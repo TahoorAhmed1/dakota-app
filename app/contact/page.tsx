@@ -1,14 +1,141 @@
 "use client";
+
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import Image from "next/image";
-import huntImg from "@/assets/catalogue1.png";
-import groupImg from "@/assets/catalogue2.png";
+import { FormEvent, useMemo, useState } from "react";
+import pic1 from "@/assets/discount 6.jpg";
+import pic2 from "@/assets/contact2.jpg";
+import pic3 from "@/assets/contact3.jpg";
+import pic4 from "@/assets/discount5.jpg";
+import pic5 from "@/assets/contact6.jpg";
+
+const fieldClassName =
+  "h-[38px] w-full rounded-[2px] border border-[#9d9d9d] bg-white px-3 text-[12px] text-[#3f3124] outline-none transition placeholder:text-[#8d8d8d] focus:border-[#a65d1f] focus:ring-1 focus:ring-[#a65d1f]/25";
+
+const textareaClassName =
+  "min-h-[92px] w-full rounded-[2px] border border-[#9d9d9d] bg-white px-3 py-2 text-[12px] text-[#3f3124] outline-none transition placeholder:text-[#8d8d8d] focus:border-[#a65d1f] focus:ring-1 focus:ring-[#a65d1f]/25";
+
+const selectChoices = {
+  experience: [
+    "1st time",
+    "2-3 years",
+    "4-6 years",
+    "7+ years",
+  ],
+  minGroupSize: ["6", "7", "8", "9", "10"],
+  maxGroupSize: ["6", "7", "8", "9", "10", "11+"],
+  dogPower: ["0", "1", "2", "3", "4+"],
+  timeframe: [
+    "Oct 18-21",
+    "Oct 25-28",
+    "Nov 1-4",
+    "Nov 8-11",
+    "Nov 15-18",
+    "Nov 22-25",
+    "Nov 29-Dec 2",
+  ],
+};
+
+const stateOptions = [
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
+  "Other",
+];
+
+type FormState = {
+  huntType: string;
+  experience: string;
+  minGroupSize: string;
+  maxGroupSize: string;
+  dogPower: string;
+  firstChoice: string;
+  secondChoice: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  state: string;
+  phone: string;
+  additionalComments: string;
+  captchaChecked: boolean;
+};
+
+type Errors = Partial<Record<keyof FormState, string>>;
+
+function SectionImage({ src, alt }: { src: StaticImageData; alt: string }) {
+  return (
+    <div className="relative h-[96px] overflow-hidden rounded-[18px] sm:h-[118px] lg:h-[124px] xl:h-[132px]">
+      <Image src={src} alt={alt} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 280px" />
+    </div>
+  );
+}
+
+function Label({ children }: { children: React.ReactNode }) {
+  return <label className="mb-[6px] block text-[12px] font-medium leading-[1.2] text-[#2d241b]">{children}</label>;
+}
+
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <Label>
+      <span className="text-[#d25f2d]">*</span>
+      {children}
+    </Label>
+  );
+}
 
 export default function ContactPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormState>({
+    huntType: "",
+    experience: "",
+    minGroupSize: "",
+    maxGroupSize: "",
     dogPower: "",
     firstChoice: "",
     secondChoice: "",
@@ -23,59 +150,78 @@ export default function ContactPage() {
   const [errors, setErrors] = useState<Errors>({});
   const [submitState, setSubmitState] = useState<"idle" | "success">("idle");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+  const availableSecondChoices = useMemo(
+    () => selectChoices.timeframe.filter((option) => option !== formData.firstChoice),
+    [formData.firstChoice],
+  );
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value, type } = event.target;
+    const checked = type === "checkbox" ? (event.target as HTMLInputElement).checked : undefined;
+
+    setFormData((prev) => {
+      const nextValue = type === "checkbox" ? checked ?? false : value;
+      const nextState = { ...prev, [name]: nextValue } as FormState;
+
+      if (name === "firstChoice" && nextState.firstChoice === nextState.secondChoice) {
+        nextState.secondChoice = "";
+      }
+
+      if (name === "minGroupSize" && nextState.maxGroupSize) {
+        const min = Number(nextState.minGroupSize.replace(/\D/g, ""));
+        const max = Number(nextState.maxGroupSize.replace(/\D/g, ""));
+        if (min && max && max < min) {
+          nextState.maxGroupSize = "";
+        }
+      }
+
+      return nextState;
     });
 
     setErrors((prev) => ({ ...prev, [name]: undefined }));
     setSubmitState("idle");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitMessage('');
+  const validate = () => {
+    const nextErrors: Errors = {};
 
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSubmitMessage(data.message);
-        // Reset form
-        setFormData({
-          huntType: "",
-          experience: "",
-          minGroupSize: "",
-          maxGroupSize: "",
-          dogPower: "",
-          firstChoice: "",
-          secondChoice: "",
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          additionalComments: "",
-        });
-      } else {
-        setSubmitMessage(data.error || 'Something went wrong. Please try again.');
-      }
-    } catch (error) {
-      console.error('Form submission error:', error);
-      setSubmitMessage('Network error. Please check your connection and try again.');
-    } finally {
-      setIsSubmitting(false);
+    if (!formData.huntType) nextErrors.huntType = "Please choose a hunt type.";
+    if (!formData.experience) nextErrors.experience = "Please choose your experience level.";
+    if (!formData.minGroupSize) nextErrors.minGroupSize = "Please choose the minimum group size.";
+    if (!formData.maxGroupSize) nextErrors.maxGroupSize = "Please choose the maximum group size.";
+    if (!formData.dogPower) nextErrors.dogPower = "Please choose how many dogs you plan to bring.";
+    if (!formData.firstChoice) nextErrors.firstChoice = "Please select your first preferred week.";
+    if (!formData.secondChoice) nextErrors.secondChoice = "Please select your second preferred week.";
+    if (!formData.firstName.trim()) nextErrors.firstName = "First name is required.";
+    if (!formData.lastName.trim()) nextErrors.lastName = "Last name is required.";
+    if (!formData.email.trim()) {
+      nextErrors.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      nextErrors.email = "Enter a valid email address.";
     }
+    if (!formData.state) nextErrors.state = "Please select your state/province.";
+    if (!formData.phone.trim()) {
+      nextErrors.phone = "Phone number is required.";
+    } else if (!/^[0-9+()\-\s]{7,}$/.test(formData.phone)) {
+      nextErrors.phone = "Enter a valid phone number.";
+    }
+
+    if (formData.minGroupSize && formData.maxGroupSize) {
+      const min = Number(formData.minGroupSize.replace(/\D/g, ""));
+      const max = Number(formData.maxGroupSize.replace(/\D/g, ""));
+      if (min && max && max < min) {
+        nextErrors.maxGroupSize = "Max hunters cannot be less than min hunters.";
+      }
+    }
+
+    if (!formData.captchaChecked) {
+      nextErrors.captchaChecked = "Please verify the captcha confirmation.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -135,67 +281,39 @@ export default function ContactPage() {
             </h2>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-12 space-y-6">
-            {/* Hunt Type */}
-            <div className="flex items-center gap-6">
-              <div className="flex-1">
-                <label className="block text-lg font-semibold text-[#281703]">1. Hunt</label>
-                <select
-                  name="huntType"
-                  value={formData.huntType}
-                  onChange={handleChange}
-                  className="w-full mt-2 p-3 border border-[#b9773d] rounded-md"
-                >
-                  <option value="">Are you looking for a self or fully guided hunt?</option>
-                  <option value="Self-Guided">Self-Guided</option>
-                  <option value="Fully Guided">Fully Guided</option>
-                </select>
-              </div>
-              <div className="flex-1">
-                <Image
-                  src={huntImg}
-                  alt="Hunt Image"
-                  className="w-full h-[180px] object-cover rounded-md"
-                />
-              </div>
-            </div>
-
-            {/* Experience */}
-            <div>
-              <label className="block text-lg font-semibold text-[#281703]">2. Experience</label>
-              <select
-                name="experience"
-                value={formData.experience}
-                onChange={handleChange}
-                className="w-full mt-2 p-3 border border-[#b9773d] rounded-md"
-              >
-                <option value="">How many years have you hunted South Dakota?</option>
-                <option value="1">1 Year</option>
-                <option value="2">2 Years</option>
-                <option value="3">3+ Years</option>
-              </select>
-            </div>
-
-            {/* Group Info */}
-            <div className="flex items-center gap-6">
-              <div className="flex-1">
-                <label className="block text-lg font-semibold text-[#281703]">3. Group Info</label>
-                <p className="text-sm text-[#5f5f5f]">Please note the minimum group size is 6-10 hunters per group.</p>
-                <div className="mt-2">
-                  <label className="block">What would be the least number of hunters in your group?</label>
-                  <select
-                    name="minGroupSize"
-                    value={formData.minGroupSize}
-                    onChange={handleChange}
-                    className="w-full p-3 border border-[#b9773d] rounded-md"
-                  >
-                    <option value="">Choose</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </select>
+          <form onSubmit={handleSubmit} noValidate className="px-4 pb-8 pt-3 sm:px-6 sm:pb-10 lg:px-8 lg:pb-12">
+            <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
+                <div>
+                  <h3 className="text-[24px] font-black uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">1. Hunt</h3>
+                  <p className="mt-3 text-[13px] leading-6 text-[#352b24]">
+                    <span className="text-[#d25f2d]">*</span>Are you looking for a self or fully guided hunt?
+                  </p>
+                  <div className="mt-2 space-y-2 text-[13px] text-[#433328]">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="huntType"
+                        value="Self-Guided"
+                        checked={formData.huntType === "Self-Guided"}
+                        onChange={handleChange}
+                        className="h-4 w-4 accent-[#ba611c]"
+                      />
+                      <span>Self-Guided</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="huntType"
+                        value="Fully Guided (Professional Guide + Trained Dogs)"
+                        checked={formData.huntType === "Fully Guided (Professional Guide + Trained Dogs)"}
+                        onChange={handleChange}
+                        className="h-4 w-4 accent-[#ba611c]"
+                      />
+                      <span>Fully Guided (Professional Guide + Trained Dogs)</span>
+                    </label>
+                  </div>
+                  <ErrorText message={errors.huntType} />
                 </div>
                 <SectionImage src={pic1} alt="Hunter aiming during pheasant hunt" />
               </div>
@@ -379,14 +497,6 @@ export default function ContactPage() {
                   <ErrorText message={errors.phone} />
                 </div>
               </div>
-              <div className="flex-1">
-                <Image
-                  src={groupImg}
-                  alt="Group Image"
-                  className="w-full h-[180px] object-cover rounded-md"
-                />
-              </div>
-            </div>
 
               <div className="mt-4 max-w-[700px]">
                 <Label>Additional Comments</Label>
@@ -424,19 +534,12 @@ export default function ContactPage() {
                 </button>
               </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="mt-8 w-full py-4 text-lg font-semibold text-white bg-[#F16724] rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit Form'}
-            </button>
-
-            {submitMessage && (
-              <div className={`mt-4 p-4 rounded-md ${submitMessage.includes('Thank you') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                {submitMessage}
-              </div>
-            )}
+              {submitState === "success" && (
+                <div className="mt-5 rounded-[8px] border border-[#c9ddb7] bg-[#f3faea] px-4 py-3 text-[13px] text-[#406127]">
+                  Your request information has been captured successfully.
+                </div>
+              )}
+            </div>
           </form>
         </div>
       </section>

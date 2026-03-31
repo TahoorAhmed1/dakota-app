@@ -288,7 +288,7 @@ export default function DiscountsPage() {
                   className="h-[160px] sm:h-[188px] lg:h-[208px] xl:h-[230px]"
                 />
                 <ImageTile
-                  src={photo6}
+                  src={photo5}
                   alt="Group of hunters posing outdoors"
                   className="h-[136px] sm:h-[156px] lg:h-[174px] xl:h-[194px]"
                 />
@@ -306,7 +306,7 @@ export default function DiscountsPage() {
                   className="h-[124px] sm:h-[148px] lg:h-[164px] xl:h-[180px]"
                 />
                 <ImageTile
-                  src={photo5}
+                  src={photo6}
                   alt="Hunter aiming shotgun in field"
                   className="h-[288px] sm:h-[356px] lg:h-[414px] xl:h-[462px]"
                 />

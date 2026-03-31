@@ -37,13 +37,13 @@ const galleryItems: GalleryItem[] = [
     sizes: "(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw",
   },
   {
-    src: rate4,
+    src: rate3,
     alt: "Close-up of a pheasant being carried after a successful hunt",
     className: "md:col-start-3 md:row-span-2 aspect-[0.46/1] md:h-full",
     sizes: "(max-width: 767px) 100vw, (max-width: 1279px) 35vw, 18vw",
   },
   {
-    src: rate3,
+    src: rate4,
     alt: "Hunters in blaze orange moving through a snowy field with shotguns",
     className: "md:col-span-2 md:row-span-1 aspect-[2.06/0.61]",
     sizes: "(max-width: 767px) 100vw, (max-width: 1279px) 100vw, 66vw",
@@ -154,78 +154,12 @@ export default function RatesPage() {
         <HeroCurve />
       </section>
 
-      {/* Main section */}
-      <section className="bg-[#E7DCCF] px-6 pb-16 pt-20">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-center text-[34px] font-bold leading-tight text-[#281703] md:text-[56px]">
-            Pheasant Hunting Rates &amp; Booking Info
-          </h2>
-
-          <div className="mt-10">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-bold text-[#281703] mb-4">4 Nights / 3 Days Package</h3>
-                <div className="text-3xl font-bold text-[#F16724] mb-2">$1,749</div>
-                <p className="text-sm text-gray-600 mb-4">per person</p>
-                <ul className="space-y-2 text-sm">
-                  <li>✓ 4 nights lodging</li>
-                  <li>✓ 3 full days hunting</li>
-                  <li>✓ Access to premium hunting grounds</li>
-                  <li>✓ Basic amenities included</li>
-                </ul>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md border-2 border-[#F16724]">
-                <div className="bg-[#F16724] text-white px-3 py-1 rounded text-sm inline-block mb-2">Most Popular</div>
-                <h3 className="text-xl font-bold text-[#281703] mb-4">3 Nights / 2 Days Package</h3>
-                <div className="text-3xl font-bold text-[#F16724] mb-2">$1,399</div>
-                <p className="text-sm text-gray-600 mb-4">per person</p>
-                <ul className="space-y-2 text-sm">
-                  <li>✓ 3 nights lodging</li>
-                  <li>✓ 2 full days hunting</li>
-                  <li>✓ Access to premium hunting grounds</li>
-                  <li>✓ Basic amenities included</li>
-                </ul>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-bold text-[#281703] mb-4">5 Nights / 4 Days Package</h3>
-                <div className="text-3xl font-bold text-[#F16724] mb-2">$2,099</div>
-                <p className="text-sm text-gray-600 mb-4">per person</p>
-                <ul className="space-y-2 text-sm">
-                  <li>✓ 5 nights lodging</li>
-                  <li>✓ 4 full days hunting</li>
-                  <li>✓ Access to premium hunting grounds</li>
-                  <li>✓ Extended amenities</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-bold text-[#281703] mb-4">What's Included</h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold mb-2">Hunting Package Includes:</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Access to private hunting grounds</li>
-                    <li>• Modern lodging accommodations</li>
-                    <li>• Hot showers and basic amenities</li>
-                    <li>• Access to clean, well-maintained facilities</li>
-                    <li>• Experienced local guidance available</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Additional Services:</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Guided hunts (additional cost)</li>
-                    <li>• Dog training areas</li>
-                    <li>• Equipment rental</li>
-                    <li>• Transportation services</li>
-                    <li>• Processing and cleaning services</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+      <section className="bg-[#e6dbcf] px-4 pb-14 pt-5 sm:px-6 md:px-8 md:pb-16 md:pt-8 lg:px-10 lg:pb-20 lg:pt-10">
+        <div className="mx-auto max-w-[1320px]">
+          <div className="text-center">
+            <h2 className="text-[26px] font-black leading-[1.05] tracking-[-0.04em] text-[#2a1808] sm:text-[34px] md:text-[46px] lg:text-[60px]">
+              Pheasant Hunting Rates &amp; Booking Info
+            </h2>
           </div>
 
           <div className="mt-7 grid gap-[10px] sm:gap-3 md:mt-8 md:grid-cols-[1.06fr_0.96fr_0.36fr] md:grid-rows-[auto_auto] lg:gap-[12px]">
@@ -264,28 +198,15 @@ export default function RatesPage() {
               </p>
             </div>
 
-            <div className="flex flex-col items-start gap-3 text-[15px] font-semibold leading-7 text-[#F16724] md:items-end md:text-right">
-              <Link href="/availability" className="transition-colors hover:text-[#281703]">
-                Pheasant Hunting Package Rates and Availability
-              </Link>
-              <Link href="/discounts" className="transition-colors hover:text-[#281703]">
-                Special Offers, Discounts, Add-Ons and Sales
-              </Link>
-              <Link href="/quote-reserve" className="transition-colors hover:text-[#281703]">
-                Quote or Reserve Your Own Hunt
-              </Link>
-              <Link href="/about" className="transition-colors hover:text-[#281703]">
-                What's Included in Your Unguided Pheasant Hunting Package
-              </Link>
-              <Link href="/availability" className="transition-colors hover:text-[#281703]">
-                Self-Guided South Dakota Pheasant Hunting Season Schedule
-              </Link>
-              <div className="text-[#281703] font-normal">
-                Minimum group size: 6-10 hunters per group
-              </div>
-              <div className="text-[#281703] font-normal">
-                All rates are per person based on double occupancy
-              </div>
+            <div className="flex flex-col gap-1.5 text-left md:items-end md:text-right">
+              {rateLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="text-[13px] font-semibold leading-[1.35] text-[#df8142] transition-colors duration-200 hover:text-[#8e4a1f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#df8142] focus-visible:ring-offset-2 focus-visible:ring-offset-[#e6dbcf] sm:text-[14px] md:text-[15px] lg:text-[16px]"
+                  dangerouslySetInnerHTML={{ __html: link.label }}
+                />
+              ))}
             </div>
           </div>
         </div>
