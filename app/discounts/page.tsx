@@ -1,78 +1,101 @@
+import Image, { StaticImageData } from "next/image";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import LatestNews from "@/components/NewsEvent";
 import OurPartners from "@/components/ourPartners";
+import photo1 from "@/assets/rate 4.jpg";
+import photo2 from "@/assets/discount5.jpg";
+import photo3 from "@/assets/discount 3.jpg";
+import photo4 from "@/assets/rate 2.jpg";
+import photo5 from "@/assets/discount 6.jpg";
+import photo6 from "@/assets/rate 1.jpg";
 
-function BulletItem({ children }: { children: React.ReactNode }) {
+const heroPercents = [
+  { className: "left-[1%] top-[1%] text-[86px] md:text-[132px]" },
+  { className: "left-[18%] top-[0%] text-[62px] md:text-[96px]" },
+  { className: "left-[39%] top-[2%] text-[54px] md:text-[84px]" },
+  { className: "right-[8%] top-[1%] text-[72px] md:text-[112px]" },
+  { className: "left-[4%] top-[20%] text-[64px] md:text-[108px]" },
+  { className: "left-[24%] top-[16%] text-[54px] md:text-[88px]" },
+  { className: "left-[46%] top-[20%] text-[58px] md:text-[94px]" },
+  { className: "left-[71%] top-[18%] text-[50px] md:text-[86px]" },
+  { className: "right-[1%] top-[24%] text-[72px] md:text-[118px]" },
+  { className: "left-[0%] top-[47%] text-[62px] md:text-[102px]" },
+  { className: "left-[22%] top-[43%] text-[54px] md:text-[86px]" },
+  { className: "left-[43%] top-[39%] text-[68px] md:text-[108px]" },
+  { className: "left-[65%] top-[44%] text-[56px] md:text-[90px]" },
+  { className: "right-[6%] top-[50%] text-[76px] md:text-[124px]" },
+  { className: "left-[8%] bottom-[10%] text-[70px] md:text-[110px]" },
+  { className: "left-[32%] bottom-[12%] text-[56px] md:text-[88px]" },
+  { className: "left-[55%] bottom-[8%] text-[72px] md:text-[114px]" },
+  { className: "right-[14%] bottom-[14%] text-[62px] md:text-[100px]" },
+];
+
+function BulletItem({ children }: { children: ReactNode }) {
   return (
-    <li className="flex items-start gap-3">
-      <span className="mt-1 text-[#F16724]">✓</span>
+    <li className="flex items-start gap-2.5 leading-[1.45] sm:gap-3">
+      <span className="mt-[3px] shrink-0 text-[12px] font-bold text-[#ed7a34] sm:text-[13px]">
+        ✓
+      </span>
       <span>{children}</span>
     </li>
   );
 }
 
-function PlaceholderImage({
-  className = "",
-  label,
+function ImageTile({
+  src,
+  alt,
+  className,
+  priority = false,
 }: {
+  src: StaticImageData;
+  alt: string;
   className?: string;
-  label: string;
+  priority?: boolean;
 }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#d9b48b] via-[#b97d45] to-[#5a3418] ${className}`}
+      className={`relative overflow-hidden rounded-[28px] bg-[#caa47d] shadow-[0_10px_30px_rgba(40,23,3,0.08)] ${className ?? ""}`}
     >
-      <div className="absolute inset-0 bg-black/10" />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="rounded-full bg-white/85 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#281703]">
-          {label}
-        </span>
-      </div>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        priority={priority}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 45vw, 26vw"
+        className="object-cover"
+      />
     </div>
   );
 }
 
 export default function DiscountsPage() {
   return (
-    <main className="flex flex-col">
-      {/* Hero */}
-      <section className="relative flex min-h-[620px] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#efe8df_0%,#f0d0a5_100%)]">
-        <div className="absolute inset-0 opacity-10">
-          {[
-            "left-[4%] top-[3%]",
-            "left-[12%] top-[18%]",
-            "left-[30%] top-[6%]",
-            "left-[52%] top-[2%]",
-            "left-[74%] top-[10%]",
-            "left-[88%] top-[4%]",
-            "left-[7%] top-[42%]",
-            "left-[22%] top-[34%]",
-            "left-[41%] top-[28%]",
-            "left-[64%] top-[33%]",
-            "left-[82%] top-[40%]",
-            "left-[15%] top-[62%]",
-            "left-[34%] top-[58%]",
-            "left-[56%] top-[64%]",
-            "left-[78%] top-[60%]",
-          ].map((pos, index) => (
+    <main className="overflow-hidden bg-[#ddd2c7] text-[#281703]">
+      <section className="relative isolate flex min-h-[360px] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#f4efe8_0%,#f0cf9f_100%)] px-4 pb-24 pt-20 sm:min-h-[430px] sm:px-6 sm:pt-24 lg:min-h-[520px] lg:pb-28">
+        <div className="absolute inset-0 opacity-[0.16]">
+          {heroPercents.map((item, index) => (
             <span
               key={index}
-              className={`absolute ${pos} text-[72px] font-black text-[#6b4b34] md:text-[110px]`}
+              className={`absolute font-black leading-none text-[#7f6248] ${item.className}`}
             >
               %
             </span>
           ))}
         </div>
 
-        <div className="relative z-10 flex flex-col items-center px-6 pt-24 text-center">
-          <h1 className="text-[52px] font-bold uppercase leading-none text-[#281703] md:text-[82px]">
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <h1 className="text-[38px] font-black uppercase leading-none tracking-[-0.03em] text-[#1e1004] sm:text-[54px] lg:text-[82px]">
             Discounts
           </h1>
 
-          <div className="mt-6 flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#281703]">
+          <nav
+            aria-label="Breadcrumb"
+            className="mt-5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#2a1705] sm:gap-3 sm:text-[11px]"
+          >
             <Link
               href="/"
-              className="flex items-center gap-2 transition-colors hover:text-[#F16724]"
+              className="inline-flex items-center gap-2 transition-colors duration-200 hover:text-[#ed7a34]"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -80,71 +103,72 @@ export default function DiscountsPage() {
                 height="13"
                 viewBox="0 0 24 24"
                 fill="currentColor"
+                aria-hidden="true"
               >
                 <path d="M12 3.172 3 10.2V21h6v-6h6v6h6V10.2l-9-7.028Z" />
               </svg>
               <span>Home</span>
             </Link>
-
-            <span>›</span>
-            <span>Discounts</span>
-          </div>
+            <span aria-hidden="true">›</span>
+            <span className="text-[#1e1004]">Discounts</span>
+          </nav>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
-          <div className="h-20 w-full rounded-t-[100%] border-t-[4px] border-[#281703] bg-[#E7DCCF]" />
-        </div>
+        <div className="absolute -bottom-[78px] left-1/2 h-[160px] w-[140%] -translate-x-1/2 rounded-[100%] border-t-[4px] border-[#281703] bg-[#e3d9ce] sm:-bottom-[84px] sm:h-[172px] lg:-bottom-[92px] lg:h-[188px]" />
       </section>
 
-      {/* Main content */}
-      <section className="bg-[#E7DCCF] px-6 pb-16 pt-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="text-center">
-            <h2 className="text-[32px] font-bold leading-tight text-[#281703] md:text-[56px]">
+      <section className="relative z-10 bg-[#e3d9ce] px-4 pb-14 pt-14 sm:px-6 sm:pb-16 sm:pt-16 lg:px-8 lg:pb-20 lg:pt-20">
+        <div className="mx-auto max-w-[1220px]">
+          <div className="mx-auto max-w-[860px] text-center">
+            <h2 className="text-[27px] font-black leading-[1.05] tracking-[-0.03em] text-[#281703] sm:text-[36px] lg:text-[58px]">
               UGUIDE South Dakota Pheasant Hunting Specials
             </h2>
 
-            <p className="mx-auto mt-4 max-w-4xl text-[15px] font-medium leading-7 text-[#2f2b27]">
-              Click on specific links to get more info about the special or
-              related camp. Remember to go to{" "}
-              <span className="font-semibold text-[#F16724]">Availability</span>{" "}
+            <p className="mx-auto mt-3 max-w-[760px] text-[13px] font-medium leading-[1.55] text-[#312b24] sm:text-[14px] lg:text-[15px]">
+              Click on specific links to get more info about the special or related camp.
+              Remember to go to the{" "}
+              <Link
+                href="/availability"
+                className="font-semibold text-[#ed7a34] transition-colors duration-200 hover:text-[#b8581d]"
+              >
+                Availability
+              </Link>{" "}
               page to check current rates and openings.
             </p>
           </div>
 
-          <div className="mt-12 grid gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-            {/* Left text content */}
-            <div className="text-[14px] leading-7 text-[#2f2b27] md:text-[15px]">
-              <div className="space-y-6">
+          <div className="mt-10 grid items-start gap-8 lg:mt-12 lg:grid-cols-[minmax(0,1.04fr)_minmax(340px,0.76fr)] lg:gap-10 xl:gap-14">
+            <div className="max-w-[700px] text-[13px] leading-[1.28] text-[#231f1c] sm:text-[14px] lg:text-[15px]">
+              <div className="space-y-5 lg:space-y-6">
                 <div>
-                  <h3 className="text-[18px] font-bold text-[#281703]">
+                  <h3 className="text-[16px] font-black leading-[1.2] text-[#281703] sm:text-[17px] lg:text-[18px]">
                     Fair Chase Pheasant Hunting Notice:
                   </h3>
-                  <p className="mt-2">
-                    These hunts are a test of your shooting, dog and hunting
-                    skills. These are not released pheasants. These are some of
-                    the wariest pheasants you will find in North America. We do
-                    not allow groups to hunt what skilled dogs. Your overall
-                    success and experience will be relative to the number of
-                    skilled shooters, experienced pheasant hunting dogs and
-                    experienced pheasant hunters in your group. If you lack the
-                    above you may be better served to look for a guided hunt at
-                    a shooting preserve where they release pheasants.
+                  <p className="mt-1.5 leading-[1.32] lg:mt-2">
+                    These hunts are a test of your shooting, dog and hunting skills. These are
+                    not released pheasants. These are some of the wariest pheasants you will
+                    find in North America. We do not allow groups to hunt without skilled dogs.
+                    Your overall success and experience will be relative to the number of skilled
+                    shooters, experienced pheasant hunting dogs and experienced pheasant hunters
+                    in your group. If you lack the above you may be better served to look for a
+                    guided hunt at a shooting preserve where they release pheasants.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-[18px] font-bold text-[#281703]">
+                  <h3 className="text-[16px] font-black leading-[1.2] text-[#281703] sm:text-[17px] lg:text-[18px]">
                     Discount-Specials-Deals-Bargains-Cheap-Low Cost-DIY
                   </h3>
 
-                  <ul className="mt-3 space-y-4">
+                  <ul className="mt-2.5 space-y-3 lg:mt-3 lg:space-y-4">
                     <BulletItem>
                       <span>
-                        <b>Hunter Volume Discount</b> (up to $80 off per
-                        person) - For each additional paying person above 6 and
-                        up to 10, you will be discounted $20/person off the
-                        package price for everyone in the group.
+                        <b>Hunter Volume Discount</b> (up to $80 off per person) &mdash; For
+                        each additional paying person above 6 and up to 10, you will be
+                        discounted $20/person off the package price for everyone in the group.
+                        For example: Let&apos;s say normal rate is $1955/person and your group size is
+                        7. Your discount would be $20/person. If your group size was 10 your
+                        discount would be $80/person.
                       </span>
                     </BulletItem>
 
@@ -152,50 +176,47 @@ export default function DiscountsPage() {
                       <span>
                         <b>Youth &amp; Juniors Specials</b>
                         <br />
-                        <span className="text-[#F16724]">
-                          Eligibility
-                        </span>{" "}
-                        - Once the camp minimum is met/booked with full price
-                        adult hunters you may add up to 2 Youth ages 12-15 and
-                        up to 2 Juniors ages 16-17. The youth will be free of
-                        charge and the Juniors rate will be 50% off.
+                        <span className="font-semibold text-[#ed7a34]">Eligibility</span> — Once
+                        the camp minimum is met/booked with full price adult hunters you may add
+                        up to 2 Youth ages 12&ndash;15 and up to 2 Juniors ages 16&ndash;17. The youth
+                        will be free of charge and the Juniors rate will be 50% off.
                       </span>
                     </BulletItem>
 
                     <BulletItem>
                       <span>
-                        <b>EarlyBird On-Line Re-Book Discount</b> - Rebook next
-                        years hunt with 14+ days of conclusion of this years
-                        hunt, on-line, and receive 5% discount off your total
-                        hunt package for next year.{" "}
-                        <span className="text-[#F16724]">
+                        <b>EarlyBird On-Line Re-Book Discount</b> — Rebook next year&apos;s hunt
+                        within 14+ days of conclusion of this year&apos;s hunt, online, and receive
+                        5% discount off your total hunt package for next year.{" "}
+                        <Link
+                          href="/quote-reserve"
+                          className="font-medium text-[#ed7a34] transition-colors duration-200 hover:text-[#b8581d]"
+                        >
                           On-Line Booking Tool Here
-                        </span>
+                        </Link>
                       </span>
                     </BulletItem>
 
                     <BulletItem>
                       <span>
-                        New Groups booking hunts for the first time can qualify
-                        for this discount when they book their hunt before year
-                        end, for next year, in the current hunting season (Dec
-                        31).
+                        New Groups booking hunts for the first time can qualify for this
+                        discount when they book their hunt before year end, for next year, in
+                        the current hunting season (Dec 31).
                       </span>
                     </BulletItem>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-[18px] font-bold text-[#281703]">
-                    Each member in your group can choose 1 eligible individual
-                    discount from the list below:
+                  <h3 className="text-[16px] font-black leading-[1.2] text-[#281703] sm:text-[17px] lg:text-[18px]">
+                    Each member in your group can choose 1 eligible individual discount from the
+                    list below:
                   </h3>
 
-                  <ul className="mt-3 space-y-2">
+                  <ul className="mt-2.5 space-y-1.5 lg:mt-3 lg:space-y-2">
                     <BulletItem>
                       <span>
-                        Group Coordinator - 10% Discount (only 1 person in group
-                        may use this)
+                        Group Coordinator - 10% Discount (only 1 person in group may use this)
                       </span>
                     </BulletItem>
                     <BulletItem>
@@ -214,42 +235,38 @@ export default function DiscountsPage() {
                       <span>Law Enforcement (Active/Retired) - 5% Discount</span>
                     </BulletItem>
                     <BulletItem>
-                      <span>
-                        Emergency Medical Technician (Active/Retired) - 5%
-                        Discount
-                      </span>
+                      <span>Emergency Medical Technician (Active/Retired) - 5% Discount</span>
                     </BulletItem>
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-[18px] font-bold text-[#281703]">
+                  <h3 className="text-[16px] font-black leading-[1.2] text-[#281703] sm:text-[17px] lg:text-[18px]">
                     Add-Ons
                   </h3>
 
-                  <ul className="mt-3 space-y-4 pl-6">
+                  <ul className="mt-2.5 space-y-3 pl-5 leading-[1.34] marker:text-[#281703] lg:mt-3 lg:space-y-4 lg:pl-6">
                     <li className="list-disc">
-                      Non-Hunters - Anyone staying with the group and not
-                      hunting will be charged a standard lodging rate of
-                      $100/night/person (depending on tier). Minimum is 4 nights
-                      and no discounts apply to non-hunters.
+                      Non-Hunters &mdash; Anyone staying with the group and not hunting will be
+                      charged a standard lodging rate of $100/night/person (depending on tier).
+                      Minimum is 4 nights and no discounts apply to non-hunters.
                     </li>
-
                     <li className="list-disc">
-                      Additional nights lodging - Hunters may want to extend
-                      their hunting trip by staying extra nights and hunting
-                      public ground in the area. Extra nights lodging will be
-                      charged at $100/night/person (depending on tier) for
-                      additional nights lodging in addition to the standard
-                      4-nights included in the base package.
+                      Additional nights lodging &mdash; Hunters may want to extend their hunting
+                      trip by staying extra nights and hunting public ground in the area. Extra
+                      nights lodging will be charged at $100/night/person (depending on tier)
+                      for additional nights lodging in addition to the standard 4-nights
+                      included in the base package.
                     </li>
-
                     <li className="list-disc">
-                      Various camps offer both 3 &amp; 4 day hunt options. See
-                      details on various{" "}
-                      <span className="font-semibold text-[#F16724]">
+                      Various camps offer both 3 &amp; 4 day hunt options. See details on various
+                      {" "}
+                      <Link
+                        href="/rates"
+                        className="font-semibold text-[#ed7a34] transition-colors duration-200 hover:text-[#b8581d]"
+                      >
                         Packages here
-                      </span>
+                      </Link>
                       .
                     </li>
                   </ul>
@@ -257,28 +274,43 @@ export default function DiscountsPage() {
               </div>
             </div>
 
-            {/* Right image collage */}
-            <div className="grid grid-cols-2 gap-6 self-start">
-              <PlaceholderImage
-                label="Photo 1"
-                className="col-span-1 h-[330px]"
-              />
-              <PlaceholderImage
-                label="Photo 2"
-                className="col-span-1 h-[180px]"
-              />
-              <PlaceholderImage
-                label="Photo 3"
-                className="col-span-1 h-[180px] -mt-16"
-              />
-              <PlaceholderImage
-                label="Photo 4"
-                className="col-span-1 row-span-2 h-[470px]"
-              />
-              <PlaceholderImage
-                label="Photo 5"
-                className="col-span-1 h-[180px]"
-              />
+            <div className="mx-auto grid w-full max-w-[520px] grid-cols-2 gap-3 self-start sm:gap-4 lg:max-w-none lg:gap-5 xl:gap-6">
+              <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 xl:gap-6">
+                <ImageTile
+                  src={photo1}
+                  alt="Pheasant feathers in hunter's hand"
+                  priority
+                  className="h-[240px] sm:h-[300px] lg:h-[348px] xl:h-[386px]"
+                />
+                <ImageTile
+                  src={photo4}
+                  alt="Hunter walking dog through field"
+                  className="h-[160px] sm:h-[188px] lg:h-[208px] xl:h-[230px]"
+                />
+                <ImageTile
+                  src={photo5}
+                  alt="Group of hunters posing outdoors"
+                  className="h-[136px] sm:h-[156px] lg:h-[174px] xl:h-[194px]"
+                />
+              </div>
+
+              <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 xl:gap-6">
+                <ImageTile
+                  src={photo2}
+                  alt="Hunters seated indoors in blaze orange gear"
+                  className="h-[124px] sm:h-[148px] lg:h-[164px] xl:h-[180px]"
+                />
+                <ImageTile
+                  src={photo3}
+                  alt="Hunter loading shells from vest pocket"
+                  className="h-[124px] sm:h-[148px] lg:h-[164px] xl:h-[180px]"
+                />
+                <ImageTile
+                  src={photo6}
+                  alt="Hunter aiming shotgun in field"
+                  className="h-[288px] sm:h-[356px] lg:h-[414px] xl:h-[462px]"
+                />
+              </div>
             </div>
           </div>
         </div>

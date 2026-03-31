@@ -2,125 +2,177 @@ import Link from "next/link";
 import LatestNews from "@/components/NewsEvent";
 import OurPartners from "@/components/ourPartners";
 
-const campProperties = [
+type CampProperty = {
+  name: string;
+  location: string;
+  county: string;
+  href: string;
+};
+
+const campProperties: CampProperty[] = [
   {
     name: "Faulkton Pheasant Camp",
     location: "Faulkton, South Dakota",
     county: "Faulk County",
-    href: "/camps/faulkton-pheasant-camp",
+    href: "https://www.uguidesdpheasants.com/pheasant-hunts/faulkton/",
   },
   {
     name: "Gunner's Haven Pheasant Camp",
     location: "Selby, South Dakota",
     county: "Walworth County",
-    href: "/camps/gunners-haven-pheasant-camp",
+    href: "https://www.uguidesdpheasants.com/pheasant-hunts/gunners-haven/",
   },
   {
     name: "Meadow Creek Pheasant Camp",
     location: "Meadow, South Dakota",
     county: "Perkins County",
-    href: "/camps/meadow-creek-pheasant-camp",
+    href: "https://www.uguidesdpheasants.com/pheasant-hunts/meadow-creek/",
   },
   {
     name: "Pheasant Camp Lodge",
-    location: "Andes, South Dakota",
+    location: "Lake Andes, South Dakota",
     county: "Charles Mix County",
-    href: "/camps/pheasant-camp-lodge",
+    href: "https://www.uguidesdpheasants.com/pheasant-hunts/pheasant-camp-lodge/",
   },
   {
     name: "West River Adventures Pheasant Camp",
     location: "Timberlake, SD",
     county: "Dewey County",
-    href: "/camps/west-river-adventures-pheasant-camp",
+    href: "https://www.uguidesdpheasants.com/pheasant-hunts/west-river-adventures/",
   },
 ];
 
+function BreadcrumbHomeIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className="shrink-0"
+    >
+      <path d="M12 3.172 3 10.2V21h6v-6h6v6h6V10.2l-9-7.028Z" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="mt-[5px] h-[13px] w-[13px] shrink-0 text-[#e67b35]"
+      fill="currentColor"
+    >
+      <path d="M7.7 14.3 3.4 10l1.4-1.4 2.9 2.9 7.5-7.5L16.6 5 7.7 14.3Z" />
+    </svg>
+  );
+}
+
+function HeroCurve() {
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 overflow-hidden leading-none">
+      <svg
+        viewBox="0 0 1440 132"
+        preserveAspectRatio="none"
+        className="block h-[88px] w-full sm:h-[96px] lg:h-[110px]"
+        aria-hidden="true"
+      >
+        <path
+          d="M0 83C190 67 343 55 504 49C647 43 797 43 936 50C1119 60 1273 75 1440 92V132H0V83Z"
+          fill="#E7DCCF"
+        />
+        <path
+          d="M0 83C190 67 343 55 504 49C647 43 797 43 936 50C1119 60 1273 75 1440 92"
+          fill="none"
+          stroke="#2b1705"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
 export default function CampsPage() {
   return (
-    <main className="flex flex-col">
-      {/* Hero */}
-      <section className="CampsImage relative flex h-screen min-h-[640px] items-center justify-center">
-        <div className="absolute inset-0 bg-[#f1c08b]/35" />
-        <div className="absolute inset-0 bg-black/10" />
+    <main className="flex flex-col bg-[#e7dccf] text-[#281703]">
+      <section className="CampsImage relative isolate flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 pt-20 sm:min-h-[430px] sm:px-6 md:min-h-[500px] lg:min-h-[590px] lg:px-8">
+        <div className="absolute inset-0 bg-[#e8b783]/45" />
+        <div className="absolute inset-0 bg-black/12" />
 
-        <div className="relative z-10 flex flex-col items-center px-6 text-center">
-          <h1 className="text-[58px] font-bold uppercase leading-none text-[#281703] md:text-[82px]">
+        <div className="relative z-10 flex max-w-4xl flex-col items-center text-center">
+          <h1 className="text-[46px] font-bold uppercase leading-none tracking-[-0.03em] text-[#231305] sm:text-[64px] lg:text-[78px]">
             Camps
           </h1>
 
-          <div className="mt-6 flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#281703]">
-            <Link
-              href="/"
-              className="flex items-center gap-2 transition-colors hover:text-[#F16724]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 3.172 3 10.2V21h6v-6h6v6h6V10.2l-9-7.028Z" />
-              </svg>
-              <span>Home</span>
-            </Link>
-
-            <span>›</span>
-            <span>Camps</span>
-          </div>
+          <nav
+            aria-label="Breadcrumb"
+            className="mt-5 sm:mt-6"
+          >
+            <ol className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#281703] sm:gap-3 sm:text-[11px]">
+              <li>
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-2 transition-colors duration-200 hover:text-[#e67b35] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#281703] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                >
+                  <BreadcrumbHomeIcon />
+                  <span>Home</span>
+                </Link>
+              </li>
+              <li aria-hidden="true" className="text-[12px] text-[#6c5240]">
+                ›
+              </li>
+              <li aria-current="page">Camps</li>
+            </ol>
+          </nav>
         </div>
 
-        {/* Curved divider */}
-        <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
-          <div className="h-20 w-full rounded-t-[100%] border-t-[4px] border-[#281703] bg-[#E7DCCF]" />
-        </div>
+        <HeroCurve />
       </section>
 
-      {/* Intro section */}
-      <section className="bg-[#E7DCCF] px-6 pb-16 pt-20 md:pt-24">
-        <div className="mx-auto max-w-5xl">
-          <div className="text-center">
-            <h2 className="text-[34px] font-bold leading-tight text-[#281703] md:text-[56px]">
+      <section className="bg-[#e7dccf] px-5 pb-12 pt-6 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8 lg:pb-20 lg:pt-14">
+        <div className="mx-auto max-w-[1120px]">
+          <div className="mx-auto max-w-[980px] text-center">
+            <h2 className="text-[34px] font-bold leading-[1.05] tracking-[-0.03em] text-[#281703] sm:text-[42px] lg:text-[56px]">
               South Dakota Pheasant Hunting
             </h2>
 
-            <p className="mx-auto mt-5 max-w-4xl text-[15px] font-semibold leading-7 text-[#2f2b27] md:text-[16px]">
+            <p className="mx-auto mt-4 max-w-[860px] text-[13px] font-semibold leading-[1.35] text-[#2c221c] sm:mt-5 sm:text-[14px] lg:text-[15px]">
               Below are links to detailed information on the various South Dakota
               Pheasant Hunting properties that UGUIDE offers. Each property has
-              its own minimum and maximum capacity per week. Within the links
-              you will find detailed info such as lodging photos, land photos,
+              its own minimum and maximum capacity per week. Within the links you
+              will find detailed info such as lodging photos, land photos,
               hunting video, amenities and more. This detailed info is designed
-              to help you select the package that best suits your group&apos;s
-              pheasant hunting vacation requirements.
+              to help you select the package that best suits your groups pheasant
+              hunting vacation requirements.
             </p>
           </div>
 
-          <div className="my-12 border-t border-[#9a8e81]" />
+          <div className="mx-auto mt-10 h-px max-w-[1060px] bg-[#9c8f82] sm:mt-12 lg:mt-14" />
 
-          <div className="text-center">
-            <h3 className="text-[34px] font-bold leading-tight text-[#281703] md:text-[54px]">
+          <div className="mx-auto mt-10 max-w-[980px] text-center sm:mt-12 lg:mt-14">
+            <h3 className="text-[31px] font-bold leading-[1.05] tracking-[-0.03em] text-[#281703] sm:text-[38px] lg:text-[54px]">
               Pheasant Camp Properties
             </h3>
 
-            <ul className="mt-6 space-y-2 text-left md:text-center">
+            <ul className="mx-auto mt-5 flex max-w-[880px] flex-col gap-1 text-left sm:mt-6 sm:items-center sm:text-center">
               {campProperties.map((camp) => (
                 <li
                   key={camp.name}
-                  className="flex items-start justify-start gap-3 text-[15px] font-medium leading-7 text-[#2f2b27] md:justify-center"
+                  className="flex items-start gap-2 text-[14px] font-medium leading-[1.25] text-[#2f2b27] sm:text-[15px]"
                 >
-                  <span className="mt-[2px] text-[#F16724]">✓</span>
-
+                  <CheckIcon />
                   <p>
                     <a
                       href={camp.href}
-                      className="font-semibold text-[#F16724] transition-colors hover:underline"
+                      className="font-semibold text-[#e67b35] underline-offset-2 transition-colors duration-200 hover:text-[#b85e24] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#281703] focus-visible:ring-offset-2 focus-visible:ring-offset-[#e7dccf]"
                     >
                       {camp.name}
                     </a>
-                    <span className="text-[#2f2b27]">
-                      {" "}
-                      - {camp.location} - {camp.county}
-                    </span>
+                    <span>{` - ${camp.location} - ${camp.county}`}</span>
                   </p>
                 </li>
               ))}
