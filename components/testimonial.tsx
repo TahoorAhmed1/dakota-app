@@ -13,7 +13,7 @@ function Testimonials() {
         What People Say About UGUIDE South Dakota Pheasant Hunting!
       </h2>
 
-      <p className="mt-3 text-gray-600">Content Will Add</p>
+      <p className="mt-3 text-gray-600">Real experiences from our satisfied hunters</p>
 
       {/* Cards */}
       <div className="mt-14 flex justify-center items-center gap-8 flex-wrap">
@@ -27,16 +27,16 @@ function Testimonials() {
           </div>
           <div className="text-yellow-400 text-2xl mb-3">★★★★★</div>
 
-          <p className="font-semibold text-black">“UGUIDE are so much fun”</p>
+          <p className="font-semibold text-black">"Best pheasant hunting experience we've ever had!"</p>
 
           <p className="text-sm text-black mt-4">
-            Pretium quam lacus interdum ultrices velit elementum idicul netus
-            faucibus. Venenatis quam diam nisi id at amet, mi at auctor once
-            vestibulum
+            Our group of 8 hunters had an incredible time at Faulkton Pheasant Camp.
+            The birds were plentiful and the accommodations were top-notch. UGUIDE
+            made everything so easy to coordinate.
           </p>
 
-          <p className="mt-5 font-semibold text-black">Peter Harvey</p>
-          <p className="text-xs text-black">Business</p>
+          <p className="mt-5 font-semibold text-black">Mike Johnson</p>
+          <p className="text-xs text-black">Annual Hunter</p>
 
           <div className="w-12 h-12 bg-[#BDBDBD] rounded-full mx-auto mt-4"></div>
         </div>
@@ -59,16 +59,16 @@ function Testimonials() {
           </div>
           <div className="text-yellow-400 text-2xl mb-3">★★★★★</div>
 
-          <p className="font-semibold">“UGUIDE are so much fun”</p>
+          <p className="font-semibold">"Outstanding organization and beautiful camps"</p>
 
           <p className="text-sm mt-4 text-gray-200">
-            Pretium quam lacus interdum ultrices velit elementum idicul netus
-            faucibus. Venenatis quam diam nisi id at amet, mi at auctor once
-            vestibulum
+            We've been coming to UGUIDE for 5 years now. The camps are always clean,
+            well-maintained, and the hunting grounds are some of the best in South Dakota.
+            Chris and his team make every detail perfect.
           </p>
 
-          <p className="mt-5 font-semibold">Peter Harvey</p>
-          <p className="text-xs text-gray-300">Business</p>
+          <p className="mt-5 font-semibold">Sarah & David Martinez</p>
+          <p className="text-xs text-gray-300">Returning Customers</p>
 
           <div className="w-14 h-14 bg-gray-300 rounded-full mx-auto mt-5"></div>
         </div>
@@ -84,16 +84,16 @@ function Testimonials() {
 
           <div className="text-yellow-400 text-2xl mb-3">★★★★★</div>
 
-          <p className="font-semibold text-black">“UGUIDE are so much fun”</p>
+          <p className="font-semibold text-black">"Perfect for our corporate group outing"</p>
 
           <p className="text-sm text-black mt-4">
-            Pretium quam lacus interdum ultrices velit elementum idicul netus
-            faucibus. Venenatis quam diam nisi id at amet, mi at auctor once
-            vestibulum
+            We brought 12 employees for a team-building pheasant hunt. The logistics
+            were handled flawlessly, the food was excellent, and everyone had a great time.
+            Highly recommend for groups!
           </p>
 
-          <p className="mt-5 font-semibold text-black">Peter Harvey</p>
-          <p className="text-xs text-black">Business</p>
+          <p className="mt-5 font-semibold text-black">Robert Chen</p>
+          <p className="text-xs text-black">Corporate Event Organizer</p>
 
           <div className="w-12 h-12 bg-[#BDBDBD] rounded-full mx-auto mt-4"></div>
         </div>

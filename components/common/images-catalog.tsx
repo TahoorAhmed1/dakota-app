@@ -9,8 +9,8 @@ import Image from "next/image";
 function ImagesCatalog() {
   const images = [catalogue1, catalogue2, catalogue3, catalogue4, catalogue5,catalogue6];
   return <div className="max-w-7xl mx-auto grid grid-cols-3 gap-10  pt-60 pb-20">
-    {images.map((src)=>{ 
-        return <Image src={src} alt="" className="w-full h-[330px] object-cover" />
+    {images.map((src, index)=>{ 
+        return <Image key={index} src={src} alt="" className="w-full h-[330px] object-cover" />
     })}
   </div>;
 }

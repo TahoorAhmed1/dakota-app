@@ -9,9 +9,9 @@ function OurPartners() {
     <div className="bg-[#F5F5F5] py-10">
       <h1 className="text-[#281703] text-center text-2xl font-bold">Our Partners</h1>
       <div className="max-w-7xl mx-auto grid grid-cols-4 gap-10 ">
-        {image.map((src) => {
+        {image.map((src, index) => {
           return (
-            <Image src={src} alt="" className="w-full h-full object-contain" />
+            <Image key={index} src={src} alt="" className="w-full h-full object-contain" />
           );
         })}
       </div>

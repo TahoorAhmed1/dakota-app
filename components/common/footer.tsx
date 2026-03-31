@@ -1,7 +1,43 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import logo from "@/assets/logo-black.png";
 
 function Footer() {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(data.message);
+        setEmail('');
+      } else {
+        setMessage(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Newsletter signup error:', error);
+      setMessage('Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <footer className="Footerback relative bg-cover bg-center py-4 text-black">
      
@@ -57,12 +93,25 @@ function Footer() {
               <input
                 type="email"
                 placeholder="Your email here"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 px-4 py-3 text-sm outline-none"
+                disabled={isSubmitting}
               />
-              <button className="bg-[#3b220c] text-white px-6 text-sm font-semibold">
-                SUBSCRIBE
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="bg-[#3b220c] text-white px-6 text-sm font-semibold disabled:opacity-50"
+              >
+                {isSubmitting ? '...' : 'SUBSCRIBE'}
               </button>
             </div>
+
+            {message && (
+              <p className={`text-sm mt-2 ${message.includes('Thank you') ? 'text-green-600' : 'text-red-600'}`}>
+                {message}
+              </p>
+            )}
           </div>
         </div>
 

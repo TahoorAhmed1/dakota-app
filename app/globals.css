@@ -94,7 +94,7 @@ body {
 }
 
 .ContactImage {
-  background-image: url("../assets/contact-background.jpg.jpg");
+  background-image: url("../assets/contact-background.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

@@ -145,6 +145,8 @@ function SummaryRow({
 
 export default function QuoteReservePage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
 
   const [groupData, setGroupData] = useState<StepOneData>({
     season: seasons[0],
@@ -168,6 +170,54 @@ export default function QuoteReservePage() {
       Array.from({ length: groupData.hunterCount }, (_, i) => prev[i] ?? makeHunter(i + 1))
     );
   }, [groupData.hunterCount]);
+
+  const handleSubmit = async () => {
+    if (!bookingName || !bookingEmail) {
+      setSubmitMessage('Please enter booking name and email');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      const response = await fetch('/api/quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupData,
+          hunters,
+          pricing: pricingRows,
+          totals: {
+            subtotal: grandSubtotal,
+            depositBase,
+            processingFee,
+            depositTotal
+          },
+          bookingInfo: {
+            name: bookingName,
+            email: bookingEmail
+          }
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitMessage(`Quote submitted successfully! Quote ID: ${data.quoteId}`);
+        // Could redirect to a thank you page or show success state
+      } else {
+        setSubmitMessage(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Quote submission error:', error);
+      setSubmitMessage('Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const pricingRows = useMemo(() => {
     const baseRate = packageRates[groupData.packageType] ?? 1749;
@@ -721,10 +771,20 @@ export default function QuoteReservePage() {
                         Back to Step 2
                       </button>
 
-                      <button className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95">
-                        To Step 4: Payment »
+                      <button
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isSubmitting ? 'Submitting...' : 'Submit Quote Request »'}
                       </button>
                     </div>
+
+                    {submitMessage && (
+                      <div className={`mt-4 p-4 rounded-md text-center ${submitMessage.includes('successfully') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {submitMessage}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

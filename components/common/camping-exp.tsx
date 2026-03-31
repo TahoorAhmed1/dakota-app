@@ -1,5 +1,8 @@
+"use client";
+
 import campingImage from "@/assets/camping.png";
 import Image from "next/image";
+import Link from "next/link";
 
 function CampingExp() {
   return (
@@ -33,9 +36,9 @@ function CampingExp() {
 
           <div className="pr-8">
             {/* RIGHT BUTTON */}
-            <button className="border border-orange-400 text-orange-400 px-6 py-3 rounded-md hover:bg-orange-400 hover:text-white transition whitespace-nowrap">
+            <Link href="/quote-reserve" className="inline-block border border-orange-400 text-orange-400 px-6 py-3 rounded-md hover:bg-orange-400 hover:text-white transition whitespace-nowrap">
               Book Your Hunt Online →
-            </button>
+            </Link>
           </div>
         </div>
       </div>

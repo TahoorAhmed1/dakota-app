@@ -73,16 +73,16 @@ const StatusDot = ({ type }: { type: "sold" | "pending" | "available" }) => {
             r="9"
             fill="#29B100"
             stroke="#29B100"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           <path
             d="M15 10L11 14L9 12"
             stroke="white"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       )}
