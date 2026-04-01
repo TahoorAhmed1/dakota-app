@@ -226,11 +226,30 @@ export default function QuoteReservePage() {
   }, [config]);
 
   const discountOptions = useMemo(() => {
-    if (!config) return [];
-    return config.discountRules
+    if (!config) {
+      return [
+        { code: "NONE", label: "Adult - Group Coordinator" },
+        { code: "JUNIOR", label: "Junior Discount" },
+      ];
+    }
+
+    const options = config.discountRules
       .slice()
       .sort((a, b) => a.stackOrder - b.stackOrder)
       .map((rule) => ({ code: rule.code, label: rule.label }));
+
+    if (!options.length) {
+      return [
+        { code: "NONE", label: "Adult - Group Coordinator" },
+        { code: "JUNIOR", label: "Junior Discount" },
+      ];
+    }
+
+    const withDefault = [{ code: "NONE", label: "Adult - Group Coordinator" }, ...options];
+    return withDefault.reduce((acc, option) => {
+      if (!acc.some((item) => item.code === option.code)) acc.push(option);
+      return acc;
+    }, [] as { code: string; label: string }[]);
   }, [config]);
 
   const selectedPricing = useMemo(() => {
@@ -593,98 +612,99 @@ export default function QuoteReservePage() {
 
             {step === 2 && (
               <>
-                <div className="grid grid-cols-[70px_1.3fr_1.5fr_1.2fr_1.3fr] bg-[#4c2c11] px-6 py-5 text-[13px] font-bold uppercase text-white md:text-[18px]">
-                  <div />
-                  <div>Hunter Name</div>
-                  <div>Individual Discount</div>
-                  <div>Extra Days Hunting</div>
-                  <div>Extra Nights Lodging</div>
-                </div>
+                <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
+                  <div className="grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-black uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
+                    <div className="text-center">#</div>
+                    <div>Hunter Name</div>
+                    <div>Individual Discount</div>
+                    <div>Extra Days Hunting</div>
+                    <div>Extra Nights Lodging</div>
+                  </div>
 
-                <div className="bg-[#f5f5f5]">
-                  {hunters.map((hunter, index) => (
-                    <div
-                      key={hunter.id}
-                      className="grid grid-cols-[70px_1.3fr_1.5fr_1.2fr_1.3fr] items-center gap-4 border-b border-[#d9d9d9] px-6 py-5"
-                    >
-                      <div className="text-[14px] font-bold text-[#2b1a0f]">{index + 1})</div>
-
-                      <input
-                        value={hunter.name}
-                        onChange={(e) =>
-                          setHunters((prev) =>
-                            prev.map((item, i) =>
-                              i === index ? { ...item, name: e.target.value } : item
-                            )
-                          )
-                        }
-                        placeholder="Hunter Name"
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                      />
-
-                      <select
-                        value={hunter.discountCode}
-                        onChange={(e) =>
-                          setHunters((prev) =>
-                            prev.map((item, i) =>
-                              i === index
-                                ? { ...item, discountCode: e.target.value }
-                                : item
-                            )
-                          )
-                        }
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
+                  <div className="bg-[#ffffff]">
+                    {hunters.map((hunter, index) => (
+                      <div
+                        key={hunter.id}
+                        className={`grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] items-center gap-2 border-b border-[#d9d9d9] px-5 py-4 text-[14px] md:px-6 ${index % 2 === 0 ? "bg-[#fff7ee]" : "bg-white"}`}
                       >
-                        {discountOptions.map((option) => (
-                          <option key={option.code} value={option.code}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
+                        <div className="text-center text-[14px] font-bold text-[#4c2c11]">{index + 1})</div>
 
-                      <select
-                        value={hunter.extraDays}
-                        onChange={(e) =>
-                          setHunters((prev) =>
-                            prev.map((item, i) =>
-                              i === index
-                                ? { ...item, extraDays: Number(e.target.value) }
-                                : item
+                        <input
+                          value={hunter.name}
+                          onChange={(e) =>
+                            setHunters((prev) =>
+                              prev.map((item, i) =>
+                                i === index ? { ...item, name: e.target.value } : item
+                              )
                             )
-                          )
-                        }
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                      >
-                        {[0, 1, 2, 3].map((value) => (
-                          <option key={value} value={value}>
-                            {value === 0 ? "Extra Days Hunting" : `${value} Extra Day`}
-                          </option>
-                        ))}
-                      </select>
+                          }
+                          placeholder="Hunter Name"
+                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-[#fff] px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                        />
 
-                      <select
-                        value={hunter.extraNights}
-                        onChange={(e) =>
-                          setHunters((prev) =>
-                            prev.map((item, i) =>
-                              i === index
-                                ? { ...item, extraNights: Number(e.target.value) }
-                                : item
+                        <select
+                          value={hunter.discountCode}
+                          onChange={(e) =>
+                            setHunters((prev) =>
+                              prev.map((item, i) =>
+                                i === index
+                                  ? { ...item, discountCode: e.target.value }
+                                  : item
+                              )
                             )
-                          )
-                        }
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                      >
-                        {[0, 1, 2, 3].map((value) => (
-                          <option key={value} value={value}>
-                            {value === 0 ? "Extra Nights Lodging" : `${value} Extra Night`}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ))}
+                          }
+                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-[#fff] px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                        >
+                          {discountOptions.map((option) => (
+                            <option key={option.code} value={option.code}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
 
-                  <div className="grid grid-cols-1 items-center gap-4 px-8 py-8 md:grid-cols-[auto_280px] md:justify-start">
+                        <select
+                          value={hunter.extraDays}
+                          onChange={(e) =>
+                            setHunters((prev) =>
+                              prev.map((item, i) =>
+                                i === index
+                                  ? { ...item, extraDays: Number(e.target.value) }
+                                  : item
+                              )
+                            )
+                          }
+                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-[#fff] px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                        >
+                          {[0, 1, 2, 3].map((value) => (
+                            <option key={value} value={value}>
+                              {value === 0 ? "Extra Days Hunting" : `${value} Extra Day`}
+                            </option>
+                          ))}
+                        </select>
+
+                        <select
+                          value={hunter.extraNights}
+                          onChange={(e) =>
+                            setHunters((prev) =>
+                              prev.map((item, i) =>
+                                i === index
+                                  ? { ...item, extraNights: Number(e.target.value) }
+                                  : item
+                              )
+                            )
+                          }
+                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-[#fff] px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                        >
+                          {[0, 1, 2, 3].map((value) => (
+                            <option key={value} value={value}>
+                              {value === 0 ? "Extra Nights Lodging" : `${value} Extra Night`}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ))}
+
+                    <div className="grid grid-cols-1 items-center gap-4 px-8 py-7 md:grid-cols-[auto_340px]">
                     <label className="text-[15px] font-semibold text-[#2b1a0f]">
                       Enter your email address to receive a copy of the quote:
                     </label>
@@ -712,7 +732,8 @@ export default function QuoteReservePage() {
                     </button>
                   </div>
                 </div>
-              </>
+              </div>
+            </>
             )}
 
             {step === 3 && (
