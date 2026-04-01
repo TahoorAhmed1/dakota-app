@@ -52,7 +52,7 @@ export default function LatestNews() {
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-8 mt-12 text-left">
           {posts.map((post) => (
-            <div key={post.id} className="group bg-white p-3 rounded-sm shadow-[0_1px_8px_rgba(0,0,0,0.06)]">
+            <div key={post.id} className="group  rounded-sm ">
               {/* Image */}
               <div className="overflow-hidden rounded-sm">
                 <Image
