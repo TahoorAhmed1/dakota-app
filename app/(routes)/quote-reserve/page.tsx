@@ -757,8 +757,7 @@ export default function QuoteReservePage() {
             )}
 
             {step === 2 && (
-              <>
-                <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
+              <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
                   <div className="grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-black uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
                     <div className="text-center">#</div>
                     <div>{labels?.step2.hunterNameHeader ?? "Hunter Name"}</div>
@@ -890,9 +889,7 @@ export default function QuoteReservePage() {
                       </button>
                     </div>
                   </div>
-                </div>
               </div>
-            </>
             )}
 
             {step === 3 && (
