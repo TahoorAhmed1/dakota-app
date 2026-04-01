@@ -15,7 +15,7 @@ const menu = [
   { label: "MAP", href: "/map" },
   { label: "RATES", href: "/rates" },
   { label: "DISCOUNTS", href: "/discounts" },
-  { label: "RESOURCES", href: "#" },
+  { label: "RESOURCES", href: "/resources" },
 ];
 
 function Header() {

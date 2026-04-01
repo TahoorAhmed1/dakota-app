@@ -122,11 +122,11 @@ function HeroCurve() {
 
 export default function RatesPage() {
   return (
-    <main className="flex flex-col bg-[#e6dbcf] text-[#281703]">
+    <main className="flex flex-col  text-[#281703]">
       <section className="relative isolate overflow-hidden">
         <div className="RatesImage absolute inset-0 bg-cover bg-center" />
-        <div className="absolute inset-0 bg-[#d49758]/50" />
-        <div className="absolute inset-0 bg-black/12" />
+        <div className="absolute inset-0 " />
+        <div className="absolute inset-0 " />
 
         <div className="relative mx-auto flex min-h-[360px] max-w-[1600px] items-center justify-center px-5 pb-24 pt-24 text-center sm:min-h-[430px] sm:px-8 sm:pb-28 md:min-h-[510px] md:pt-28 lg:min-h-[560px] lg:px-10 lg:pb-32">
           <div className="translate-y-6 sm:translate-y-8 md:translate-y-10">
@@ -150,11 +150,8 @@ export default function RatesPage() {
             </nav>
           </div>
         </div>
-
-        <HeroCurve />
       </section>
-
-      <section className="bg-[#e6dbcf] px-4 pb-14 pt-5 sm:px-6 md:px-8 md:pb-16 md:pt-8 lg:px-10 lg:pb-20 lg:pt-10">
+      <section className="bg-[#e8ded1] px-4 pb-14 pt-5 sm:px-6 md:px-8 md:pb-16 md:pt-8 lg:px-10 lg:pb-20 lg:pt-10">
         <div className="mx-auto max-w-[1320px]">
           <div className="text-center">
             <h2 className="text-[26px] font-black leading-[1.05] tracking-[-0.04em] text-[#2a1808] sm:text-[34px] md:text-[46px] lg:text-[60px]">

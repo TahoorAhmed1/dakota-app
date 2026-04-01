@@ -315,10 +315,10 @@ function PropertyMap() {
 export default function MapPage() {
   return (
     <>
-      <main className="flex flex-col bg-[#E7DCCF]">
+      <main className="flex flex-col ">
         <section className="MapImage relative flex min-h-[440px] items-center justify-center overflow-hidden bg-cover bg-center px-6 pb-24 pt-32 sm:min-h-[500px] md:min-h-[560px] md:pb-28 md:pt-36">
-          <div className="absolute inset-0 bg-[#f0c38f]/38" />
-          <div className="absolute inset-0 bg-black/10" />
+          <div className="absolute inset-0 " />
+          <div className="absolute inset-0 " />
 
           <div className="relative z-10 flex flex-col items-center text-center">
             <h1 className="text-[46px] font-bold uppercase leading-none tracking-[-0.02em] text-[#281703] sm:text-[62px] md:text-[78px]">
@@ -350,12 +350,12 @@ export default function MapPage() {
             </nav>
           </div>
 
-          <div className="absolute bottom-0 left-1/2 z-10 w-[120%] -translate-x-1/2 translate-y-[56%]">
+          {/* <div className="absolute bottom-0 left-1/2 z-10 w-[120%] -translate-x-1/2 translate-y-[56%]">
             <div className="h-20 w-full rounded-t-[100%] border-t-[4px] border-[#281703] bg-[#E7DCCF] sm:h-24 md:h-28" />
-          </div>
+          </div> */}
         </section>
 
-        <section className="bg-[#E7DCCF] px-4 pb-16 pt-16 sm:px-6 md:pb-20 md:pt-20">
+        <section className="bg-[#e8ded1] px-4 pb-16 pt-16 sm:px-6 md:pb-20 md:pt-20">
           <div className="mx-auto max-w-[980px] text-center">
             <h2 className="text-[34px] font-bold leading-[1.08] tracking-[-0.02em] text-[#281703] sm:text-[42px] md:text-[56px]">
               UGUIDE Property Locations

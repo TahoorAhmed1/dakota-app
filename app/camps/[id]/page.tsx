@@ -91,9 +91,9 @@ export default function CampDetailPage({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
+        {/* <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
           <div className="h-20 w-full rounded-t-[100%] border-t-[4px] border-[#281703] bg-[#E7DCCF]" />
-        </div>
+        </div> */}
       </section>
 
       {/* Camp Details */}

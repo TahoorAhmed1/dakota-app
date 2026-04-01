@@ -7,8 +7,8 @@ export default function AvailabilityPage() {
     <main className="flex flex-col">
       {/* Hero */}
       <section className="AvailabilityImage relative flex h-screen min-h-[620px] items-center justify-center">
-        <div className="absolute inset-0 bg-[#f0c38f]/35" />
-        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute inset-0 " />
+        <div className="absolute inset-0 " />
 
         <div className="relative z-10 flex flex-col items-center px-6 text-center">
           <h1 className="text-[52px] font-bold uppercase leading-none text-[#281703] md:text-[82px]">
@@ -38,16 +38,16 @@ export default function AvailabilityPage() {
         </div>
 
         {/* Curved divider */}
-        <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
+        {/* <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
           <div className="h-20 w-full rounded-t-[100%] border-t-[4px] border-[#281703] bg-[#E7DCCF]" />
-        </div>
+        </div> */}
       </section>
 
       {/* Season schedule section */}
       <SeasonSchedule />
 
       {/* Gallery section */}
-      <section className="bg-[#F5F5F5] px-6 pb-24">
+      <section className="bg-[#e8ded1] px-6 pb-24">
         <div className="mx-auto max-w-7xl">
           <ImagesCatalog />
         </div>

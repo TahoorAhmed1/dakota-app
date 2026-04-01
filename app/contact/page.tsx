@@ -4,7 +4,7 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import pic1 from "@/assets/discount 6.jpg";
-import pic2 from "@/assets/contact2.jpg";
+import pic2 from "@/assets/contactImage.png";
 import pic3 from "@/assets/contact3.jpg";
 import pic4 from "@/assets/discount5.jpg";
 import pic5 from "@/assets/contact6.jpg";
@@ -237,8 +237,8 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="flex flex-col bg-[#ddd1c5] text-[#281703]">
-      <section className="relative isolate flex min-h-[430px] items-center justify-center overflow-hidden bg-[#c39c74] sm:min-h-[520px] lg:min-h-[560px] xl:min-h-[590px]">
+    <main className="flex flex-col  text-[#281703]">
+      <section className="relative isolate flex min-h-[430px] items-center justify-center overflow-hidden  sm:min-h-[520px] lg:min-h-[560px] xl:min-h-[590px]">
         <div className="absolute inset-0">
           <Image
             src={pic2}
@@ -249,8 +249,8 @@ export default function ContactPage() {
             sizes="100vw"
           />
         </div>
-        <div className="absolute inset-0 bg-[#f0c38f]/52" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.22)_0%,rgba(129,73,26,0.18)_100%)]" />
+        <div className="absolute inset-0 " />
+        <div className="absolute inset-0 " />
 
         <div className="relative z-10 flex w-full flex-col items-center px-5 pt-20 text-center sm:px-6 sm:pt-24 lg:pt-28">
           <h1 className="text-[42px] font-black uppercase leading-none tracking-[-0.03em] text-[#1f1204] sm:text-[58px] md:text-[72px] lg:text-[78px]">
@@ -269,12 +269,12 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
+        {/* <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
           <div className="h-14 w-full rounded-t-[100%] border-t-[4px] border-[#2b1705] bg-[#dfd3c8] sm:h-16 md:h-20" />
-        </div>
+        </div> */}
       </section>
 
-      <section className="bg-[#dfd3c8] px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:px-8 xl:px-10">
+      <section className="bg-[#e8ded1] px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:px-8 xl:px-10">
         <div className="mx-auto max-w-[1220px] rounded-[18px] bg-[#f5f5f5] shadow-[0_10px_35px_rgba(69,42,13,0.16)]">
           <div className="overflow-hidden rounded-t-[18px] bg-[linear-gradient(180deg,#6f3f08_0%,#3d1d00_100%)] px-4 py-4 text-center sm:px-6 lg:px-8">
             <h2 className="text-[24px] font-black uppercase tracking-[-0.03em] text-white sm:text-[30px] md:text-[36px]">

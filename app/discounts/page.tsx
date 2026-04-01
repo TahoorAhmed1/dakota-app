@@ -64,34 +64,36 @@ export default function DiscountsPage() {
         <div className="absolute inset-0 bg-[#f0c38f]/46" />
         <div className="absolute inset-0 bg-black/10" />
 
-        <div className="relative z-10 flex flex-col items-center text-center">
-          <h1 className="text-[38px] font-black uppercase leading-none tracking-[-0.03em] text-[#1e1004] sm:text-[54px] lg:text-[82px]">
-            Discounts
-          </h1>
+        <div className="relative mx-auto flex min-h-[360px] max-w-[1600px] items-center justify-center px-5 pb-24 pt-24 text-center sm:min-h-[430px] sm:px-8 sm:pb-28 md:min-h-[510px] md:pt-28 lg:min-h-[560px] lg:px-10 lg:pb-32">
+          <div className="translate-y-6 sm:translate-y-8 md:translate-y-10">
+            <h1 className="text-[42px] font-black uppercase leading-none tracking-[-0.04em] text-[#1f1308] sm:text-[54px] md:text-[68px] lg:text-[74px]">
+              Discounts
+            </h1>
 
-          <nav
-            aria-label="Breadcrumb"
-            className="mt-5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#2a1705] sm:gap-3 sm:text-[11px]"
-          >
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 transition-colors duration-200 hover:text-[#ed7a34]"
+            <nav
+              aria-label="Breadcrumb"
+              className="mt-5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#24150a] sm:text-[11px]"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 transition-colors duration-200 hover:text-[#d26f2f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d26f2f] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
-                <path d="M12 3.172 3 10.2V21h6v-6h6v6h6V10.2l-9-7.028Z" />
-              </svg>
-              <span>Home</span>
-            </Link>
-            <span aria-hidden="true">›</span>
-            <span className="text-[#1e1004]">Discounts</span>
-          </nav>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M12 3.172 3 10.2V21h6v-6h6v6h6V10.2l-9-7.028Z" />
+                </svg>
+                <span>Home</span>
+              </Link>
+              <span>›</span>
+              <span aria-current="page">Discounts</span>
+            </nav>
+          </div>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
@@ -99,7 +101,7 @@ export default function DiscountsPage() {
         </div>
       </section>
 
-      <section className="relative z-10 bg-[#e3d9ce] px-4 pb-14 pt-14 sm:px-6 sm:pb-16 sm:pt-16 lg:px-8 lg:pb-20 lg:pt-20">
+      <section className="relative z-10 bg-[#e8ded1] px-4 pb-14 pt-14 sm:px-6 sm:pb-16 sm:pt-16 lg:px-8 lg:pb-20 lg:pt-20">
         <div className="mx-auto max-w-[1220px]">
           <div className="mx-auto max-w-[860px] text-center">
             <h2 className="text-[27px] font-black leading-[1.05] tracking-[-0.03em] text-[#281703] sm:text-[36px] lg:text-[58px]">

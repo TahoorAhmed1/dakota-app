@@ -98,10 +98,10 @@ function HeroCurve() {
 
 export default function CampsPage() {
   return (
-    <main className="flex flex-col bg-[#e7dccf] text-[#281703]">
+    <main className="flex flex-col text-[#281703]">
       <section className="CampsImage relative isolate flex min-h-[360px] items-center justify-center overflow-hidden bg-cover bg-center px-4 pt-20 sm:min-h-[430px] sm:px-6 md:min-h-[500px] lg:min-h-[590px] lg:px-8">
-        <div className="absolute inset-0 bg-[#e8b783]/45" />
-        <div className="absolute inset-0 bg-black/12" />
+        <div className="absolute inset-0 " />
+        <div className="absolute inset-0 " />
 
         <div className="relative z-10 flex max-w-4xl flex-col items-center text-center">
           <h1 className="text-[46px] font-bold uppercase leading-none tracking-[-0.03em] text-[#231305] sm:text-[64px] lg:text-[78px]">
@@ -130,7 +130,6 @@ export default function CampsPage() {
           </nav>
         </div>
 
-        <HeroCurve />
       </section>
 
       <section className="bg-[#e7dccf] px-5 pb-12 pt-6 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8 lg:pb-20 lg:pt-14">

@@ -51,10 +51,10 @@ function PartnerLogo({
 
 export default function AboutPage() {
   return (
-    <main className="flex flex-col bg-[#e6dbcf] text-[#24170c]">
+    <main className="flex flex-col  text-[#24170c]">
       <section className="AboutImage relative flex min-h-[360px] items-center justify-center overflow-hidden px-4 pb-24 pt-28 sm:min-h-[440px] sm:px-6 md:min-h-[520px] lg:min-h-[560px]">
-        <div className="absolute inset-0 bg-[#f3c998]/45" />
-        <div className="absolute inset-0 bg-[#1d1309]/10" />
+        <div className="absolute inset-0" />
+        <div className="absolute inset-0" />
 
         <div className="relative z-10 flex flex-col items-center text-center">
           <h1 className="text-[42px] font-black uppercase leading-none tracking-[0.02em] text-[#1f1208] sm:text-[58px] md:text-[72px] lg:text-[82px]">
@@ -83,12 +83,12 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
+        {/* <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
           <div className="h-16 w-full rounded-t-[100%] border-t-[4px] border-[#2c1706] bg-[#e6dbcf] sm:h-20 md:h-24" />
-        </div>
+        </div> */}
       </section>
 
-      <section className="bg-[#e6dbcf] px-4 pb-16 pt-12 sm:px-6 sm:pb-20 md:pt-16 lg:px-8">
+      <section className="bg-[#e8ded1] px-4 pb-16 pt-12 sm:px-6 sm:pb-20 md:pt-16 lg:px-8">
         <div className="mx-auto max-w-[1280px]">
           <header className="text-center">
             <h2 className="text-[30px] font-black leading-none text-[#24170c] sm:text-[40px] md:text-[56px]">
