@@ -50,12 +50,6 @@ export default function AvailabilityPage() {
       <section className="bg-[#F5F5F5] px-6 pb-24">
         <div className="mx-auto max-w-7xl">
           <ImagesCatalog />
-
-          <div className="-mt-6 text-center">
-            <button className="text-[18px] font-medium text-[#281703] underline underline-offset-4 transition-colors hover:text-[#F16724]">
-              See More
-            </button>
-          </div>
         </div>
       </section>
     </main>

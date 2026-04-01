@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DiscountType {
+  FIXED
+  PERCENT
+}
+
+enum DiscountCategory {
+  INDIVIDUAL
+  JUNIOR
+}
+
+model Camp {
+  id           String            @id @default(cuid())
+  name         String            @unique
+  slug         String            @unique
+  isActive     Boolean           @default(true)
+  displayOrder Int               @default(0)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  pricingRows  CampWeekPricing[]
+  quotes       Quote[]
+}
+
+model HuntWeek {
+  id           String            @id @default(cuid())
+  label        String            @unique
+  slug         String            @unique
+  seasonLabel  String
+  startDate    DateTime?
+  endDate      DateTime?
+  isActive     Boolean           @default(true)
+  displayOrder Int               @default(0)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  pricingRows  CampWeekPricing[]
+  quotes       Quote[]
+}
+
+model PackageOption {
+  id           String            @id @default(cuid())
+  code         String            @unique
+  label        String            @unique
+  nights       Int
+  days         Int
+  isActive     Boolean           @default(true)
+  displayOrder Int               @default(0)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  pricingRows  CampWeekPricing[]
+  quotes       Quote[]
+}
+
+model CampWeekPricing {
+  id              String         @id @default(cuid())
+  campId          String
+  weekId          String
+  packageId       String
+  baseRate        Decimal        @db.Decimal(10, 2)
+  minGroupSize    Int
+  isAvailable     Boolean        @default(true)
+  availabilityTag String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  camp            Camp           @relation(fields: [campId], references: [id], onDelete: Cascade)
+  week            HuntWeek       @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  package         PackageOption  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@unique([campId, weekId, packageId])
+}
+
+model VolumeDiscountRule {
+  id               String   @id @default(cuid())
+  minHunters       Int
+  maxHunters       Int?
+  amountOffPerHead Decimal  @db.Decimal(10, 2)
+  isActive         Boolean  @default(true)
+  displayOrder     Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model DiscountRule {
+  id          String           @id @default(cuid())
+  code        String           @unique
+  label       String
+  category    DiscountCategory
+  type        DiscountType
+  value       Decimal          @db.Decimal(10, 2)
+  stackOrder  Int
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Quote {
+  id                 String       @id @default(cuid())
+  quoteNumber        String       @unique
+  seasonLabel        String
+  campId             String
+  weekId             String
+  packageId          String
+  hunterCount        Int
+  earlyBird          Boolean
+  quoteEmail         String?
+  bookingName        String
+  bookingEmail       String
+  subtotalBeforeTax  Decimal      @db.Decimal(12, 2)
+  minimumAdjustment  Decimal      @db.Decimal(12, 2)
+  taxAmount          Decimal      @db.Decimal(12, 2)
+  totalAmount        Decimal      @db.Decimal(12, 2)
+  depositRate        Decimal      @db.Decimal(5, 4)
+  depositBase        Decimal      @db.Decimal(12, 2)
+  processingFeeRate  Decimal      @db.Decimal(5, 4)
+  processingFee      Decimal      @db.Decimal(12, 2)
+  depositTotal       Decimal      @db.Decimal(12, 2)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  camp               Camp         @relation(fields: [campId], references: [id])
+  week               HuntWeek     @relation(fields: [weekId], references: [id])
+  package            PackageOption @relation(fields: [packageId], references: [id])
+  hunters            QuoteHunter[]
+}
+
+model QuoteHunter {
+  id                   String   @id @default(cuid())
+  quoteId              String
+  rowIndex             Int
+  hunterName           String?
+  discountCode         String
+  extraDays            Int
+  extraNights          Int
+  baseRate             Decimal  @db.Decimal(10, 2)
+  volumeDiscount       Decimal  @db.Decimal(10, 2)
+  extraHunting         Decimal  @db.Decimal(10, 2)
+  extraLodging         Decimal  @db.Decimal(10, 2)
+  earlyBirdDiscount    Decimal  @db.Decimal(10, 2)
+  individualDiscount   Decimal  @db.Decimal(10, 2)
+  juniorDiscount       Decimal  @db.Decimal(10, 2)
+  subtotalBeforeTax    Decimal  @db.Decimal(10, 2)
+  taxAmount            Decimal  @db.Decimal(10, 2)
+  totalAmount          Decimal  @db.Decimal(10, 2)
+  createdAt            DateTime @default(now())
+  quote                Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@unique([quoteId, rowIndex])
+}
+
+model ContactSubmission {
+  id                 String   @id @default(cuid())
+  huntType           String
+  experience         String
+  minGroupSize       String
+  maxGroupSize       String
+  dogPower           String
+  firstChoice        String
+  secondChoice       String
+  firstName          String
+  lastName           String
+  email              String
+  stateProvince      String
+  phone              String
+  additionalComments String?
+  createdAt          DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

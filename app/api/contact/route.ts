@@ -40,6 +40,7 @@
 
 
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 type ContactPayload = {
   huntType?: string;
@@ -122,6 +123,24 @@ export async function POST(req: NextRequest) {
       ...body,
       submittedAt: new Date().toISOString(),
     };
+
+    await prisma.contactSubmission.create({
+      data: {
+        huntType: String(body.huntType),
+        experience: String(body.experience),
+        minGroupSize: String(body.minGroupSize),
+        maxGroupSize: String(body.maxGroupSize),
+        dogPower: String(body.dogPower),
+        firstChoice: String(body.firstChoice),
+        secondChoice: String(body.secondChoice),
+        firstName: String(body.firstName),
+        lastName: String(body.lastName),
+        email: String(body.email),
+        stateProvince: String(body.stateProvince),
+        phone: String(body.phone),
+        additionalComments: body.additionalComments ? String(body.additionalComments) : null,
+      },
+    });
 
     if (process.env.CONTACT_WEBHOOK_URL) {
       const webhookResponse = await fetch(process.env.CONTACT_WEBHOOK_URL, {

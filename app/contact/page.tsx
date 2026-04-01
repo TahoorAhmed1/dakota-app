@@ -130,6 +130,10 @@ function RequiredLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ErrorText({ message }: { message?: string }) {
+  return message ? <p className="mt-1 text-[11px] text-[#c44d2b]">{message}</p> : null;
+}
+
 export default function ContactPage() {
   const [formData, setFormData] = useState<FormState>({
     huntType: "",
@@ -231,9 +235,6 @@ export default function ContactPage() {
     setSubmitState("success");
     console.log("Contact form submitted", formData);
   };
-
-  const ErrorText = ({ message }: { message?: string }) =>
-    message ? <p className="mt-1 text-[11px] text-[#c44d2b]">{message}</p> : null;
 
   return (
     <main className="flex flex-col bg-[#ddd1c5] text-[#281703]">
@@ -434,7 +435,7 @@ export default function ContactPage() {
                       </Link>
                     </div>
                     <div className="grid gap-2 sm:grid-cols-[86px_minmax(0,1fr)_72px] sm:items-center">
-                      <label htmlFor="secondChoice" className="text-[13px] font-medium text-[#352b24]">1st Choice</label>
+                      <label htmlFor="secondChoice" className="text-[13px] font-medium text-[#352b24]">2nd Choice</label>
                       <div>
                         <select id="secondChoice" name="secondChoice" value={formData.secondChoice} onChange={handleChange} className={fieldClassName}>
                           <option value="">Choose</option>

@@ -35,7 +35,7 @@ const posts = [
 
 export default function LatestNews() {
   return (
-    <section className="w-full bg-[#E7DCCF] py-20 px-6">
+    <section className="w-full bg-[#f5f5f5] py-16 px-6">
       <div className="max-w-6xl mx-auto text-center">
         <p className="text-xs tracking-[3px] text-orange-500 uppercase mb-3">
           Updates
@@ -50,9 +50,9 @@ export default function LatestNews() {
           wild-reared self guided and unguided pheasant hunting.
         </p>
         {/* Cards */}
-        <div className="grid md:grid-cols-3 gap-10 mt-14 text-left">
+        <div className="grid md:grid-cols-3 gap-8 mt-12 text-left">
           {posts.map((post) => (
-            <div key={post.id} className="group">
+            <div key={post.id} className="group bg-white p-3 rounded-sm shadow-[0_1px_8px_rgba(0,0,0,0.06)]">
               {/* Image */}
               <div className="overflow-hidden rounded-sm">
                 <Image

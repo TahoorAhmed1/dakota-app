@@ -3,33 +3,13 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import LatestNews from "@/components/NewsEvent";
 import OurPartners from "@/components/ourPartners";
+import heroImage from "@/assets/aboutImage.png";
 import photo1 from "@/assets/rate 4.jpg";
 import photo2 from "@/assets/discount5.jpg";
 import photo3 from "@/assets/discount 3.jpg";
 import photo4 from "@/assets/rate 2.jpg";
 import photo5 from "@/assets/discount 6.jpg";
 import photo6 from "@/assets/rate 1.jpg";
-
-const heroPercents = [
-  { className: "left-[1%] top-[1%] text-[86px] md:text-[132px]" },
-  { className: "left-[18%] top-[0%] text-[62px] md:text-[96px]" },
-  { className: "left-[39%] top-[2%] text-[54px] md:text-[84px]" },
-  { className: "right-[8%] top-[1%] text-[72px] md:text-[112px]" },
-  { className: "left-[4%] top-[20%] text-[64px] md:text-[108px]" },
-  { className: "left-[24%] top-[16%] text-[54px] md:text-[88px]" },
-  { className: "left-[46%] top-[20%] text-[58px] md:text-[94px]" },
-  { className: "left-[71%] top-[18%] text-[50px] md:text-[86px]" },
-  { className: "right-[1%] top-[24%] text-[72px] md:text-[118px]" },
-  { className: "left-[0%] top-[47%] text-[62px] md:text-[102px]" },
-  { className: "left-[22%] top-[43%] text-[54px] md:text-[86px]" },
-  { className: "left-[43%] top-[39%] text-[68px] md:text-[108px]" },
-  { className: "left-[65%] top-[44%] text-[56px] md:text-[90px]" },
-  { className: "right-[6%] top-[50%] text-[76px] md:text-[124px]" },
-  { className: "left-[8%] bottom-[10%] text-[70px] md:text-[110px]" },
-  { className: "left-[32%] bottom-[12%] text-[56px] md:text-[88px]" },
-  { className: "left-[55%] bottom-[8%] text-[72px] md:text-[114px]" },
-  { className: "right-[14%] bottom-[14%] text-[62px] md:text-[100px]" },
-];
 
 function BulletItem({ children }: { children: ReactNode }) {
   return (
@@ -72,17 +52,17 @@ function ImageTile({
 export default function DiscountsPage() {
   return (
     <main className="overflow-hidden bg-[#ddd2c7] text-[#281703]">
-      <section className="relative isolate flex min-h-[360px] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#f4efe8_0%,#f0cf9f_100%)] px-4 pb-24 pt-20 sm:min-h-[430px] sm:px-6 sm:pt-24 lg:min-h-[520px] lg:pb-28">
-        <div className="absolute inset-0 opacity-[0.16]">
-          {heroPercents.map((item, index) => (
-            <span
-              key={index}
-              className={`absolute font-black leading-none text-[#7f6248] ${item.className}`}
-            >
-              %
-            </span>
-          ))}
-        </div>
+      <section className="relative isolate flex min-h-[360px] items-center justify-center overflow-hidden px-4 pb-24 pt-20 sm:min-h-[430px] sm:px-6 sm:pt-24 lg:min-h-[520px] lg:pb-28">
+        <Image
+          src={heroImage}
+          alt="Hunters in field"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[#f0c38f]/46" />
+        <div className="absolute inset-0 bg-black/10" />
 
         <div className="relative z-10 flex flex-col items-center text-center">
           <h1 className="text-[38px] font-black uppercase leading-none tracking-[-0.03em] text-[#1e1004] sm:text-[54px] lg:text-[82px]">
@@ -114,7 +94,9 @@ export default function DiscountsPage() {
           </nav>
         </div>
 
-        <div className="absolute -bottom-[78px] left-1/2 h-[160px] w-[140%] -translate-x-1/2 rounded-[100%] border-t-[4px] border-[#281703] bg-[#e3d9ce] sm:-bottom-[84px] sm:h-[172px] lg:-bottom-[92px] lg:h-[188px]" />
+        <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
+          <div className="h-20 w-full rounded-t-[100%] border-t-[4px] border-[#281703] bg-[#e3d9ce]" />
+        </div>
       </section>
 
       <section className="relative z-10 bg-[#e3d9ce] px-4 pb-14 pt-14 sm:px-6 sm:pb-16 sm:pt-16 lg:px-8 lg:pb-20 lg:pt-20">
