@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { CalculatorSettings, calculateDepositRate } from "@/lib/calculator-settings";
+
 type StepOneData = {
   seasonLabel: string;
   campId: string;
@@ -19,6 +21,16 @@ type HunterForm = {
   extraDays: number;
   extraNights: number;
 };
+
+type ValidationErrors = Partial<{
+  step1: string;
+  step2: string;
+  step3: string;
+  quoteEmail: string;
+  bookingName: string;
+  bookingEmail: string;
+  pricing: string;
+}>;
 
 type CalculatorConfig = {
   camps: Array<{ id: string; name: string; slug: string }>;
@@ -49,6 +61,7 @@ type CalculatorConfig = {
     value: number;
     stackOrder: number;
   }>;
+  settings: CalculatorSettings;
 };
 
 const makeHunter = (id: number): HunterForm => ({
@@ -71,11 +84,18 @@ const getVolumeDiscount = (
   return matched ? matched.amountOffPerHead : 0;
 };
 
+const formatCampOptionLabel = (name: string) =>
+  name
+    .replace(/ Pheasant Camp$/i, "")
+    .replace(/^Faulkton Pheasant Camp$/i, "Faulkton");
+
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
 function SectionDivider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-4 py-5">
       <div className="h-px flex-1 bg-[#d7b299]" />
-      <span className="text-[12px] font-bold uppercase tracking-[0.15em] text-[#e97933]">
+      <span className="text-[12px] font-normal uppercase tracking-[0.15em] text-[#e97933]">
         {label}
       </span>
       <div className="h-px flex-1 bg-[#d7b299]" />
@@ -101,9 +121,10 @@ function FieldRow({
       </label>
 
       <div className="mt-3 flex items-center gap-2 md:mt-0">
+
         {children}
         {reference ? (
-          <span className="text-[12px] font-semibold text-[#f26f2d]">
+          <span className="text-[12px] w-fit font-semibold text-[#f26f2d]">
             ({reference})
           </span>
         ) : null}
@@ -152,6 +173,7 @@ export default function QuoteReservePage() {
   const [quoteEmail, setQuoteEmail] = useState("");
   const [bookingName, setBookingName] = useState("");
   const [bookingEmail, setBookingEmail] = useState("");
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
   useEffect(() => {
     async function loadConfig() {
@@ -219,6 +241,17 @@ export default function QuoteReservePage() {
     [config, groupData.packageId]
   );
 
+  const selectedCampLabel = useMemo(
+    () => (selectedCamp ? formatCampOptionLabel(selectedCamp.name) : "-"),
+    [selectedCamp]
+  );
+
+  const selectedPackageLabel = useMemo(() => {
+    if (!selectedPackage) return "-";
+
+    return `${selectedPackage.nights} Night${selectedPackage.nights === 1 ? "" : "s"} / ${selectedPackage.days} Day${selectedPackage.days === 1 ? "" : "s"}`;
+  }, [selectedPackage]);
+
   const discountMap = useMemo(() => {
     const map = new Map<string, CalculatorConfig["discountRules"][number]>();
     (config?.discountRules ?? []).forEach((rule) => map.set(rule.code, rule));
@@ -233,6 +266,15 @@ export default function QuoteReservePage() {
       .map((rule) => ({ code: rule.code, label: rule.label }));
   }, [config]);
 
+  const dayOptions = useMemo(() => {
+    if (!config) return [];
+
+    return config.packages
+      .slice()
+      .sort((a, b) => a.days - b.days)
+      .map((pkg) => ({ id: pkg.id, days: pkg.days }));
+  }, [config]);
+
   const selectedPricing = useMemo(() => {
     if (!config) return null;
     return (
@@ -245,6 +287,8 @@ export default function QuoteReservePage() {
     );
   }, [config, groupData]);
 
+  const settings = config?.settings;
+
   const pricingRows = useMemo(() => {
     if (!config || !selectedPricing) return [];
 
@@ -253,10 +297,11 @@ export default function QuoteReservePage() {
     return hunters.map((hunter, idx) => {
       const baseRate = selectedPricing.baseRate;
       const rule = discountMap.get(hunter.discountCode) ?? discountMap.get("NONE");
-      const extraHunting = hunter.extraDays * 225;
-      const extraLodging = hunter.extraNights * 165;
+      const extraHunting = hunter.extraDays * (settings?.extraDayRate ?? 225);
+      const extraLodging = hunter.extraNights * (settings?.extraNightRate ?? 165);
       const rateAfterVolume = baseRate - volumeDiscount;
-      const earlyBirdDiscount = groupData.earlyBird === "Yes" ? rateAfterVolume * 0.05 : 0;
+      const earlyBirdDiscount =
+        groupData.earlyBird === "Yes" ? rateAfterVolume * (settings?.earlyBirdRate ?? 0.05) : 0;
 
       let individualDiscount = 0;
       let juniorDiscount = 0;
@@ -285,7 +330,7 @@ export default function QuoteReservePage() {
         juniorDiscount +
         extraHunting +
         extraLodging;
-      const tax = subtotalBeforeTax * 0.065;
+      const tax = subtotalBeforeTax * (settings?.salesTaxRate ?? 0.057);
       const total = subtotalBeforeTax + tax;
 
       return {
@@ -312,26 +357,109 @@ export default function QuoteReservePage() {
     : 0;
   const minimumAdjustment = Math.max(0, minimumRevenueFloor - subtotalBeforeTax);
   const taxableSubtotal = subtotalBeforeTax + minimumAdjustment;
-  const totalTax = taxableSubtotal * 0.065;
+  const totalTax = taxableSubtotal * (settings?.salesTaxRate ?? 0.057);
   const grandSubtotal = taxableSubtotal + totalTax;
 
   const today = new Date();
-  const mayFirst = new Date(today.getFullYear(), 4, 1);
-  const augEnd = new Date(today.getFullYear(), 7, 31, 23, 59, 59, 999);
-  const depositRate = today < mayFirst ? 0.25 : today <= augEnd ? 0.5 : 1;
+  const depositRate = config
+    ? calculateDepositRate(config.settings.depositSchedule, today)
+    : 1;
 
   const depositBase = grandSubtotal * depositRate;
-  const processingFee = depositBase * 0.0299;
+  const processingFee = depositBase * (config?.settings.processingFeeRate ?? 0.0299);
   const depositTotal = depositBase + processingFee;
 
+  const labels = settings?.labels;
+  const taxLabel = `Taxes ${((settings?.salesTaxRate ?? 0.057) * 100).toFixed(1)}%`;
+
+  const validateStepOne = (): ValidationErrors => {
+    const errors: ValidationErrors = {};
+
+    if (!config) {
+      errors.step1 = "Configuration is still loading. Please wait a moment.";
+      return errors;
+    }
+
+    if (!groupData.seasonLabel || !groupData.campId || !groupData.weekId || !groupData.packageId) {
+      errors.step1 = "Complete all required group selections before continuing.";
+    }
+
+    if (!selectedPricing) {
+      errors.pricing = "The selected camp, week, and day combination does not have pricing configured yet.";
+    } else if (!selectedPricing.isAvailable) {
+      errors.pricing = "The selected camp, week, and day combination is currently unavailable.";
+    }
+
+    return errors;
+  };
+
+  const validateStepTwo = (): ValidationErrors => {
+    const errors = validateStepOne();
+
+    const missingHunter = hunters.find((hunter) => hunter.name.trim().length === 0);
+    if (missingHunter) {
+      errors.step2 = `Enter a name for Hunter ${missingHunter.id}.`;
+    }
+
+    const overlongHunter = hunters.find((hunter) => hunter.name.trim().length > 120);
+    if (overlongHunter) {
+      errors.step2 = `Hunter ${overlongHunter.id} name must be 120 characters or less.`;
+    }
+
+    if (quoteEmail.trim() && !isValidEmail(quoteEmail.trim())) {
+      errors.quoteEmail = "Enter a valid email address to send a copy of the quote.";
+    }
+
+    return errors;
+  };
+
+  const validateStepThree = (): ValidationErrors => {
+    const errors = validateStepTwo();
+
+    if (!bookingName.trim()) {
+      errors.bookingName = "Enter the booking name.";
+    } else if (bookingName.trim().length > 120) {
+      errors.bookingName = "Booking name must be 120 characters or less.";
+    }
+
+    if (!bookingEmail.trim()) {
+      errors.bookingEmail = "Enter the booking email address.";
+    } else if (!isValidEmail(bookingEmail.trim())) {
+      errors.bookingEmail = "Enter a valid booking email address.";
+    }
+
+    if (!errors.step3 && (errors.bookingName || errors.bookingEmail)) {
+      errors.step3 = "Fix the booking details before submitting the quote.";
+    }
+
+    return errors;
+  };
+
+  const goToStep2 = () => {
+    const errors = validateStepOne();
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+    setStep(2);
+  };
+
+  const goToStep3 = () => {
+    const errors = validateStepTwo();
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+    setStep(3);
+  };
+
   const handleSubmit = async () => {
-    if (!config || !groupData.campId || !groupData.weekId || !groupData.packageId) {
-      setSubmitMessage("Configuration not loaded yet. Please wait and try again.");
+    const errors = validateStepThree();
+    setValidationErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setSubmitMessage("Please fix the highlighted form errors and try again.");
       return;
     }
 
-    if (!bookingName || !bookingEmail) {
-      setSubmitMessage("Please enter booking name and email.");
+    if (!config || !groupData.campId || !groupData.weekId || !groupData.packageId) {
+      setSubmitMessage("Configuration not loaded yet. Please wait and try again.");
       return;
     }
 
@@ -384,12 +512,12 @@ export default function QuoteReservePage() {
 
   return (
     <main className="flex flex-col">
-      <section className="QuoteReserveImage relative flex h-screen min-h-[620px] items-center justify-center">
+      <section className="QuoteReserveImage relative flex h-screen min-h-155 items-center justify-center">
         <div className="absolute inset-0 " />
         <div className="absolute inset-0 " />
 
         <div className="relative z-10 flex flex-col items-center px-6 text-center">
-          <h1 className="text-[46px] font-bold uppercase leading-none text-[#281703] md:text-[76px]">
+          <h1 className="text-[46px] font-normal uppercase leading-none text-[#281703] md:text-[76px]">
             Quote-Reserve
           </h1>
 
@@ -421,11 +549,11 @@ export default function QuoteReservePage() {
       </section>
 
       <section className="bg-[#E7DCCF] px-4 pb-24 pt-20 md:px-6">
-        <div className="mx-auto max-w-[1180px]">
-          <h2 className="text-center text-[30px] font-black uppercase tracking-[0.04em] text-[#281703] md:text-[54px]">
-            {step === 1 && "Step 1: Quote-Reserve Group Options"}
-            {step === 2 && "Step 2: Quote-Reserve Enter Hunters"}
-            {step === 3 && "Step 3: Quote-Reserve Review Totals"}
+        <div className="mx-auto max-w-295">
+          <h2 className="text-center text-[30px] font-black uppercase tracking-[0.04em] text-[#281703] underline decoration-[3px] underline-offset-[6px] md:text-[54px]">
+            {step === 1 && (labels?.stepHeadings.step1 ?? "Step 1: Quote\u2013Reserve Group Options")}
+            {step === 2 && (labels?.stepHeadings.step2 ?? "Step 2: Quote\u2013Reserve Enter Hunters")}
+            {step === 3 && (labels?.stepHeadings.step3 ?? "Step 3: Quote\u2013Reserve Review Totals")}
           </h2>
 
           {configError ? (
@@ -434,18 +562,24 @@ export default function QuoteReservePage() {
             </div>
           ) : null}
 
+          {validationErrors.pricing ? (
+            <div className="mt-6 rounded-md bg-red-100 px-6 py-4 text-center text-sm font-semibold text-red-800">
+              {validationErrors.pricing}
+            </div>
+          ) : null}
+
           <div className="mt-8 overflow-hidden rounded-[18px] bg-[#f5f5f5] shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
             {step === 1 && (
               <>
                 <div className="bg-[#4c2c11] px-8 py-6 text-center text-[26px] font-bold uppercase text-white md:text-[44px]">
-                  Price Your Own Hunt in 3 Simple Steps
+                  {labels?.step1.cardTitle ?? "Price Your Own Hunt in 3 Simple Steps"}
                 </div>
 
                 <div className="bg-[#f5f5f5] px-8 pb-8 pt-4">
-                  <SectionDivider label="Required Fields" />
+                  <SectionDivider label={labels?.step1.requiredLabel ?? "Required Fields"} />
 
                   <div className="overflow-hidden rounded-b-xl border border-[#d9d9d9] bg-[#f5f5f5]">
-                    <FieldRow label="What Season Is Your Group Hunting In?">
+                    <FieldRow label={labels?.step1.seasonLabel ?? "What Season Is Your Group Hunting In?"}>
                       <select
                         value={groupData.seasonLabel}
                         onChange={(e) => {
@@ -470,8 +604,8 @@ export default function QuoteReservePage() {
                     </FieldRow>
 
                     <FieldRow
-                      label="What Camp Is Your Group Going To?"
-                      reference="Reference Camps"
+                      label={labels?.step1.campLabel ?? "What Camp Is Your Group Going To?"}
+                      reference={labels?.step1.campReference ?? "Reference Camps"}
                     >
                       <select
                         value={groupData.campId}
@@ -482,15 +616,15 @@ export default function QuoteReservePage() {
                       >
                         {(config?.camps ?? []).map((camp) => (
                           <option key={camp.id} value={camp.id}>
-                            {camp.name}
+                            {formatCampOptionLabel(camp.name)}
                           </option>
                         ))}
                       </select>
                     </FieldRow>
 
                     <FieldRow
-                      label="What Week Is Your Group Going?"
-                      reference="Reference Days Camps"
+                      label={labels?.step1.weekLabel ?? "What Week Is Your Group Going?"}
+                      reference={labels?.step1.weekReference ?? "Reference Days Camps"}
                     >
                       <select
                         value={groupData.weekId}
@@ -508,8 +642,8 @@ export default function QuoteReservePage() {
                     </FieldRow>
 
                     <FieldRow
-                      label="How Many Hunters In Your Group?"
-                      reference="Minimums and Capacities Chart"
+                      label={labels?.step1.hunterCountLabel ?? "How Many Hunters In Your Group?"}
+                      reference={labels?.step1.hunterCountReference ?? "Minimums and Capacities Chart"}
                     >
                       <select
                         value={groupData.hunterCount}
@@ -521,7 +655,7 @@ export default function QuoteReservePage() {
                         }
                         className="h-11 w-full rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
                       >
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20].map((count) => (
+                        {(config?.settings.hunterCountOptions ?? [1, 2, 3, 4, 5, 6, 7, 8, 9]).map((count) => (
                           <option key={count} value={count}>
                             {count} Hunters
                           </option>
@@ -530,8 +664,8 @@ export default function QuoteReservePage() {
                     </FieldRow>
 
                     <FieldRow
-                      label="What Package?"
-                      reference="Minimums and Capacities Chart"
+                      label={labels?.step1.packageLabel ?? "What Package?"}
+                      reference={labels?.step1.packageReference ?? "Minimums and Capacities Chart"}
                     >
                       <select
                         value={groupData.packageId}
@@ -553,13 +687,13 @@ export default function QuoteReservePage() {
                   </div>
 
                   <div className="mt-8">
-                    <SectionDivider label="Optional Fields" />
+                    <SectionDivider label={labels?.step1.optionalLabel ?? "Optional Fields"} />
                   </div>
 
                   <div className="grid grid-cols-1 items-center gap-6 px-8 py-4 md:grid-cols-[1.2fr_1fr]">
                     <label className="text-[15px] font-semibold text-[#2b1a0f]">
                       <span className="mr-1 text-[#f26f2d]">*</span>
-                      Does Your Group Qualify For 5% Early Bird Booking Discount?
+                      {labels?.step1.earlyBirdLabel ?? "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
                       <span className="ml-1 text-[#f26f2d]">●</span>
                     </label>
 
@@ -571,20 +705,32 @@ export default function QuoteReservePage() {
                           earlyBird: e.target.value as "Yes" | "No",
                         }))
                       }
-                      className="h-11 w-full max-w-[140px] rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
+                      className="h-11 w-full max-w-35 rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
                     >
-                      <option value="No">No</option>
-                      <option value="Yes">Yes</option>
+                      {(config?.settings.earlyBirdOptions ?? [
+                        { label: "No", value: "No" as const },
+                        { label: "Yes", value: "Yes" as const },
+                      ]).map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
+                  {validationErrors.step1 ? (
+                    <div className="px-8 pb-4 text-sm font-semibold text-red-700">
+                      {validationErrors.step1}
+                    </div>
+                  ) : null}
+
                   <div className="mt-8 flex justify-end px-8 pb-6">
                     <button
-                      onClick={() => setStep(2)}
+                      onClick={goToStep2}
                       disabled={!config}
                       className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:opacity-50"
                     >
-                      To Step 2: Enter Hunters »
+                      {labels?.step1.nextButton ?? "To Step 2: Enter Hunters »"}
                     </button>
                   </div>
                 </div>
@@ -593,123 +739,137 @@ export default function QuoteReservePage() {
 
             {step === 2 && (
               <>
-                <div className="grid grid-cols-[70px_1.3fr_1.5fr_1.2fr_1.3fr] bg-[#4c2c11] px-6 py-5 text-[13px] font-bold uppercase text-white md:text-[18px]">
-                  <div />
-                  <div>Hunter Name</div>
-                  <div>Individual Discount</div>
-                  <div>Extra Days Hunting</div>
-                  <div>Extra Nights Lodging</div>
-                </div>
-
-                <div className="bg-[#f5f5f5]">
-                  {hunters.map((hunter, index) => (
-                    <div
-                      key={hunter.id}
-                      className="grid grid-cols-[70px_1.3fr_1.5fr_1.2fr_1.3fr] items-center gap-4 border-b border-[#d9d9d9] px-6 py-5"
-                    >
-                      <div className="text-[14px] font-bold text-[#2b1a0f]">{index + 1})</div>
-
-                      <input
-                        value={hunter.name}
-                        onChange={(e) =>
-                          setHunters((prev) =>
-                            prev.map((item, i) =>
-                              i === index ? { ...item, name: e.target.value } : item
-                            )
-                          )
-                        }
-                        placeholder="Hunter Name"
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                      />
-
-                      <select
-                        value={hunter.discountCode}
-                        onChange={(e) =>
-                          setHunters((prev) =>
-                            prev.map((item, i) =>
-                              i === index
-                                ? { ...item, discountCode: e.target.value }
-                                : item
-                            )
-                          )
-                        }
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                      >
-                        {discountOptions.map((option) => (
-                          <option key={option.code} value={option.code}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-
-                      <select
-                        value={hunter.extraDays}
-                        onChange={(e) =>
-                          setHunters((prev) =>
-                            prev.map((item, i) =>
-                              i === index
-                                ? { ...item, extraDays: Number(e.target.value) }
-                                : item
-                            )
-                          )
-                        }
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                      >
-                        {[0, 1, 2, 3].map((value) => (
-                          <option key={value} value={value}>
-                            {value === 0 ? "Extra Days Hunting" : `${value} Extra Day`}
-                          </option>
-                        ))}
-                      </select>
-
-                      <select
-                        value={hunter.extraNights}
-                        onChange={(e) =>
-                          setHunters((prev) =>
-                            prev.map((item, i) =>
-                              i === index
-                                ? { ...item, extraNights: Number(e.target.value) }
-                                : item
-                            )
-                          )
-                        }
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                      >
-                        {[0, 1, 2, 3].map((value) => (
-                          <option key={value} value={value}>
-                            {value === 0 ? "Extra Nights Lodging" : `${value} Extra Night`}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ))}
-
-                  <div className="grid grid-cols-1 items-center gap-4 px-8 py-8 md:grid-cols-[auto_280px] md:justify-start">
-                    <label className="text-[15px] font-semibold text-[#2b1a0f]">
-                      Enter your email address to receive a copy of the quote:
-                    </label>
-
-                    <input
-                      value={quoteEmail}
-                      onChange={(e) => setQuoteEmail(e.target.value)}
-                      className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                    />
+                <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
+                  <div className="grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-black uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
+                    <div className="text-center">#</div>
+                    <div>{labels?.step2.hunterNameHeader ?? "Hunter Name"}</div>
+                    <div>{labels?.step2.individualDiscountHeader ?? "Individual Discount"}</div>
+                    <div>{labels?.step2.extraDaysHeader ?? "Extra Days Hunting"}</div>
+                    <div>{labels?.step2.extraNightsHeader ?? "Extra Nights Lodging"}</div>
                   </div>
 
-                  <div className="flex items-center justify-between px-8 pb-8">
-                    <button
-                      onClick={() => setStep(1)}
-                      className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
-                    >
-                      Back to Step 1
-                    </button>
+                  <div className="bg-[#ffffff]">
+                    {hunters.map((hunter, index) => (
+                      <div
+                        key={hunter.id}
+                        className={`grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] items-center gap-2 border-b border-[#d9d9d9] px-5 py-4 text-[14px] md:px-6 ${index % 2 === 0 ? "bg-[#fff7ee]" : "bg-white"}`}
+                      >
+                        <div className="text-center text-[14px] font-bold text-[#4c2c11]">{index + 1})</div>
 
-                    <button
-                      onClick={() => setStep(3)}
-                      className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95"
-                    >
-                      To Step 3: Review Total »
-                    </button>
+                        <input
+                          value={hunter.name}
+                          onChange={(e) =>
+                            setHunters((prev) =>
+                              prev.map((item, i) =>
+                                i === index ? { ...item, name: e.target.value } : item
+                              )
+                            )
+                          }
+                          placeholder="Hunter Name"
+                          maxLength={120}
+                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                        />
+
+                        <select
+                          value={hunter.discountCode}
+                          onChange={(e) =>
+                            setHunters((prev) =>
+                              prev.map((item, i) =>
+                                i === index ? { ...item, discountCode: e.target.value } : item
+                              )
+                            )
+                          }
+                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                        >
+                          {discountOptions.map((option) => (
+                            <option key={option.code} value={option.code}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+
+                        <select
+                          value={hunter.extraDays}
+                          onChange={(e) =>
+                            setHunters((prev) =>
+                              prev.map((item, i) =>
+                                i === index ? { ...item, extraDays: Number(e.target.value) } : item
+                              )
+                            )
+                          }
+                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                        >
+                          {(config?.settings.extraDayOptions ?? [0, 1, 2, 3]).map((value) => (
+                            <option key={value} value={value}>
+                              {value === 0 ? "Extra Days Hunting" : `${value} Extra Day`}
+                            </option>
+                          ))}
+                        </select>
+
+                        <select
+                          value={hunter.extraNights}
+                          onChange={(e) =>
+                            setHunters((prev) =>
+                              prev.map((item, i) =>
+                                i === index ? { ...item, extraNights: Number(e.target.value) } : item
+                              )
+                            )
+                          }
+                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                        >
+                          {(config?.settings.extraNightOptions ?? [0, 1, 2, 3]).map((value) => (
+                            <option key={value} value={value}>
+                              {value === 0 ? "Extra Nights Lodging" : `${value} Extra Night`}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ))}
+
+                    <div className="grid grid-cols-1 items-center gap-4 px-8 py-7 md:grid-cols-[auto_340px]">
+                      <label className="text-[15px] font-semibold text-[#2b1a0f]">
+                        {labels?.step2.emailLabel ?? "Enter your email address to receive a copy of the quote:"}
+                      </label>
+
+                      <input
+                        type="email"
+                        value={quoteEmail}
+                        onChange={(e) => setQuoteEmail(e.target.value)}
+                        maxLength={254}
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        spellCheck={false}
+                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
+                      />
+                    </div>
+
+                    {validationErrors.quoteEmail ? (
+                      <div className="px-8 pb-2 text-sm font-semibold text-red-700">
+                        {validationErrors.quoteEmail}
+                      </div>
+                    ) : null}
+
+                    {validationErrors.step2 ? (
+                      <div className="px-8 pb-4 text-sm font-semibold text-red-700">
+                        {validationErrors.step2}
+                      </div>
+                    ) : null}
+
+                    <div className="flex items-center justify-between px-8 pb-8">
+                      <button
+                        onClick={() => setStep(1)}
+                        className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
+                      >
+                        {labels?.step2.backButton ?? "Back to Step 1"}
+                      </button>
+
+                      <button
+                        onClick={goToStep3}
+                        className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95"
+                      >
+                        {labels?.step2.nextButton ?? "To Step 3: Review Total »"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </>
@@ -719,97 +879,89 @@ export default function QuoteReservePage() {
               <div className="bg-[#f5f5f5]">
                 <div className="overflow-hidden">
                   <div className="bg-[#4c2c11] px-8 py-5 text-[18px] font-bold uppercase text-white">
-                    Quote Details and Payment Options
+                    {labels?.step3.overviewTitle ?? "Quote Details and Payment Options"}
                   </div>
 
                   <div className="border-b border-[#d9d9d9] px-8 py-8 text-center text-[14px] leading-7 text-[#2b1a0f]">
                     <p className="font-semibold">
-                      Thank you for quoting your groups fair chase pheasant hunt at a
-                      UGUIDE South Dakota Pheasant Hunting property. You are encouraged
-                      to forward this quote to your group for their review and
-                      consideration.
+                      {labels?.step3.overviewIntro ?? "Thank you for quoting your groups fair chase pheasant hunt at a UGUIDE South Dakota Pheasant Hunting property. You are encouraged to forward this quote to your group for their review and consideration."}
                     </p>
 
                     <p className="mt-6 font-semibold">
-                      There are two simple options to reserve your hunt:
+                      {labels?.step3.optionsLabel ?? "There are two simple options to reserve your hunt:"}
                     </p>
 
                     <p className="mt-4 text-[18px] font-black">
-                      Option 1 - One group member pays deposit
+                      {labels?.step3.optionOneTitle ?? "Option 1 - One group member pays deposit"}
                     </p>
 
                     <div className="mt-3 space-y-2">
-                      <p>✓ Check the Availability page to make sure the hunt you would like to reserve is available.</p>
-                      <p>
-                        ✓ Use the Booking Tool which will calculate your deposit amount
-                        and then take you to Paypal to pay with credit card or Paypal
-                        account, whichever you prefer.
-                      </p>
-                      <p>
-                        ✓ Upon completion of checkout, you will receive an automated
-                        itinerary for your hunt package in your email.
-                      </p>
+                      {(labels?.step3.optionOneBullets ?? [
+                        "Check the Availability page to make sure the hunt you would like to reserve is available.",
+                        "Use the Booking Tool which will calculate your deposit amount and then take you to Paypal to pay with credit card or Paypal account, whichever you prefer.",
+                        "Upon completion of checkout, you will receive an automated itinerary for your hunt package in your email.",
+                      ]).map((bullet) => (
+                        <p key={bullet}>✓ {bullet}</p>
+                      ))}
                     </div>
 
                     <p className="mt-6 text-[18px] font-black">
-                      Option 2 - Individuals in group split up deposit
+                      {labels?.step3.optionTwoTitle ?? "Option 2 - Individuals in group split up deposit"}
                     </p>
 
                     <div className="mt-3 space-y-2">
-                      <p>✓ Check the Availability page to make sure the hunt you would like to reserve is available.</p>
-                      <p>
-                        ✓ From the Quote page, determine how much you would like each
-                        member of your group to pay as their portion of the deposit.
-                      </p>
-                      <p>
-                        ✓ Email the Individual Pay link to each member of your group
-                        with instructions on the amount you would like them to pay.
-                      </p>
+                      {(labels?.step3.optionTwoBullets ?? [
+                        "Check the Availability page to make sure the hunt you would like to reserve is available.",
+                        "From the Quote page, determine how much you would like each member of your group to pay as their portion of the deposit.",
+                        "Email the Individual Pay link to each member of your group with instructions on the amount you would like them to pay.",
+                      ]).map((bullet) => (
+                        <p key={bullet}>✓ {bullet}</p>
+                      ))}
                     </div>
                   </div>
 
                   <div className="bg-[#4c2c11] px-8 py-5 text-[18px] font-bold uppercase text-white">
-                    Group Selections
+                    {labels?.step3.groupSelectionsTitle ?? "Group Selections"}
                   </div>
 
-                  <SummaryRow label="Season Selected:" value={groupData.seasonLabel || "-"} />
-                  <SummaryRow label="Camp Selected:" value={selectedCamp?.name || "-"} />
-                  <SummaryRow label="Camp Tier:" value="Tier 1" />
-                  <SummaryRow label="Package Selected:" value={selectedPackage?.label || "-"} />
+                  <SummaryRow label={`${labels?.step3.groupFields.season ?? "Season Selected"}:`} value={groupData.seasonLabel || "-"} />
+                  <SummaryRow label={`${labels?.step3.groupFields.camp ?? "Camp Selected"}:`} value={selectedCamp?.name || "-"} />
+                  <SummaryRow label={`${labels?.step3.groupFields.campTier ?? "Camp Tier"}:`} value="Tier 1" />
+                  <SummaryRow label={`${labels?.step3.groupFields.package ?? "Package Selected"}:`} value={selectedPackage?.label || "-"} />
                   <SummaryRow
-                    label="Total Hunters Selected:"
+                    label={`${labels?.step3.groupFields.totalHunters ?? "Total Hunters Selected"}:`}
                     value={`${groupData.hunterCount} Hunters`}
                   />
-                  <SummaryRow label="Early Bird Discount:" value={groupData.earlyBird} />
+                  <SummaryRow label={`${labels?.step3.groupFields.earlyBird ?? "Early Bird Discount"}:`} value={groupData.earlyBird} />
                   <SummaryRow
                     label="Minimum Group Revenue Rule:"
                     value={selectedPricing ? `${selectedPricing.minGroupSize} minimum` : "-"}
                   />
 
                   <div className="border-b border-[#d9d9d9] px-8 py-5 text-center text-[14px] font-medium text-[#2b1a0f]">
-                    ✓ Week Selected: {selectedWeek?.label || "-"}
+                    ✓ {(labels?.step3.groupFields.week ?? "Week Selected")}: {selectedWeek?.label || "-"}
                   </div>
 
                   <div className="bg-[#4c2c11] px-8 py-5 text-[18px] font-bold uppercase text-white">
-                    Hunter Selections
+                    {labels?.step3.hunterSelectionsTitle ?? "Hunter Selections"}
                   </div>
 
                   <div className="overflow-x-auto px-4 py-4">
                     <table className="min-w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
                       <thead>
                         <tr className="bg-[#f26f2d] text-left text-white">
-                          <th className="border border-[#d9d9d9] px-2 py-2">#</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Hunter Name</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Individual Discount</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Base Rate</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Volume Discount</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Extra Hunting</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Extra Lodging</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Junior Discount</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Adult Discount</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Early Bird Discount</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Taxes 6.5%</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Total</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.hunterNumber ?? "#"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.hunterName ?? "Hunter Name"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.individualDiscount ?? "Individual Discount"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.baseRate ?? "Base Rate"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.volumeDiscount ?? "Volume Discount"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.extraHunting ?? "Extra Hunting"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.extraLodging ?? "Extra Lodging"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.juniorDiscount ?? "Junior Discount"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.adultDiscount ?? "Adult Discount"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.earlyBirdDiscount ?? "Early Bird Discount"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.taxes ?? taxLabel}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.total ?? "Total"}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -836,7 +988,7 @@ export default function QuoteReservePage() {
 
                     <div className="mt-4 flex justify-end">
                       <button className="rounded-md bg-[#f26f2d] px-8 py-3 text-[15px] font-black uppercase text-white">
-                        Totals
+                        {labels?.step3.totalsBadgeLabel ?? "Totals"}
                       </button>
                     </div>
 
@@ -847,61 +999,84 @@ export default function QuoteReservePage() {
                       Minimum adjustment: <span className="text-[24px] font-black">${minimumAdjustment.toFixed(2)}</span>
                     </div>
                     <div className="mt-2 text-right text-[18px] font-semibold text-[#2b1a0f]">
-                      Total price after applicable discounts and state sales tax:{" "}
+                      {labels?.step3.totalPriceLabel ?? "Total price after applicable discounts and state sales tax:"}{" "}
                       <span className="text-[28px] font-black">${grandSubtotal.toFixed(2)}</span>
                     </div>
                   </div>
 
                   <div className="bg-[#4c2c11] px-8 py-5 text-[18px] font-bold uppercase text-white">
-                    Deposit/Booking Information
+                    {labels?.step3.depositTitle ?? "Deposit/Booking Information"}
                   </div>
 
                   <div className="px-8 py-6 text-[14px] text-[#2b1a0f]">
                     <p className="mb-5 font-semibold">
-                      Deposit % calculated is based on the time of year that you are
-                      booking a hunt. Up to May 1st it is 25%. From May 1-August 31 it
-                      is 50%. From Sept. 1 thru end of season it is 100%.
+                      {labels?.step3.depositDescription ?? "Deposit % calculated is based on the time of year that you are booking a hunt. Up to May 1st it is 25%. From May 1-August 31 it is 50%. From Sept. 1 thru end of season it is 100%."}
                     </p>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_320px] md:items-center">
                       <label className="font-semibold">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        Enter name of person booking the hunt:
+                        {labels?.step3.bookingNameLabel ?? "Enter name of person booking the hunt:"}
                       </label>
                       <input
                         value={bookingName}
                         onChange={(e) => setBookingName(e.target.value)}
+                        maxLength={120}
+                        autoComplete="name"
                         className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 outline-none"
                       />
+
+                      {validationErrors.bookingName ? (
+                        <div className="md:col-start-2 text-sm font-semibold text-red-700">
+                          {validationErrors.bookingName}
+                        </div>
+                      ) : null}
 
                       <label className="font-semibold">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        Enter email address of person booking the hunt:
+                        {labels?.step3.bookingEmailLabel ?? "Enter email address of person booking the hunt:"}
                       </label>
                       <input
+                        type="email"
                         value={bookingEmail}
                         onChange={(e) => setBookingEmail(e.target.value)}
+                        maxLength={254}
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        spellCheck={false}
                         className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 outline-none"
                       />
 
-                      <label className="font-semibold">Deposit Amount ({Math.round(depositRate * 100)}%):</label>
+                      {validationErrors.bookingEmail ? (
+                        <div className="md:col-start-2 text-sm font-semibold text-red-700">
+                          {validationErrors.bookingEmail}
+                        </div>
+                      ) : null}
+
+                      <label className="font-semibold">
+                        {labels?.step3.depositAmountLabel ?? "Deposit Amount"} ({Math.round(depositRate * 100)}%):
+                      </label>
                       <div className="text-[18px] font-black">
-                        ${depositBase.toFixed(2)} + 2.99% (${processingFee.toFixed(2)}) = $
-                        {depositTotal.toFixed(2)}
+                        ${depositBase.toFixed(2)} + 2.99% (${processingFee.toFixed(2)}) = ${depositTotal.toFixed(2)}
                       </div>
                     </div>
 
                     <p className="mt-4 text-[13px] italic text-[#4e4e4e]">
-                      Note: You will be redirected to Paypal.com to make your secure
-                      deposit.
+                      {labels?.step3.depositNote ?? "Note: You will be redirected to Paypal.com to make your secure deposit."}
                     </p>
+
+                    {validationErrors.step3 ? (
+                      <div className="mt-4 text-sm font-semibold text-red-700">
+                        {validationErrors.step3}
+                      </div>
+                    ) : null}
 
                     <div className="mt-8 flex items-center justify-between">
                       <button
                         onClick={() => setStep(2)}
                         className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
                       >
-                        Back to Step 2
+                        {labels?.step3.backButton ?? "Back to Step 2"}
                       </button>
 
                       <button
@@ -909,7 +1084,7 @@ export default function QuoteReservePage() {
                         disabled={isSubmitting}
                         className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        {isSubmitting ? "Submitting..." : "Submit Quote Request »"}
+                        {isSubmitting ? "Submitting..." : (labels?.step3.submitButton ?? "Submit Quote Request »")}
                       </button>
                     </div>
 

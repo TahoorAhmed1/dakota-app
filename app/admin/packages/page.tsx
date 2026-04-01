@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import AdminLoadingState from "@/components/admin/admin-loading-state";
 import { fetchAdminConfig, updateAdminConfig, getAdminKeyFromStorage } from "@/lib/admin-client";
 
 type Package = {
@@ -56,9 +59,11 @@ export default function PackagesPage() {
       const adminKey = getAdminKeyFromStorage();
       const updatedConfig = { ...config, packages };
       await updateAdminConfig(updatedConfig, adminKey || undefined);
-      alert("Packages updated successfully!");
+      toast.success("Packages updated successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save changes");
+      const message = err instanceof Error ? err.message : "Failed to save changes";
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -91,56 +96,56 @@ export default function PackagesPage() {
   };
 
   if (loading) {
-    return <div className="text-lg text-gray-600">Loading packages...</div>;
+    return <AdminLoadingState label="Loading packages..." />;
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-900">Manage Packages</h2>
+      <h2 className="text-3xl font-bold text-black">Manage Packages</h2>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-700">{error}</p>
+        <div className="rounded-2xl border border-orange-400 bg-orange-100 p-4">
+          <p className="text-black">{error}</p>
         </div>
       )}
 
       {/* Add New Package */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New Package</h3>
+      <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
+        <h3 className="mb-4 text-lg font-semibold text-black">Add New Package</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nights</label>
+            <label className="mb-1 block text-sm font-medium text-black">Nights</label>
             <input
               type="number"
               min="1"
               value={newPackage.nights}
               onChange={(e) => setNewPackage({ ...newPackage, nights: parseInt(e.target.value) })}
-              className="px-3 py-2 border border-gray-300 rounded w-full"
+              className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Days</label>
+            <label className="mb-1 block text-sm font-medium text-black">Days</label>
             <input
               type="number"
               min="1"
               value={newPackage.days}
               onChange={(e) => setNewPackage({ ...newPackage, days: parseInt(e.target.value) })}
-              className="px-3 py-2 border border-gray-300 rounded w-full"
+              className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Active</label>
+            <label className="mb-1 block text-sm font-medium text-black">Active</label>
             <input
               type="checkbox"
               checked={newPackage.active}
               onChange={(e) => setNewPackage({ ...newPackage, active: e.target.checked })}
-              className="w-4 h-4 mt-2"
+              className="mt-2 h-4 w-4 accent-orange-500"
             />
           </div>
           <div className="flex items-end">
             <button
               onClick={handleAddPackage}
-              className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition font-medium"
+              className="w-full rounded-xl bg-orange-500 px-4 py-2 font-medium text-black transition hover:bg-orange-400"
             >
               Add Package
             </button>
@@ -149,23 +154,23 @@ export default function PackagesPage() {
       </div>
 
       {/* Packages List */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="border-b border-black bg-black">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                 Duration
               </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Nights</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Days</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Active</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Nights</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Days</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Active</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Actions</th>
             </tr>
           </thead>
           <tbody>
             {packages.map((pkg) => (
-              <tr key={pkg.id} className="border-b hover:bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-900">
+              <tr key={pkg.id} className="border-b border-black/10 hover:bg-orange-50">
+                <td className="px-6 py-4 font-medium text-black">
                   {pkg.nights}N/{pkg.days}D
                 </td>
                 <td className="px-6 py-4">
@@ -176,7 +181,7 @@ export default function PackagesPage() {
                     onChange={(e) =>
                       handleUpdatePackage(pkg.id, "nights", parseInt(e.target.value))
                     }
-                    className="px-3 py-2 border border-gray-300 rounded w-24"
+                    className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -187,7 +192,7 @@ export default function PackagesPage() {
                     onChange={(e) =>
                       handleUpdatePackage(pkg.id, "days", parseInt(e.target.value))
                     }
-                    className="px-3 py-2 border border-gray-300 rounded w-24"
+                    className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -195,13 +200,13 @@ export default function PackagesPage() {
                     type="checkbox"
                     checked={pkg.active}
                     onChange={(e) => handleUpdatePackage(pkg.id, "active", e.target.checked)}
-                    className="w-4 h-4"
+                    className="h-4 w-4 accent-orange-500"
                   />
                 </td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleDeletePackage(pkg.id)}
-                    className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
+                    className="rounded-lg bg-black px-3 py-1 text-sm text-white transition hover:bg-orange-500 hover:text-black"
                   >
                     Delete
                   </button>
@@ -216,7 +221,7 @@ export default function PackagesPage() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded font-semibold transition"
+        className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white"
       >
         {saving ? "Saving..." : "Save All Changes"}
       </button>

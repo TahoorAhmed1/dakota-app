@@ -1,3 +1,5 @@
+import { CalculatorSettings, calculateDepositRate } from "@/lib/calculator-settings";
+
 type DiscountCategory = "INDIVIDUAL" | "JUNIOR";
 type DiscountType = "FIXED" | "PERCENT";
 type DecimalLike = number | string | { toString(): string };
@@ -31,6 +33,7 @@ export type CalculatorConfig = {
     value: number;
     stackOrder: number;
   }>;
+  settings: CalculatorSettings;
 };
 
 export type HunterInput = {
@@ -88,12 +91,6 @@ export type QuoteCalculation = {
   };
 };
 
-const EXTRA_DAY_RATE = 225;
-const EXTRA_NIGHT_RATE = 165;
-const EARLY_BIRD_RATE = 0.05;
-const SALES_TAX_RATE = 0.065;
-const PROCESSING_FEE_RATE = 0.0299;
-
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
@@ -131,6 +128,7 @@ export function mapConfigFromDb(data: {
     value: DecimalLike;
     stackOrder: number;
   }>;
+  settings: CalculatorSettings;
 }): CalculatorConfig {
   return {
     camps: data.camps,
@@ -148,6 +146,7 @@ export function mapConfigFromDb(data: {
       ...rule,
       value: toNumber(rule.value),
     })),
+    settings: data.settings,
   };
 }
 
@@ -159,16 +158,6 @@ function getVolumeDiscount(config: CalculatorConfig, hunterCount: number): numbe
   });
 
   return matched ? matched.amountOffPerHead : 0;
-}
-
-function calculateDepositRate(now: Date): number {
-  const year = now.getFullYear();
-  const mayFirst = new Date(year, 4, 1);
-  const augustLastEnd = new Date(year, 7, 31, 23, 59, 59, 999);
-
-  if (now < mayFirst) return 0.25;
-  if (now <= augustLastEnd) return 0.5;
-  return 1.0;
 }
 
 export function calculateQuote(input: QuoteCalcInput, config: CalculatorConfig): QuoteCalculation {
@@ -201,7 +190,9 @@ export function calculateQuote(input: QuoteCalcInput, config: CalculatorConfig):
       config.discountRules.find((rule) => rule.code === chosenCode) ?? noneRule ?? null;
 
     const rateAfterVolume = pricing.baseRate - volumeDiscount;
-    const earlyBirdDiscount = input.earlyBird ? rateAfterVolume * EARLY_BIRD_RATE : 0;
+    const earlyBirdDiscount = input.earlyBird
+      ? rateAfterVolume * config.settings.earlyBirdRate
+      : 0;
 
     let individualDiscount = 0;
     let juniorDiscount = 0;
@@ -227,8 +218,8 @@ export function calculateQuote(input: QuoteCalcInput, config: CalculatorConfig):
 
     const extraDays = Math.max(0, hunter.extraDays ?? 0);
     const extraNights = Math.max(0, hunter.extraNights ?? 0);
-    const extraHunting = extraDays * EXTRA_DAY_RATE;
-    const extraLodging = extraNights * EXTRA_NIGHT_RATE;
+    const extraHunting = extraDays * config.settings.extraDayRate;
+    const extraLodging = extraNights * config.settings.extraNightRate;
 
     const subtotalBeforeTax =
       rateAfterVolume -
@@ -238,7 +229,7 @@ export function calculateQuote(input: QuoteCalcInput, config: CalculatorConfig):
       extraHunting +
       extraLodging;
 
-    const taxAmount = subtotalBeforeTax * SALES_TAX_RATE;
+    const taxAmount = subtotalBeforeTax * config.settings.salesTaxRate;
     const totalAmount = subtotalBeforeTax + taxAmount;
 
     return {
@@ -265,12 +256,12 @@ export function calculateQuote(input: QuoteCalcInput, config: CalculatorConfig):
   const minimumRevenueFloor = pricing.baseRate * pricing.minGroupSize;
   const minimumAdjustment = Math.max(0, minimumRevenueFloor - subtotalBeforeTax);
   const taxableSubtotal = subtotalBeforeTax + minimumAdjustment;
-  const taxAmount = taxableSubtotal * SALES_TAX_RATE;
+  const taxAmount = taxableSubtotal * config.settings.salesTaxRate;
   const totalAmount = taxableSubtotal + taxAmount;
 
-  const depositRate = calculateDepositRate(new Date());
+  const depositRate = calculateDepositRate(config.settings.depositSchedule, new Date());
   const depositBase = totalAmount * depositRate;
-  const processingFee = depositBase * PROCESSING_FEE_RATE;
+  const processingFee = depositBase * config.settings.processingFeeRate;
   const depositTotal = depositBase + processingFee;
 
   return {
@@ -291,7 +282,7 @@ export function calculateQuote(input: QuoteCalcInput, config: CalculatorConfig):
       totalAmount: round2(totalAmount),
       depositRate,
       depositBase: round2(depositBase),
-      processingFeeRate: PROCESSING_FEE_RATE,
+      processingFeeRate: config.settings.processingFeeRate,
       processingFee: round2(processingFee),
       depositTotal: round2(depositTotal),
     },

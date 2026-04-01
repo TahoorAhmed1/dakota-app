@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import AdminLoadingState from "@/components/admin/admin-loading-state";
 import { fetchAdminConfig, updateAdminConfig, getAdminKeyFromStorage } from "@/lib/admin-client";
 
 type DiscountRule = {
@@ -65,9 +68,11 @@ export default function DiscountsPage() {
       const adminKey = getAdminKeyFromStorage();
       const updatedConfig = { ...config, discountRules: discounts };
       await updateAdminConfig(updatedConfig, adminKey || undefined);
-      alert("Discount rules updated successfully!");
+      toast.success("Discount rules updated successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save changes");
+      const message = err instanceof Error ? err.message : "Failed to save changes";
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -103,48 +108,48 @@ export default function DiscountsPage() {
   };
 
   if (loading) {
-    return <div className="text-lg text-gray-600">Loading discount rules...</div>;
+    return <AdminLoadingState label="Loading discount rules..." />;
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-900">Manage Discounts</h2>
+      <h2 className="text-3xl font-bold text-black">Manage Discounts</h2>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-700">{error}</p>
+        <div className="rounded-2xl border border-orange-400 bg-orange-100 p-4">
+          <p className="text-black">{error}</p>
         </div>
       )}
 
       {/* Info Box */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm text-blue-800">
+      <div className="rounded-2xl border border-orange-400 bg-orange-100 p-4">
+        <p className="text-sm text-black">
           <strong>FIXED:</strong> Subtract a fixed dollar amount | <strong>PERCENT:</strong> Subtract a percentage of base rate
         </p>
       </div>
 
       {/* Add New Discount */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New Discount</h3>
+      <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
+        <h3 className="mb-4 text-lg font-semibold text-black">Add New Discount</h3>
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <input
             type="text"
             placeholder="Code (e.g., MILITARY)"
             value={newDiscount.code}
             onChange={(e) => setNewDiscount({ ...newDiscount, code: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <input
             type="text"
             placeholder="Label (e.g., Military Discount)"
             value={newDiscount.label}
             onChange={(e) => setNewDiscount({ ...newDiscount, label: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <select
             value={newDiscount.type || ""}
             onChange={(e) => setNewDiscount({ ...newDiscount, type: e.target.value as "FIXED" | "PERCENT" })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           >
             <option value="FIXED">Fixed ($)</option>
             <option value="PERCENT">Percent (%)</option>
@@ -154,19 +159,19 @@ export default function DiscountsPage() {
             placeholder="Amount"
             value={newDiscount.amount || ""}
             onChange={(e) => setNewDiscount({ ...newDiscount, amount: parseInt(e.target.value) })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <select
             value={newDiscount.category || ""}
             onChange={(e) => setNewDiscount({ ...newDiscount, category: e.target.value as "INDIVIDUAL" | "JUNIOR" })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           >
             <option value="INDIVIDUAL">Individual</option>
             <option value="JUNIOR">Junior</option>
           </select>
           <button
             onClick={handleAddDiscount}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition font-medium"
+            className="rounded-xl bg-orange-500 px-4 py-2 font-medium text-black transition hover:bg-orange-400"
           >
             Add Discount
           </button>
@@ -174,28 +179,28 @@ export default function DiscountsPage() {
       </div>
 
       {/* Discounts List */}
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
+      <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="border-b border-black bg-black">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Code</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Label</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Type</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Amount</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Category</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Active</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Code</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Label</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Type</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Amount</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Category</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Active</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Actions</th>
             </tr>
           </thead>
           <tbody>
             {discounts.map((discount, idx) => (
-              <tr key={idx} className="border-b hover:bg-gray-50">
+              <tr key={idx} className="border-b border-black/10 hover:bg-orange-50">
                 <td className="px-6 py-4">
                   <input
                     type="text"
                     value={discount.code}
                     onChange={(e) => handleUpdateDiscount(idx, "code", e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-full"
+                    className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -203,14 +208,14 @@ export default function DiscountsPage() {
                     type="text"
                     value={discount.label}
                     onChange={(e) => handleUpdateDiscount(idx, "label", e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-full"
+                    className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
                   <select
                     value={discount.type}
                     onChange={(e) => handleUpdateDiscount(idx, "type", e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-full"
+                    className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   >
                     <option value="FIXED">Fixed</option>
                     <option value="PERCENT">Percent</option>
@@ -221,14 +226,14 @@ export default function DiscountsPage() {
                     type="number"
                     value={discount.amount}
                     onChange={(e) => handleUpdateDiscount(idx, "amount", parseInt(e.target.value))}
-                    className="px-3 py-2 border border-gray-300 rounded w-24"
+                    className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
                   <select
                     value={discount.category}
                     onChange={(e) => handleUpdateDiscount(idx, "category", e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-full"
+                    className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   >
                     <option value="INDIVIDUAL">Individual</option>
                     <option value="JUNIOR">Junior</option>
@@ -239,13 +244,13 @@ export default function DiscountsPage() {
                     type="checkbox"
                     checked={discount.active}
                     onChange={(e) => handleUpdateDiscount(idx, "active", e.target.checked)}
-                    className="w-4 h-4"
+                    className="h-4 w-4 accent-orange-500"
                   />
                 </td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleDeleteDiscount(idx)}
-                    className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
+                    className="rounded-lg bg-black px-3 py-1 text-sm text-white transition hover:bg-orange-500 hover:text-black"
                   >
                     Delete
                   </button>
@@ -260,7 +265,7 @@ export default function DiscountsPage() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded font-semibold transition"
+        className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white"
       >
         {saving ? "Saving..." : "Save All Changes"}
       </button>

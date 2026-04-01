@@ -39,14 +39,14 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-blue-700 flex items-center justify-center px-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">Admin Portal</h1>
-        <p className="text-gray-600 text-center mb-6">Dakota Hunting Adventures</p>
+    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(135deg,#000_0%,#000_58%,#f37021_100%)] px-4">
+      <div className="w-full max-w-md rounded-3xl border border-black bg-white p-8 shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+        <h1 className="mb-2 text-center text-3xl font-bold text-black">Admin Portal</h1>
+        <p className="mb-6 text-center text-black/70">Dakota Hunting Adventures</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="apiKey" className="mb-1 block text-sm font-medium text-black">
               Admin API Key
             </label>
             <input
@@ -55,26 +55,26 @@ export default function AdminLoginPage() {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="Enter your admin API key"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-xl border border-black/20 px-4 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               disabled={loading}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="mt-1 text-xs text-black/60">
               If no key is set, you can access without entering one
             </p>
           </div>
 
-          {error && <div className="text-red-600 text-sm bg-red-50 p-3 rounded">{error}</div>}
+          {error && <div className="rounded-xl border border-orange-400 bg-orange-100 p-3 text-sm text-black">{error}</div>}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-2 rounded-lg transition"
+            className="w-full rounded-xl bg-orange-500 py-2 font-medium text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white"
           >
             {loading ? "Authenticating..." : "Sign In"}
           </button>
         </form>
 
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
+        <div className="mt-6 rounded-2xl border border-orange-300 bg-orange-100 p-4 text-sm text-black">
           <p className="font-semibold mb-2">Demo Access:</p>
           <p>Leave the API key field empty to access the admin portal without authentication.</p>
         </div>

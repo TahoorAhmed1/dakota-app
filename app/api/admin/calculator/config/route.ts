@@ -1,9 +1,116 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { defaultCalculatorSettings } from "@/lib/calculator-settings";
 import { prisma } from "@/lib/prisma";
 import { assertAdminAccess } from "@/lib/server/admin-auth";
 import { getCalculatorConfig } from "@/lib/server/calculator-data";
+
+const labelsSchema = z.object({
+  stepHeadings: z.object({
+    step1: z.string().min(1),
+    step2: z.string().min(1),
+    step3: z.string().min(1),
+  }),
+  step1: z.object({
+    cardTitle: z.string().min(1),
+    requiredLabel: z.string().min(1),
+    optionalLabel: z.string().min(1),
+    seasonLabel: z.string().min(1),
+    campLabel: z.string().min(1),
+    weekLabel: z.string().min(1),
+    hunterCountLabel: z.string().min(1),
+    packageLabel: z.string().min(1),
+    earlyBirdLabel: z.string().min(1),
+    campReference: z.string().min(1),
+    weekReference: z.string().min(1),
+    hunterCountReference: z.string().min(1),
+    packageReference: z.string().min(1),
+    nextButton: z.string().min(1),
+  }),
+  step2: z.object({
+    hunterNameHeader: z.string().min(1),
+    individualDiscountHeader: z.string().min(1),
+    extraDaysHeader: z.string().min(1),
+    extraNightsHeader: z.string().min(1),
+    emailLabel: z.string().min(1),
+    backButton: z.string().min(1),
+    nextButton: z.string().min(1),
+  }),
+  step3: z.object({
+    overviewTitle: z.string().min(1),
+    overviewIntro: z.string().min(1),
+    optionsLabel: z.string().min(1),
+    optionOneTitle: z.string().min(1),
+    optionOneBullets: z.array(z.string().min(1)).min(1),
+    optionTwoTitle: z.string().min(1),
+    optionTwoBullets: z.array(z.string().min(1)).min(1),
+    groupSelectionsTitle: z.string().min(1),
+    hunterSelectionsTitle: z.string().min(1),
+    depositTitle: z.string().min(1),
+    groupFields: z.object({
+      season: z.string().min(1),
+      camp: z.string().min(1),
+      campTier: z.string().min(1),
+      package: z.string().min(1),
+      totalHunters: z.string().min(1),
+      earlyBird: z.string().min(1),
+      week: z.string().min(1),
+    }),
+    tableHeaders: z.object({
+      hunterNumber: z.string().min(1),
+      hunterName: z.string().min(1),
+      individualDiscount: z.string().min(1),
+      baseRate: z.string().min(1),
+      volumeDiscount: z.string().min(1),
+      extraHunting: z.string().min(1),
+      extraLodging: z.string().min(1),
+      juniorDiscount: z.string().min(1),
+      adultDiscount: z.string().min(1),
+      earlyBirdDiscount: z.string().min(1),
+      taxes: z.string().min(1),
+      total: z.string().min(1),
+    }),
+    totalsBadgeLabel: z.string().min(1),
+    totalPriceLabel: z.string().min(1),
+    minimumAdjustmentLabel: z.string().min(1),
+    depositDescription: z.string().min(1),
+    bookingNameLabel: z.string().min(1),
+    bookingEmailLabel: z.string().min(1),
+    depositAmountLabel: z.string().min(1),
+    depositNote: z.string().min(1),
+    backButton: z.string().min(1),
+    submitButton: z.string().min(1),
+  }),
+});
+
+const settingsSchema = z.object({
+  salesTaxRate: z.number().min(0).max(1),
+  earlyBirdRate: z.number().min(0).max(1),
+  extraDayRate: z.number().min(0),
+  extraNightRate: z.number().min(0),
+  processingFeeRate: z.number().min(0).max(1),
+  hunterCountOptions: z.array(z.number().int().min(1)).min(1),
+  extraDayOptions: z.array(z.number().int().min(0)).min(1),
+  extraNightOptions: z.array(z.number().int().min(0)).min(1),
+  earlyBirdOptions: z.array(
+    z.object({
+      label: z.string().min(1),
+      value: z.enum(["Yes", "No"]),
+    })
+  ).min(1),
+  depositSchedule: z.array(
+    z.object({
+      label: z.string().min(1),
+      startMonth: z.number().int().min(1).max(12),
+      startDay: z.number().int().min(1).max(31),
+      endMonth: z.number().int().min(1).max(12),
+      endDay: z.number().int().min(1).max(31),
+      rate: z.number().min(0).max(1),
+    })
+  ).min(1),
+  labels: labelsSchema,
+});
 
 const adminConfigSchema = z.object({
   camps: z.array(
@@ -64,6 +171,7 @@ const adminConfigSchema = z.object({
       isActive: z.boolean().default(true),
     })
   ),
+  settings: settingsSchema.default(defaultCalculatorSettings),
 });
 
 export async function GET(req: NextRequest) {
@@ -180,6 +288,15 @@ export async function PUT(req: NextRequest) {
           stackOrder: rule.stackOrder,
           isActive: rule.isActive,
         })),
+      });
+
+      await tx.calculatorSetting.upsert({
+        where: { id: "default" },
+        update: { config: payload.settings },
+        create: {
+          id: "default",
+          config: payload.settings,
+        },
       });
     });
 

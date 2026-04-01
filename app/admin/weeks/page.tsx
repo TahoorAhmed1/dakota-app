@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import AdminLoadingState from "@/components/admin/admin-loading-state";
 import { fetchAdminConfig, updateAdminConfig, getAdminKeyFromStorage } from "@/lib/admin-client";
 
 type HuntWeek = {
@@ -64,9 +67,11 @@ export default function WeeksPage() {
       const adminKey = getAdminKeyFromStorage();
       const updatedConfig = { ...config, weeks };
       await updateAdminConfig(updatedConfig, adminKey || undefined);
-      alert("Hunt weeks updated successfully!");
+      toast.success("Hunt weeks updated successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save changes");
+      const message = err instanceof Error ? err.message : "Failed to save changes";
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -107,52 +112,52 @@ export default function WeeksPage() {
   };
 
   if (loading) {
-    return <div className="text-lg text-gray-600">Loading hunt weeks...</div>;
+    return <AdminLoadingState label="Loading hunt weeks..." />;
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-900">Manage Hunt Weeks</h2>
+      <h2 className="text-3xl font-bold text-black">Manage Hunt Weeks</h2>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-700">{error}</p>
+        <div className="rounded-2xl border border-orange-400 bg-orange-100 p-4">
+          <p className="text-black">{error}</p>
         </div>
       )}
 
       {/* Add New Week */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New Week</h3>
+      <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
+        <h3 className="mb-4 text-lg font-semibold text-black">Add New Week</h3>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <input
             type="text"
             placeholder="Label (e.g., Week 1)"
             value={newWeek.label}
             onChange={(e) => setNewWeek({ ...newWeek, label: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <input
             type="text"
             placeholder="Season (e.g., 2026 Season)"
             value={newWeek.seasonLabel}
             onChange={(e) => setNewWeek({ ...newWeek, seasonLabel: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <input
             type="date"
             value={newWeek.startDate}
             onChange={(e) => setNewWeek({ ...newWeek, startDate: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <input
             type="date"
             value={newWeek.endDate}
             onChange={(e) => setNewWeek({ ...newWeek, endDate: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded"
+            className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <button
             onClick={handleAddWeek}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition font-medium"
+            className="rounded-xl bg-orange-500 px-4 py-2 font-medium text-black transition hover:bg-orange-400"
           >
             Add Week
           </button>
@@ -160,27 +165,27 @@ export default function WeeksPage() {
       </div>
 
       {/* Weeks List */}
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
+      <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="border-b border-black bg-black">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Label</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Season</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Start Date</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">End Date</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Active</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Label</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Season</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Start Date</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">End Date</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Active</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Actions</th>
             </tr>
           </thead>
           <tbody>
             {weeks.map((week) => (
-              <tr key={week.id} className="border-b hover:bg-gray-50">
+              <tr key={week.id} className="border-b border-black/10 hover:bg-orange-50">
                 <td className="px-6 py-4">
                   <input
                     type="text"
                     value={week.label}
                     onChange={(e) => handleUpdateWeek(week.id, "label", e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-full"
+                    className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -188,7 +193,7 @@ export default function WeeksPage() {
                     type="text"
                     value={week.seasonLabel}
                     onChange={(e) => handleUpdateWeek(week.id, "seasonLabel", e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-full"
+                    className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -196,7 +201,7 @@ export default function WeeksPage() {
                     type="date"
                     value={week.startDate}
                     onChange={(e) => handleUpdateWeek(week.id, "startDate", e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-full"
+                    className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -204,7 +209,7 @@ export default function WeeksPage() {
                     type="date"
                     value={week.endDate}
                     onChange={(e) => handleUpdateWeek(week.id, "endDate", e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded w-full"
+                    className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
                 <td className="px-6 py-4">
@@ -212,13 +217,13 @@ export default function WeeksPage() {
                     type="checkbox"
                     checked={week.active}
                     onChange={(e) => handleUpdateWeek(week.id, "active", e.target.checked)}
-                    className="w-4 h-4"
+                    className="h-4 w-4 accent-orange-500"
                   />
                 </td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleDeleteWeek(week.id)}
-                    className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
+                    className="rounded-lg bg-black px-3 py-1 text-sm text-white transition hover:bg-orange-500 hover:text-black"
                   >
                     Delete
                   </button>
@@ -233,7 +238,7 @@ export default function WeeksPage() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded font-semibold transition"
+        className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white"
       >
         {saving ? "Saving..." : "Save All Changes"}
       </button>

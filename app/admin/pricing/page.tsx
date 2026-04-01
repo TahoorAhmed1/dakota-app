@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import AdminLoadingState from "@/components/admin/admin-loading-state";
 import { fetchAdminConfig, updateAdminConfig, getAdminKeyFromStorage } from "@/lib/admin-client";
 
 type Camp = { id: string; name: string };
@@ -78,9 +81,11 @@ export default function PricingPage() {
       const adminKey = getAdminKeyFromStorage();
       const updatedConfig = { ...config, pricingRows, volumeRules };
       await updateAdminConfig(updatedConfig, adminKey || undefined);
-      alert("Pricing rules updated successfully!");
+      toast.success("Pricing rules updated successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save changes");
+      const message = err instanceof Error ? err.message : "Failed to save changes";
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -146,7 +151,7 @@ export default function PricingPage() {
   };
 
   if (loading) {
-    return <div className="text-lg text-gray-600">Loading pricing rules...</div>;
+    return <AdminLoadingState label="Loading pricing rules..." />;
   }
 
   if (!config) {
@@ -155,26 +160,26 @@ export default function PricingPage() {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-gray-900">Manage Pricing</h2>
+      <h2 className="text-3xl font-bold text-black">Manage Pricing</h2>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-700">{error}</p>
+        <div className="rounded-2xl border border-orange-400 bg-orange-100 p-4">
+          <p className="text-black">{error}</p>
         </div>
       )}
 
       {/* Pricing Matrix */}
       <div className="space-y-4">
-        <h3 className="text-2xl font-semibold text-gray-900">Pricing Matrix</h3>
+        <h3 className="text-2xl font-semibold text-black">Pricing Matrix</h3>
 
         {/* Add New Pricing Rule */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Add Pricing Rule</h4>
+        <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
+          <h4 className="mb-4 text-lg font-semibold text-black">Add Pricing Rule</h4>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <select
               value={newPricing.campId}
               onChange={(e) => setNewPricing({ ...newPricing, campId: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded"
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             >
               <option value="">Select Camp</option>
               {config.camps.map((camp) => (
@@ -186,7 +191,7 @@ export default function PricingPage() {
             <select
               value={newPricing.weekId}
               onChange={(e) => setNewPricing({ ...newPricing, weekId: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded"
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             >
               <option value="">Select Week</option>
               {config.weeks.map((week) => (
@@ -198,7 +203,7 @@ export default function PricingPage() {
             <select
               value={newPricing.packageId}
               onChange={(e) => setNewPricing({ ...newPricing, packageId: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded"
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             >
               <option value="">Select Package</option>
               {config.packages.map((pkg) => (
@@ -214,7 +219,7 @@ export default function PricingPage() {
               onChange={(e) =>
                 setNewPricing({ ...newPricing, baseRate: parseInt(e.target.value) })
               }
-              className="px-3 py-2 border border-gray-300 rounded"
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             />
             <input
               type="number"
@@ -223,34 +228,34 @@ export default function PricingPage() {
               onChange={(e) =>
                 setNewPricing({ ...newPricing, minGroupSize: parseInt(e.target.value) })
               }
-              className="px-3 py-2 border border-gray-300 rounded"
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             />
           </div>
           <button
             onClick={handleAddPricingRule}
-            className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition font-medium"
+            className="mt-4 rounded-xl bg-orange-500 px-4 py-2 font-medium text-black transition hover:bg-orange-400"
           >
             Add Pricing Rule
           </button>
         </div>
 
         {/* Pricing Rules Table */}
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
+        <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b">
+            <thead className="border-b border-black bg-black">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Camp</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Week</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">Camp</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">Week</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                   Package
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                   Base Rate
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                   Min Group
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                   Actions
                 </th>
               </tr>
@@ -261,7 +266,7 @@ export default function PricingPage() {
                 const week = config.weeks.find((w) => w.id === row.weekId);
                 const pkg = config.packages.find((p) => p.id === row.packageId);
                 return (
-                  <tr key={idx} className="border-b hover:bg-gray-50">
+                  <tr key={idx} className="border-b border-black/10 hover:bg-orange-50">
                     <td className="px-6 py-4">{camp?.name || row.campId}</td>
                     <td className="px-6 py-4">{week?.label || row.weekId}</td>
                     <td className="px-6 py-4">
@@ -274,7 +279,7 @@ export default function PricingPage() {
                         onChange={(e) =>
                           handleUpdatePricingRule(idx, "baseRate", parseInt(e.target.value))
                         }
-                        className="px-3 py-2 border border-gray-300 rounded w-32"
+                        className="w-32 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                       />
                     </td>
                     <td className="px-6 py-4">
@@ -284,13 +289,13 @@ export default function PricingPage() {
                         onChange={(e) =>
                           handleUpdatePricingRule(idx, "minGroupSize", parseInt(e.target.value))
                         }
-                        className="px-3 py-2 border border-gray-300 rounded w-32"
+                        className="w-32 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                       />
                     </td>
                     <td className="px-6 py-4">
                       <button
                         onClick={() => handleDeletePricingRule(idx)}
-                        className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
+                        className="rounded-lg bg-black px-3 py-1 text-sm text-white transition hover:bg-orange-500 hover:text-black"
                       >
                         Delete
                       </button>
@@ -305,11 +310,11 @@ export default function PricingPage() {
 
       {/* Volume Discount Rules */}
       <div className="space-y-4">
-        <h3 className="text-2xl font-semibold text-gray-900">Volume Discount Rules</h3>
+        <h3 className="text-2xl font-semibold text-black">Volume Discount Rules</h3>
 
         {/* Add New Volume Rule */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Add Volume Rule</h4>
+        <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
+          <h4 className="mb-4 text-lg font-semibold text-black">Add Volume Rule</h4>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               type="number"
@@ -318,7 +323,7 @@ export default function PricingPage() {
               onChange={(e) =>
                 setNewVolumeRule({ ...newVolumeRule, minHunters: parseInt(e.target.value) })
               }
-              className="px-3 py-2 border border-gray-300 rounded"
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             />
             <input
               type="number"
@@ -327,7 +332,7 @@ export default function PricingPage() {
               onChange={(e) =>
                 setNewVolumeRule({ ...newVolumeRule, maxHunters: parseInt(e.target.value) })
               }
-              className="px-3 py-2 border border-gray-300 rounded"
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             />
             <input
               type="number"
@@ -339,11 +344,11 @@ export default function PricingPage() {
                   discountPerHunter: parseInt(e.target.value),
                 })
               }
-              className="px-3 py-2 border border-gray-300 rounded"
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             />
             <button
               onClick={handleAddVolumeRule}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition font-medium"
+              className="rounded-xl bg-orange-500 px-4 py-2 font-medium text-black transition hover:bg-orange-400"
             >
               Add Rule
             </button>
@@ -351,27 +356,27 @@ export default function PricingPage() {
         </div>
 
         {/* Volume Rules Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b">
+            <thead className="border-b border-black bg-black">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                   Min Hunters
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                   Max Hunters
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                   Discount per Hunter
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody>
               {volumeRules.map((rule, idx) => (
-                <tr key={idx} className="border-b hover:bg-gray-50">
+                <tr key={idx} className="border-b border-black/10 hover:bg-orange-50">
                   <td className="px-6 py-4">
                     <input
                       type="number"
@@ -379,7 +384,7 @@ export default function PricingPage() {
                       onChange={(e) =>
                         handleUpdateVolumeRule(idx, "minHunters", parseInt(e.target.value))
                       }
-                      className="px-3 py-2 border border-gray-300 rounded w-24"
+                      className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                     />
                   </td>
                   <td className="px-6 py-4">
@@ -389,7 +394,7 @@ export default function PricingPage() {
                       onChange={(e) =>
                         handleUpdateVolumeRule(idx, "maxHunters", parseInt(e.target.value))
                       }
-                      className="px-3 py-2 border border-gray-300 rounded w-24"
+                      className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                     />
                   </td>
                   <td className="px-6 py-4">
@@ -403,13 +408,13 @@ export default function PricingPage() {
                           parseInt(e.target.value)
                         )
                       }
-                      className="px-3 py-2 border border-gray-300 rounded w-24"
+                      className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                     />
                   </td>
                   <td className="px-6 py-4">
                     <button
                       onClick={() => handleDeleteVolumeRule(idx)}
-                      className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm"
+                      className="rounded-lg bg-black px-3 py-1 text-sm text-white transition hover:bg-orange-500 hover:text-black"
                     >
                       Delete
                     </button>
@@ -425,7 +430,7 @@ export default function PricingPage() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded font-semibold transition"
+        className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white"
       >
         {saving ? "Saving..." : "Save All Changes"}
       </button>

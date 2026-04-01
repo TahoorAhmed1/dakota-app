@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import { defaultCalculatorSettings, normalizeCalculatorSettings } from "@/lib/calculator-settings";
 import { mapConfigFromDb } from "@/lib/server/quote-engine";
 
 export async function getCalculatorConfig() {
-  const [camps, weeks, packages, pricingRows, volumeRules, discountRules] = await Promise.all([
+  const [camps, weeks, packages, pricingRows, volumeRules, discountRules, settings] = await Promise.all([
     prisma.camp.findMany({
       where: { isActive: true },
       orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
@@ -19,7 +20,7 @@ export async function getCalculatorConfig() {
       select: { id: true, code: true, label: true, days: true, nights: true },
     }),
     prisma.campWeekPricing.findMany({
-      orderBy: { createdAt: "asc" },
+      orderBy: [{ weekId: "asc" }, { campId: "asc" }, { packageId: "asc" }],
       select: {
         id: true,
         campId: true,
@@ -54,6 +55,10 @@ export async function getCalculatorConfig() {
         stackOrder: true,
       },
     }),
+    prisma.calculatorSetting.findUnique({
+      where: { id: "default" },
+      select: { config: true },
+    }),
   ]);
 
   return mapConfigFromDb({
@@ -63,5 +68,6 @@ export async function getCalculatorConfig() {
     pricingRows,
     volumeRules,
     discountRules,
+    settings: normalizeCalculatorSettings(settings?.config ?? defaultCalculatorSettings),
   });
 }
