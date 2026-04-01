@@ -35,7 +35,7 @@ const posts = [
 
 export default function LatestNews() {
   return (
-    <section className="w-full bg-[#f5f5f5] py-16 px-6">
+    <section className="w-full bg-[#e8ded1] py-16 px-6">
       <div className="max-w-6xl mx-auto text-center">
         <p className="text-xs tracking-[3px] text-orange-500 uppercase mb-3">
           Updates

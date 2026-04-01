@@ -259,11 +259,30 @@ export default function QuoteReservePage() {
   }, [config]);
 
   const discountOptions = useMemo(() => {
-    if (!config) return [];
-    return config.discountRules
+    if (!config) {
+      return [
+        { code: "NONE", label: "Adult - Group Coordinator" },
+        { code: "JUNIOR", label: "Junior Discount" },
+      ];
+    }
+
+    const options = config.discountRules
       .slice()
       .sort((a, b) => a.stackOrder - b.stackOrder)
       .map((rule) => ({ code: rule.code, label: rule.label }));
+
+    if (!options.length) {
+      return [
+        { code: "NONE", label: "Adult - Group Coordinator" },
+        { code: "JUNIOR", label: "Junior Discount" },
+      ];
+    }
+
+    const withDefault = [{ code: "NONE", label: "Adult - Group Coordinator" }, ...options];
+    return withDefault.reduce((acc, option) => {
+      if (!acc.some((item) => item.code === option.code)) acc.push(option);
+      return acc;
+    }, [] as { code: string; label: string }[]);
   }, [config]);
 
   const dayOptions = useMemo(() => {
@@ -872,7 +891,8 @@ export default function QuoteReservePage() {
                     </div>
                   </div>
                 </div>
-              </>
+              </div>
+            </>
             )}
 
             {step === 3 && (
