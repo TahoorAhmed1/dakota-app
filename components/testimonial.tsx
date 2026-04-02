@@ -48,13 +48,13 @@ export default function Testimonials() {
           TESTIMONIALS
         </p>
 
-        <h2 className="mx-auto mt-4 max-w-5xl text-[38px] font-bold leading-[1.1] tracking-tight text-[#2b1a0f]">
+        <h2 className="mx-auto mt-4  text-[36px] font-semibold text-[#2b1a0f]">
           What People Say About UGUIDE South Dakota Pheasant Hunting!
         </h2>
 
-        <p className="mt-8 text-[14px] font-medium text-[#2b1a0f]/50">
+        {/* <p className="mt-8 text-[14px] font-medium text-[#2b1a0f]/50">
           Content Will Add
-        </p>
+        </p> */}
 
         {/* Carousel Container */}
         <div className="relative mt-16 flex justify-center items-start h-[600px] overflow-hidden">

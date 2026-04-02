@@ -32,15 +32,15 @@ export default function Home() {
       </div>
 
       {/* Video Section */}
-      <section className="bg-[#E7DCCF] py-20 px-6">
+      <section className="bg-[#E7DCCF] py-16 px-6">
         <div className="max-w-5xl mx-auto text-center">
-          <p className="text-black  text-3xl md:text-4xl  font-semibold uppercase mb-5">
+          <p className="text-black   text-[36px] font-semibold  uppercase mb-2">
             UGUIDE South Dakota Pheasant Hunting Video{" "}
           </p>
           <h2 className="text-[15px] font-medium text-black mb-10">
-South Dakota Pheasant Hunting Action at UGUIDE Pheasant Camps          </h2>
-          {/* Replace VIDEO_ID below with the actual YouTube video ID */}
-          <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
+            South Dakota Pheasant Hunting Action at UGUIDE Pheasant Camps{" "}
+          </h2>
+          <div className="relative aspect-video rounded-xl overflow-hidden">
             <iframe
               className="absolute inset-0 w-full h-full"
               src="https://www.youtube.com/embed/VIDEO_ID"
