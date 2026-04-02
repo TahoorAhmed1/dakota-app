@@ -74,10 +74,10 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 rounded-2xl border border-orange-300 bg-orange-100 p-4 text-sm text-black">
+        {/* <div className="mt-6 rounded-2xl border border-orange-300 bg-orange-100 p-4 text-sm text-black">
           <p className="font-semibold mb-2">Demo Access:</p>
           <p>Leave the API key field empty to access the admin portal without authentication.</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

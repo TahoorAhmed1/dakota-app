@@ -54,7 +54,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h2 className="mb-2 text-xl font-bold sm:text-2xl">Admin Panel</h2>
-            <p className="text-sm text-orange-300">Orange, white, and black control center</p>
           </div>
           <button
             type="button"
