@@ -112,7 +112,7 @@ export default function PackagesPage() {
       {/* Add New Package */}
       <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
         <h3 className="mb-4 text-lg font-semibold text-black">Add New Package</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-black">Nights</label>
             <input
@@ -154,7 +154,7 @@ export default function PackagesPage() {
       </div>
 
       {/* Packages List */}
-      <div className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
+      <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
         <table className="w-full">
           <thead className="border-b border-black bg-black">
             <tr>
@@ -221,7 +221,7 @@ export default function PackagesPage() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white"
+        className="w-full rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white sm:w-auto"
       >
         {saving ? "Saving..." : "Save All Changes"}
       </button>

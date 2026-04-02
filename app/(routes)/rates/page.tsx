@@ -96,30 +96,6 @@ function ChevronIcon() {
   );
 }
 
-function HeroCurve() {
-  return (
-    <div className="pointer-events-none absolute bottom-0 left-0 right-0">
-      <svg
-        viewBox="0 0 1440 120"
-        preserveAspectRatio="none"
-        className="block h-[68px] w-full md:h-[92px] lg:h-[108px]"
-        aria-hidden="true"
-      >
-        <path
-          d="M0,82 C288,55 576,40 720,40 C864,40 1152,55 1440,82 L1440,120 L0,120 Z"
-          fill="#e6dbcf"
-        />
-        <path
-          d="M0,82 C288,55 576,40 720,40 C864,40 1152,55 1440,82"
-          fill="none"
-          stroke="#2a1607"
-          strokeWidth="4"
-        />
-      </svg>
-    </div>
-  );
-}
-
 export default function RatesPage() {
   return (
     <main className="flex flex-col  text-[#281703]">

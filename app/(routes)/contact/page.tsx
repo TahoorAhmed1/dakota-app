@@ -327,7 +327,7 @@ export default function ContactPage() {
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">
                     <span className="text-[#d25f2d]">*</span>How many years have you hunted South Dakota?
                   </p>
-                  <select name="experience" value={formData.experience} onChange={handleChange} className={`${fieldClassName} mt-2 max-w-[208px]`}>
+                  <select name="experience" value={formData.experience} onChange={handleChange} className={`${fieldClassName} mt-2 w-full sm:max-w-[208px]`}>
                     <option value="">Select</option>
                     {selectChoices.experience.map((option) => (
                       <option key={option} value={option}>
@@ -417,7 +417,7 @@ export default function ContactPage() {
                   </h3>
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">Please select your preferred weeks.</p>
                   <div className="mt-4 space-y-3 lg:max-w-[420px]">
-                    <div className="grid gap-2 sm:grid-cols-[86px_minmax(0,1fr)_72px] sm:items-center">
+                    <div className="grid gap-2 sm:grid-cols-[86px_minmax(0,1fr)] sm:items-center lg:grid-cols-[86px_minmax(0,1fr)_72px]">
                       <label htmlFor="firstChoice" className="text-[13px] font-medium text-[#352b24]">1st Choice</label>
                       <div>
                         <select id="firstChoice" name="firstChoice" value={formData.firstChoice} onChange={handleChange} className={fieldClassName}>
@@ -430,11 +430,11 @@ export default function ContactPage() {
                         </select>
                         <ErrorText message={errors.firstChoice} />
                       </div>
-                      <Link href="/availability" className="text-[11px] font-medium text-[#e3782f] underline-offset-2 hover:underline">
+                      <Link href="/availability" className="text-[11px] font-medium text-[#e3782f] underline-offset-2 hover:underline sm:justify-self-start lg:justify-self-auto">
                         View Grid
                       </Link>
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-[86px_minmax(0,1fr)_72px] sm:items-center">
+                    <div className="grid gap-2 sm:grid-cols-[86px_minmax(0,1fr)] sm:items-center lg:grid-cols-[86px_minmax(0,1fr)_72px]">
                       <label htmlFor="secondChoice" className="text-[13px] font-medium text-[#352b24]">2nd Choice</label>
                       <div>
                         <select id="secondChoice" name="secondChoice" value={formData.secondChoice} onChange={handleChange} className={fieldClassName}>
@@ -447,7 +447,7 @@ export default function ContactPage() {
                         </select>
                         <ErrorText message={errors.secondChoice} />
                       </div>
-                      <Link href="/availability" className="text-[11px] font-medium text-[#e3782f] underline-offset-2 hover:underline">
+                      <Link href="/availability" className="text-[11px] font-medium text-[#e3782f] underline-offset-2 hover:underline sm:justify-self-start lg:justify-self-auto">
                         View Grid
                       </Link>
                     </div>
@@ -529,7 +529,7 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="h-[46px] rounded-[2px] bg-[linear-gradient(180deg,#ff8c3f_0%,#f16724_100%)] px-6 text-[16px] font-black uppercase tracking-[0.04em] text-white shadow-[0_6px_14px_rgba(241,103,36,0.35)] transition hover:brightness-[1.03] focus:outline-none focus:ring-2 focus:ring-[#f16724]/40"
+                  className="h-[46px] w-full rounded-[2px] bg-[linear-gradient(180deg,#ff8c3f_0%,#f16724_100%)] px-6 text-[16px] font-black uppercase tracking-[0.04em] text-white shadow-[0_6px_14px_rgba(241,103,36,0.35)] transition hover:brightness-[1.03] focus:outline-none focus:ring-2 focus:ring-[#f16724]/40 md:w-auto"
                 >
                   Submit Form
                 </button>

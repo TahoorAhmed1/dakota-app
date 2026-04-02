@@ -93,15 +93,14 @@ const StatusDot = ({ type }: { type: "sold" | "pending" | "available" }) => {
 
 export default function SeasonSchedule() {
   return (
-    <div className="bg-[#E7DCCF] pb-40 pt-10 px-4 relative">
+    <div className="relative bg-[#E7DCCF] px-4 pb-20 pt-10 sm:px-6 lg:pb-40">
       <div className="max-w-6xl mx-auto">
-        {/* TITLE */}
         <div className="text-center mb-8">
-          <h2 className="text-[36px] font-bold text-black">
+          <h2 className="text-[28px] font-bold text-black sm:text-[32px] lg:text-[36px]">
             UGUIDE South Dakota Pheasant Hunting - Welcome{" "}
           </h2>
 
-          <p className="text-sm text-black mt-2 max-w-3xl mx-auto text-[16px] font-semibold leading-relaxed">
+          <p className="mx-auto mt-2 max-w-3xl text-[14px] font-semibold leading-relaxed text-black sm:text-[16px]">
             Welcome to UGUIDE South Dakota Pheasant Hunting. The ultimate leader
             in unguided South Dakota pheasant hunting.  Your best option for
             fair chase, private-exclusive, self-guided and unguided South Dakota
@@ -109,25 +108,20 @@ export default function SeasonSchedule() {
           </p>
         </div>
 
-        {/* TABLE */}
-        <div className="rounded-xl overflow-hidden shadow-xl border-2 border-[#3a2b20] bg-[#ecebea]">
-          {/* GROUP HEADER – FIXED: now 8 columns to match everything else */}
+        <div className="overflow-x-auto rounded-xl border-2 border-[#3a2b20] bg-[#ecebea] shadow-xl">
+          <div className="min-w-[920px]">
           <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] bg-[#6b3b16] text-white font-semibold text-sm border-b-2 border-[#3a2b20]">
-            {/* Season Schedule spans Weeks + UGUIDE */}
             <div className="col-span-2 text-center py-3 border-r border-[#3a2b20]">
               Season Schedule
             </div>
 
-            {/* Camps spans all 5 camp columns */}
             <div className="col-span-5 text-center py-3 border-r border-[#3a2b20]">
               Camps
             </div>
 
-            {/* Pricing */}
             <div className="text-center py-3">Pricing</div>
           </div>
 
-          {/* COLUMN HEADER – already correct (8 columns) */}
           <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] text-[#3c2f23] text-sm font-semibold border-b border-[#3a2b20]">
             {[
               "Weeks In Season",
@@ -148,61 +142,53 @@ export default function SeasonSchedule() {
             ))}
           </div>
 
-          {/* ROWS – FIXED: now 8 columns + all 5 camps */}
           {rows.map((row, i) => (
             <div
               key={i}
               className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] items-center text-sm border-b bg-white border-[#3a2b20]"
             >
-              {/* WEEK */}
               <div className="p-3 text-center flex justify-center items-center h-full text-orange-600 font-semibold border-r border-[#3a2b20]">
                 {row.week}
               </div>
 
-              {/* DATE (UGUIDE wider column) */}
               <div className="p-3 text-[#4a3b2f] flex items-center h-full border-r border-[#3a2b20]">
                 {row.date}
               </div>
 
-              {/* CAMP 1 – Fulkton */}
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
                 <StatusDot type="sold" />
               </div>
 
-              {/* CAMP 2 – Gunther’s Ranch */}
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
                 <StatusDot type={i % 2 === 0 ? "available" : "sold"} />
               </div>
 
-              {/* CAMP 3 – Maddox Creek */}
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
                 <StatusDot type="sold" />
               </div>
 
-              {/* CAMP 4 – Pheasant Camp Lodge (added) */}
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
                 <StatusDot type={i % 3 === 0 ? "available" : "sold"} />
               </div>
 
-              {/* CAMP 5 – West River Adventures (added) */}
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
                 <StatusDot type="available" />
               </div>
 
-              {/* PRICE – no right border (last column) */}
               <div className="p-3 text-center text-[#b14b1a] font-semibold flex justify-center items-center h-full">
                 ${1299 + i * 100}
               </div>
             </div>
           ))}
+          </div>
         </div>
 
         <div>
-          <h2 className="text-[20px] text-center font-bold text-black mt-10">
+          <h2 className="mt-8 text-center text-[18px] font-bold text-black sm:mt-10 sm:text-[20px]">
              Based on 4-nights lodging, 3-days Hunting Per Person *
           </h2>
 
-          <div className="flex flex-wrap justify-center gap-10 mt-6 text-[16px] font-normal text-[#4a3b2f]">
+          <div className="mt-6 flex flex-col items-start justify-center gap-4 text-[14px] font-normal text-[#4a3b2f] sm:flex-row sm:flex-wrap sm:items-center sm:gap-8 sm:text-[16px]">
             <div className="flex items-center gap-2">
               <svg
                 width="24"
@@ -313,8 +299,7 @@ export default function SeasonSchedule() {
           </div>
         </div>
       </div>
-      <div className="absolute -bottom-48 left-0 right-0">
-
+      <div className="mt-12 lg:absolute lg:-bottom-48 lg:left-0 lg:right-0 lg:mt-0">
       <CampingExp />
       </div>
 

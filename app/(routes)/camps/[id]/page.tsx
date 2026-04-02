@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -59,16 +60,16 @@ export default function CampDetailPage({ params }: { params: { id: string } }) {
   return (
     <main className="flex flex-col">
       {/* Hero */}
-      <section className="CampsImage relative flex h-screen min-h-[640px] items-center justify-center">
+      <section className="CampsImage relative flex min-h-[340px] items-center justify-center px-4 pb-20 pt-24 sm:min-h-[430px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[580px]">
         <div className="absolute inset-0 bg-[#f1c08b]/35" />
         <div className="absolute inset-0 bg-black/10" />
 
-        <div className="relative z-10 flex flex-col items-center px-6 text-center">
-          <h1 className="text-[58px] font-bold uppercase leading-none text-[#281703] md:text-[82px]">
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <h1 className="text-[40px] font-bold uppercase leading-none text-[#281703] sm:text-[50px] md:text-[68px] lg:text-[82px]">
             {camp.name}
           </h1>
 
-          <div className="mt-6 flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#281703]">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
             <Link
               href="/"
               className="flex items-center gap-2 transition-colors hover:text-[#F16724]"
@@ -97,12 +98,12 @@ export default function CampDetailPage({ params }: { params: { id: string } }) {
       </section>
 
       {/* Camp Details */}
-      <section className="bg-[#E7DCCF] px-6 pb-16 pt-20">
+      <section className="bg-[#E7DCCF] px-4 pb-16 pt-14 sm:px-6 sm:pt-18">
         <div className="mx-auto max-w-5xl">
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid gap-10 md:grid-cols-2 md:gap-12">
             <div>
-              <h2 className="text-[34px] font-bold text-[#281703] mb-6">{camp.name}</h2>
-              <p className="text-[#2f2b27] text-lg mb-6">{camp.description}</p>
+              <h2 className="mb-6 text-[30px] font-bold text-[#281703] sm:text-[34px]">{camp.name}</h2>
+              <p className="mb-6 text-base text-[#2f2b27] sm:text-lg">{camp.description}</p>
 
               <div className="space-y-4">
                 <div>
@@ -117,7 +118,7 @@ export default function CampDetailPage({ params }: { params: { id: string } }) {
               </div>
 
               <div className="mt-8">
-                <h3 className="text-xl font-bold text-[#281703] mb-4">Amenities</h3>
+                <h3 className="mb-4 text-xl font-bold text-[#281703]">Amenities</h3>
                 <ul className="space-y-2">
                   {camp.amenities.map((amenity, index) => (
                     <li key={index} className="flex items-center gap-2">
@@ -131,7 +132,7 @@ export default function CampDetailPage({ params }: { params: { id: string } }) {
               <div className="mt-8">
                 <Link
                   href="/quote-reserve"
-                  className="inline-block bg-[#F16724] text-white px-8 py-3 rounded-md font-semibold hover:bg-[#e55a1f] transition-colors"
+                  className="inline-block rounded-md bg-[#F16724] px-8 py-3 font-semibold text-white transition-colors hover:bg-[#e55a1f]"
                 >
                   Request Quote
                 </Link>
@@ -140,12 +141,15 @@ export default function CampDetailPage({ params }: { params: { id: string } }) {
 
             <div className="space-y-6">
               {camp.images.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`${camp.name} - Image ${index + 1}`}
-                  className="w-full h-64 object-cover rounded-md"
-                />
+                <div key={image} className="relative overflow-hidden rounded-md">
+                  <Image
+                    src={image}
+                    alt={`${camp.name} - Image ${index + 1}`}
+                    width={960}
+                    height={640}
+                    className="h-56 w-full object-cover sm:h-64 md:h-72"
+                  />
+                </div>
               ))}
             </div>
           </div>

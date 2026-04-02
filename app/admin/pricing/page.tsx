@@ -175,7 +175,7 @@ export default function PricingPage() {
         {/* Add New Pricing Rule */}
         <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
           <h4 className="mb-4 text-lg font-semibold text-black">Add Pricing Rule</h4>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             <select
               value={newPricing.campId}
               onChange={(e) => setNewPricing({ ...newPricing, campId: e.target.value })}
@@ -233,13 +233,12 @@ export default function PricingPage() {
           </div>
           <button
             onClick={handleAddPricingRule}
-            className="mt-4 rounded-xl bg-orange-500 px-4 py-2 font-medium text-black transition hover:bg-orange-400"
+            className="mt-4 w-full rounded-xl bg-orange-500 px-4 py-2 font-medium text-black transition hover:bg-orange-400 sm:w-auto"
           >
             Add Pricing Rule
           </button>
         </div>
 
-        {/* Pricing Rules Table */}
         <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
           <table className="w-full">
             <thead className="border-b border-black bg-black">
@@ -279,7 +278,7 @@ export default function PricingPage() {
                         onChange={(e) =>
                           handleUpdatePricingRule(idx, "baseRate", parseInt(e.target.value))
                         }
-                        className="w-32 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                        className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300 sm:w-32"
                       />
                     </td>
                     <td className="px-6 py-4">
@@ -289,7 +288,7 @@ export default function PricingPage() {
                         onChange={(e) =>
                           handleUpdatePricingRule(idx, "minGroupSize", parseInt(e.target.value))
                         }
-                        className="w-32 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                        className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300 sm:w-32"
                       />
                     </td>
                     <td className="px-6 py-4">
@@ -315,7 +314,7 @@ export default function PricingPage() {
         {/* Add New Volume Rule */}
         <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
           <h4 className="mb-4 text-lg font-semibold text-black">Add Volume Rule</h4>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             <input
               type="number"
               placeholder="Min Hunters"
@@ -356,7 +355,7 @@ export default function PricingPage() {
         </div>
 
         {/* Volume Rules Table */}
-        <div className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
+        <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
           <table className="w-full">
             <thead className="border-b border-black bg-black">
               <tr>
@@ -430,7 +429,7 @@ export default function PricingPage() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white"
+        className="w-full rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white sm:w-auto"
       >
         {saving ? "Saving..." : "Save All Changes"}
       </button>

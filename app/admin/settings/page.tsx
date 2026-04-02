@@ -124,7 +124,7 @@ export default function CalculatorSettingsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
           <h3 className="text-lg font-semibold text-black">Rates</h3>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {[
               ["Sales Tax Rate", "salesTaxRate"],
               ["Early Bird Rate", "earlyBirdRate"],
@@ -214,14 +214,14 @@ export default function CalculatorSettingsPage() {
         <textarea
           value={labelsJson}
           onChange={(e) => setLabelsJson(e.target.value)}
-          className="mt-4 h-130 w-full rounded-xl border border-black/20 px-3 py-2 font-mono text-sm text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+          className="mt-4 h-96 w-full rounded-xl border border-black/20 px-3 py-2 font-mono text-sm text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300 sm:h-130"
         />
       </div>
 
       <button
         onClick={handleSave}
         disabled={saving}
-        className="rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white"
+        className="w-full rounded-xl bg-orange-500 px-6 py-3 font-semibold text-black transition hover:bg-orange-400 disabled:bg-black/30 disabled:text-white sm:w-auto"
       >
         {saving ? "Saving..." : "Save Calculator Settings"}
       </button>

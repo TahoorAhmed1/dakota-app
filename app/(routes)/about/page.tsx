@@ -51,8 +51,8 @@ function PartnerLogo({
 
 export default function AboutPage() {
   return (
-    <main className="flex flex-col  text-[#24170c]">
-      <section className="AboutImage relative flex min-h-[360px] items-center justify-center overflow-hidden px-4 pb-24 pt-28 sm:min-h-[440px] sm:px-6 md:min-h-[520px] lg:min-h-[560px]">
+    <main className="flex flex-col text-[#24170c]">
+      <section className="AboutImage relative flex min-h-[320px] items-center justify-center overflow-hidden px-4 pb-18 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-22 sm:pt-28 md:min-h-[500px] lg:min-h-[560px]">
         <div className="absolute inset-0" />
         <div className="absolute inset-0" />
 
@@ -234,12 +234,12 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <aside className="space-y-8">
+            <aside className="mx-auto w-full max-w-[420px] space-y-8 lg:mx-0 lg:max-w-none">
               <div className="overflow-hidden rounded-[2px] shadow-[0_0_0_1px_rgba(0,0,0,0.04)]">
                 <Image
                   src={photo1}
                   alt="Hunter aiming in a South Dakota pheasant field"
-                  className="h-[420px] w-full object-cover sm:h-[520px] lg:h-[640px]"
+                  className="h-[320px] w-full object-cover sm:h-[420px] lg:h-[640px]"
                   priority
                 />
               </div>

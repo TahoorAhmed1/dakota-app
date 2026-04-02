@@ -6,16 +6,16 @@ export default function AvailabilityPage() {
   return (
     <main className="flex flex-col">
       {/* Hero */}
-      <section className="AvailabilityImage relative flex h-screen min-h-[620px] items-center justify-center">
+      <section className="AvailabilityImage relative flex min-h-[320px] items-center justify-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[500px] lg:min-h-[560px]">
         <div className="absolute inset-0 " />
         <div className="absolute inset-0 " />
 
-        <div className="relative z-10 flex flex-col items-center px-6 text-center">
-          <h1 className="text-[52px] font-bold uppercase leading-none text-[#281703] md:text-[82px]">
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <h1 className="text-[40px] font-bold uppercase leading-none text-[#281703] sm:text-[52px] md:text-[72px] lg:text-[82px]">
             Availability
           </h1>
 
-          <div className="mt-6 flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#281703]">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
             <Link
               href="/"
               className="flex items-center gap-2 transition-colors hover:text-[#F16724]"
@@ -47,7 +47,7 @@ export default function AvailabilityPage() {
       <SeasonSchedule />
 
       {/* Gallery section */}
-      <section className="bg-[#e8ded1] px-6 pb-24">
+      <section className="bg-[#e8ded1] px-4 pb-20 sm:px-6 sm:pb-24">
         <div className="mx-auto max-w-7xl">
           <ImagesCatalog />
         </div>

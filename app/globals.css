@@ -24,99 +24,138 @@ body {
   color: var(--foreground);
 }
 
+.HomeImage,
+.AboutImage,
+.AvailabilityImage,
+.Footerback,
+.CampsImage,
+.QuoteReserveImage,
+.RatesImage,
+.DiscountsImage,
+.MapImage,
+.ContactImage,
+.ResourcesImage {
+  background-repeat: no-repeat;
+  width: 100%;
+}
+
 .HomeImage {
   background-image: url("../assets/hero.png");
-  background-repeat: no-repeat;
   background-size: 100% 100%;
-  width: 100%;
   height: 100vh;
 }
 .AboutImage {
   background-image: url("../assets/aboutImage.png");
-  background-repeat: no-repeat;
   background-size: 100% 100%;
-  width: 100%;
   height: 100vh;
 }
 
 .AvailabilityImage {
   background-image: url("../assets/availabilityImage.png");
-  background-repeat: no-repeat;
   background-size: 100% 100%;
-  width: 100%;
   height: 100vh;
 }
 
 .Footerback {
   background-image: url("../assets/footer.png");
-  background-repeat: no-repeat;
   background-size: 100% 100%;
-  width: 100%;
   height: 100%;
 }
 
 
 .CampsImage {
   background-image: url("../assets/banner (6).png");
-  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  width: 100%;
   height: 100vh;
 }
 
 
 .QuoteReserveImage {
   background-image: url("../assets/banner (4).png");
-  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  width: 100%;
   height: 100vh;
 }
 
 .RatesImage {
   background-image: url("../assets/banner (6).png");
-  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  width: 100%;
   height: 100vh;
 }
 
 .DiscountsImage {
   background-image: url("../assets/discountsImage.png");
-  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  width: 100%;
   height: 100vh;
 }
 
 .MapImage {
   background-image: url("../assets/banner (6).png");
-  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  width: 100%;
   height: 100vh;
 }
 
 .ContactImage {
   background-image: url("../assets/contact-background.jpg");
-  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  width: 100%;
   height: 100vh;
 }
 
 .ResourcesImage {
   background-image: url("../assets/resourceImage.png");
-  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  width: 100%;
   height: 100vh;
+}
+
+@media (max-width: 1024px) {
+  .HomeImage,
+  .AboutImage,
+  .AvailabilityImage,
+  .CampsImage,
+  .QuoteReserveImage,
+  .RatesImage,
+  .DiscountsImage,
+  .MapImage,
+  .ContactImage,
+  .ResourcesImage {
+    height: 72vh;
+    min-height: 440px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .Footerback {
+    background-size: cover;
+    background-position: center top;
+  }
+}
+
+@media (max-width: 640px) {
+  .HomeImage,
+  .AboutImage,
+  .AvailabilityImage,
+  .CampsImage,
+  .QuoteReserveImage,
+  .RatesImage,
+  .DiscountsImage,
+  .MapImage,
+  .ContactImage,
+  .ResourcesImage {
+    height: 64vh;
+    min-height: 360px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .Footerback {
+    background-size: cover;
+    background-position: center top;
+  }
 }
 

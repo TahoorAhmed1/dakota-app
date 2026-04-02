@@ -263,18 +263,18 @@ export default function ResourcesPage() {
 
   return (
     <main className="flex flex-col">
-      <section className="ResourcesImage relative flex min-h-[620px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-20 sm:min-h-[650px] lg:min-h-screen lg:py-28">
+      <section className="ResourcesImage relative flex min-h-[320px] items-center justify-center overflow-hidden bg-cover bg-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[620px] lg:pb-28 lg:pt-32">
         <div className="absolute inset-0 " />
         <div className="absolute inset-0 " />
 
         <div className="relative z-10 flex flex-col items-center text-center">
-          <h1 className="text-[48px] font-bold uppercase leading-none text-[#241304] sm:text-[64px] md:text-[82px]">
+          <h1 className="text-[38px] font-bold uppercase leading-none text-[#241304] sm:text-[54px] md:text-[72px] lg:text-[82px]">
             Resources
           </h1>
 
           <nav
             aria-label="Breadcrumb"
-            className="mt-6 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:text-[12px]"
+            className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]"
           >
             <Link href="/" className="flex items-center gap-2 transition-colors hover:text-[#F16724]">
               <HomeIcon />
@@ -290,7 +290,7 @@ export default function ResourcesPage() {
         </div> */}
       </section>
 
-      <section className="bg-[#E7DCCF] px-6 pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="bg-[#E7DCCF] px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:pb-24 lg:pt-24">
         <div className="mx-auto max-w-[1120px]">
           <div className="mx-auto max-w-[880px] text-center">
             <h2 className="text-[32px] font-bold leading-[1.08] tracking-[-0.02em] text-[#281703] sm:text-[42px] lg:text-[58px]">
@@ -310,7 +310,7 @@ export default function ResourcesPage() {
           </div>
 
           <div className="mt-12 grid items-start gap-10 md:mt-14 md:grid-cols-[minmax(0,1fr)_360px] md:gap-10 lg:grid-cols-[minmax(0,1fr)_455px] lg:gap-14">
-            <div className="max-w-[390px] md:pt-2">
+            <div className="mx-auto w-full max-w-[390px] md:mx-0 md:pt-2">
               <ul className="space-y-[12px] sm:space-y-[13px]">
                 {resourceSections.map((item, index) => (
                   <ResourceAccordionItem

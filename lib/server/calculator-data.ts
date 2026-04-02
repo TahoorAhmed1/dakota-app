@@ -2,24 +2,43 @@ import { prisma } from "@/lib/prisma";
 import { defaultCalculatorSettings, normalizeCalculatorSettings } from "@/lib/calculator-settings";
 import { mapConfigFromDb } from "@/lib/server/quote-engine";
 
+const CALCULATOR_CONFIG_TTL_MS = 10_000;
+
+let cachedCalculatorConfig: ReturnType<typeof mapConfigFromDb> | null = null;
+let cachedCalculatorConfigExpiresAt = 0;
+let inFlightCalculatorConfigPromise: Promise<ReturnType<typeof mapConfigFromDb>> | null = null;
+
 export async function getCalculatorConfig() {
-  const [camps, weeks, packages, pricingRows, volumeRules, discountRules, settings] = await Promise.all([
-    prisma.camp.findMany({
+  const now = Date.now();
+
+  if (cachedCalculatorConfig && cachedCalculatorConfigExpiresAt > now) {
+    return cachedCalculatorConfig;
+  }
+
+  if (inFlightCalculatorConfigPromise) {
+    return inFlightCalculatorConfigPromise;
+  }
+
+  inFlightCalculatorConfigPromise = (async () => {
+    const camps = await prisma.camp.findMany({
       where: { isActive: true },
       orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
       select: { id: true, name: true, slug: true },
-    }),
-    prisma.huntWeek.findMany({
+    });
+
+    const weeks = await prisma.huntWeek.findMany({
       where: { isActive: true },
       orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
       select: { id: true, label: true, slug: true, seasonLabel: true },
-    }),
-    prisma.packageOption.findMany({
+    });
+
+    const packages = await prisma.packageOption.findMany({
       where: { isActive: true },
       orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
       select: { id: true, code: true, label: true, days: true, nights: true },
-    }),
-    prisma.campWeekPricing.findMany({
+    });
+
+    const pricingRows = await prisma.campWeekPricing.findMany({
       orderBy: [{ weekId: "asc" }, { campId: "asc" }, { packageId: "asc" }],
       select: {
         id: true,
@@ -31,8 +50,9 @@ export async function getCalculatorConfig() {
         isAvailable: true,
         availabilityTag: true,
       },
-    }),
-    prisma.volumeDiscountRule.findMany({
+    });
+
+    const volumeRules = await prisma.volumeDiscountRule.findMany({
       where: { isActive: true },
       orderBy: [{ displayOrder: "asc" }, { minHunters: "asc" }],
       select: {
@@ -41,8 +61,9 @@ export async function getCalculatorConfig() {
         maxHunters: true,
         amountOffPerHead: true,
       },
-    }),
-    prisma.discountRule.findMany({
+    });
+
+    const discountRules = await prisma.discountRule.findMany({
       where: { isActive: true },
       orderBy: [{ stackOrder: "asc" }, { label: "asc" }],
       select: {
@@ -54,20 +75,32 @@ export async function getCalculatorConfig() {
         value: true,
         stackOrder: true,
       },
-    }),
-    prisma.calculatorSetting.findUnique({
+    });
+
+    const settings = await prisma.calculatorSetting.findUnique({
       where: { id: "default" },
       select: { config: true },
-    }),
-  ]);
+    });
 
-  return mapConfigFromDb({
-    camps,
-    weeks,
-    packages,
-    pricingRows,
-    volumeRules,
-    discountRules,
-    settings: normalizeCalculatorSettings(settings?.config ?? defaultCalculatorSettings),
-  });
+    const config = mapConfigFromDb({
+      camps,
+      weeks,
+      packages,
+      pricingRows,
+      volumeRules,
+      discountRules,
+      settings: normalizeCalculatorSettings(settings?.config ?? defaultCalculatorSettings),
+    });
+
+    cachedCalculatorConfig = config;
+    cachedCalculatorConfigExpiresAt = Date.now() + CALCULATOR_CONFIG_TTL_MS;
+
+    return config;
+  })();
+
+  try {
+    return await inFlightCalculatorConfigPromise;
+  } finally {
+    inFlightCalculatorConfigPromise = null;
+  }
 }

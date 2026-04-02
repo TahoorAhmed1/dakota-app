@@ -71,31 +71,6 @@ function CheckIcon() {
   );
 }
 
-function HeroCurve() {
-  return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 overflow-hidden leading-none">
-      <svg
-        viewBox="0 0 1440 132"
-        preserveAspectRatio="none"
-        className="block h-[88px] w-full sm:h-[96px] lg:h-[110px]"
-        aria-hidden="true"
-      >
-        <path
-          d="M0 83C190 67 343 55 504 49C647 43 797 43 936 50C1119 60 1273 75 1440 92V132H0V83Z"
-          fill="#E7DCCF"
-        />
-        <path
-          d="M0 83C190 67 343 55 504 49C647 43 797 43 936 50C1119 60 1273 75 1440 92"
-          fill="none"
-          stroke="#2b1705"
-          strokeWidth="6"
-          strokeLinecap="round"
-        />
-      </svg>
-    </div>
-  );
-}
-
 export default function CampsPage() {
   return (
     <main className="flex flex-col text-[#281703]">

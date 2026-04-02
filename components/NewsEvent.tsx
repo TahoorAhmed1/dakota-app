@@ -35,30 +35,28 @@ const posts = [
 
 export default function LatestNews() {
   return (
-    <section className="w-full bg-[#e8ded1] py-16 px-6">
+    <section className="w-full bg-[#e8ded1] px-4 py-14 sm:px-6 sm:py-16">
       <div className="max-w-6xl mx-auto text-center">
         <p className="text-xs tracking-[3px] text-orange-500 uppercase mb-3">
           Updates
         </p>
 
-        <h2 className="text-3xl md:text-4xl font-semibold text-[#2b2b2b]">
+        <h2 className="text-2xl font-semibold text-[#2b2b2b] sm:text-3xl md:text-4xl">
           Latest News & Events
         </h2>
 
-        <p className="text-sm text-[#4b4b4b] mt-3 max-w-2xl mx-auto">
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[#4b4b4b]">
           UGUIDE South Dakota Pheasant Hunting is South Dakotas leader in
           wild-reared self guided and unguided pheasant hunting.
         </p>
-        {/* Cards */}
-        <div className="grid md:grid-cols-3 gap-8 mt-12 text-left">
+        <div className="mt-10 grid gap-6 text-left sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
-            <div key={post.id} className="group  rounded-sm ">
-              {/* Image */}
+            <div key={post.id} className="group rounded-sm">
               <div className="overflow-hidden rounded-sm">
                 <Image
                   src={post.image}
                   alt={post.title}
-                  className="w-full h-[210px] object-cover group-hover:scale-105 transition duration-500"
+                  className="h-52.5 w-full object-cover transition duration-500 group-hover:scale-105"
                 />
               </div>
 
@@ -78,7 +76,7 @@ export default function LatestNews() {
               </p>
 
               {/* Read More */}
-              <button className="mt-4 text-orange-500 text-sm font-medium hover:underline">
+              <button className="mt-4 text-sm font-medium text-orange-500 hover:underline">
                 Read More »
               </button>
             </div>

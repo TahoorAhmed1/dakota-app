@@ -69,29 +69,35 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="mb-2 text-3xl font-bold text-black">Welcome to Admin Dashboard</h2>
-        <p className="text-black/70">Manage your calculator configuration, pricing, and discounts.</p>
+      <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-[0_12px_28px_rgba(0,0,0,0.06)] sm:p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-orange-500">Overview</p>
+        <h2 className="mt-2 text-2xl font-bold text-black sm:text-3xl">Welcome to Admin Dashboard</h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-black/70 sm:text-base">
+          Manage your calculator configuration, pricing, and discounts from one place.
+        </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {stats.map((stat) => (
           <Link
             key={stat.label}
             href={stat.href}
-            className="cursor-pointer rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 hover:border-orange-400"
+            className="group cursor-pointer rounded-2xl border border-black/10 bg-white p-5 shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 hover:border-orange-400 sm:p-6"
           >
-            <p className="text-sm font-medium text-black/65">{stat.label}</p>
-            <p className="mt-2 text-4xl font-bold text-orange-500">{stat.value}</p>
+            <p className="text-sm font-medium leading-5 text-black/65">{stat.label}</p>
+            <div className="mt-4 flex items-end justify-between gap-4">
+              <p className="text-3xl font-bold text-orange-500 sm:text-4xl">{stat.value}</p>
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-black/45 transition group-hover:text-orange-500">
+                Open
+              </span>
+            </div>
           </Link>
         ))}
       </div>
 
-      {/* Quick Actions */}
       <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_28px_rgba(0,0,0,0.08)]">
         <h3 className="mb-4 text-xl font-bold text-black">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {[
             { label: "View All Camps", href: "/admin/camps" },
             { label: "Manage Weeks", href: "/admin/weeks" },
@@ -103,7 +109,7 @@ export default function AdminDashboard() {
             <Link
               key={action.href}
               href={action.href}
-              className="rounded-lg bg-orange-500 px-4 py-2 text-center text-sm font-medium text-black transition hover:bg-black hover:text-white"
+              className="rounded-xl bg-orange-500 px-4 py-3 text-center text-sm font-medium text-black transition hover:bg-black hover:text-white"
             >
               {action.label}
             </Link>

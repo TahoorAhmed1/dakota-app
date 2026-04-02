@@ -258,13 +258,13 @@ export default function DiscountsPage() {
               </div>
             </div>
 
-            <div className="mx-auto grid w-full max-w-[520px] grid-cols-2 gap-3 self-start sm:gap-4 lg:max-w-none lg:gap-5 xl:gap-6">
+            <div className="mx-auto grid w-full max-w-[520px] grid-cols-1 gap-3 self-start sm:grid-cols-2 sm:gap-4 lg:max-w-none lg:gap-5 xl:gap-6">
               <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 xl:gap-6">
                 <ImageTile
                   src={photo1}
                   alt="Pheasant feathers in hunter's hand"
                   priority
-                  className="h-[240px] sm:h-[300px] lg:h-[348px] xl:h-[386px]"
+                  className="h-[220px] sm:h-[300px] lg:h-[348px] xl:h-[386px]"
                 />
                 <ImageTile
                   src={photo4}
@@ -292,7 +292,7 @@ export default function DiscountsPage() {
                 <ImageTile
                   src={photo6}
                   alt="Hunter aiming shotgun in field"
-                  className="h-[288px] sm:h-[356px] lg:h-[414px] xl:h-[462px]"
+                  className="h-[220px] sm:h-[356px] lg:h-[414px] xl:h-[462px]"
                 />
               </div>
             </div>

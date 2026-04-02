@@ -116,17 +116,17 @@ function Footer() {
   ];
 
   return (
-    <footer className="Footerback relative bg-cover bg-center py-10 text-black">
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
-        <div className="flex flex-col mt-20 items-center text-center">
+    <footer className="Footerback relative bg-cover bg-center py-10 text-black sm:py-12">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mt-10 flex flex-col items-center text-center sm:mt-20">
           <Image
             src={logo}
             alt="U Guide"
-            className="mb-2 h-auto w-64  max-w-full"
+            className="mb-2 h-auto w-48 max-w-full sm:w-64"
             priority={false}
           />
 
-          <div className="flex justify-between items-center gap-6 ml-2">
+          <div className="ml-2 flex items-center justify-between gap-4 sm:gap-6">
             {socialLinks.map((social, i) => (
               <a
                 key={i}
@@ -144,10 +144,10 @@ function Footer() {
 
         <div className="my-7 border-t border-black/40" />
 
-        <div className="grid gap-9 md:grid-cols-[1fr_1fr_1.24fr] md:gap-14.5">
+        <div className="grid gap-8 md:grid-cols-[1fr_1fr_1.24fr] md:gap-10 lg:gap-14.5">
           <div>
-            <h3 className="mb-3.5 text-[23px] font-semibold leading-none tracking-[-0.02em]">Contact</h3>
-            <p className="text-[18px] leading-[2.05] tracking-[-0.02em] text-black/88">
+            <h3 className="mb-3.5 text-[20px] font-semibold leading-none tracking-[-0.02em] sm:text-[23px]">Contact</h3>
+            <p className="text-[16px] leading-[1.8] tracking-[-0.02em] text-black/88 sm:text-[18px] sm:leading-[2.05]">
               021 Hollywood Boulevard, LA <br />
               customer@example.com <br />
               (021) 345-6789
@@ -155,8 +155,8 @@ function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-3.5 text-[23px] font-semibold leading-none tracking-[-0.02em]">Services</h3>
-            <ul className="space-y-0.5 text-[18px] leading-[1.9] tracking-[-0.02em] text-black/88">
+            <h3 className="mb-3.5 text-[20px] font-semibold leading-none tracking-[-0.02em] sm:text-[23px]">Services</h3>
+            <ul className="space-y-0.5 text-[16px] leading-[1.65] tracking-[-0.02em] text-black/88 sm:text-[18px] sm:leading-[1.9]">
               <li>Availability</li>
               <li>Quote-Reserve</li>
               <li>UGUIDE Pheasant Outlook</li>
@@ -167,28 +167,28 @@ function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-3.5 text-[23px] font-semibold leading-none tracking-[-0.02em]">Newsletters</h3>
-            <p className="mb-4.5 text-[18px] leading-[1.65] tracking-[-0.02em] text-black/88">
+            <h3 className="mb-3.5 text-[20px] font-semibold leading-none tracking-[-0.02em] sm:text-[23px]">Newsletters</h3>
+            <p className="mb-4.5 text-[16px] leading-[1.55] tracking-[-0.02em] text-black/88 sm:text-[18px] sm:leading-[1.65]">
               Sign up your email and get news and updates
             </p>
 
             <form
               onSubmit={handleSubmit}
-              className="flex h-14.5 w-full max-w-94.5 items-center rounded-lg bg-white px-2.5 py-2 shadow-[0_1px_0_rgba(0,0,0,0.05)]"
+              className="flex w-full max-w-87.5 flex-col gap-3 rounded-lg bg-white p-3 shadow-[0_1px_0_rgba(0,0,0,0.05)] sm:h-14.5 sm:flex-row sm:items-center sm:gap-0 sm:px-2.5 sm:py-2"
             >
               <input
                 type="email"
                 placeholder="Your email here"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-full min-w-0 flex-1 border-b border-black/55 px-0.5 pb-px text-[18px] tracking-[-0.02em] text-black placeholder:text-black/55 focus:border-black focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                className="min-w-0 flex-1 border-b border-black/55 px-0.5 pb-px text-[16px] tracking-[-0.02em] text-black placeholder:text-black/55 focus:border-black focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 sm:h-full sm:text-[18px]"
                 disabled={isSubmitting}
                 aria-label="Email address"
               />
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="ml-2.5 inline-flex h-10.5 shrink-0 items-center justify-center rounded-sm bg-black px-5 text-[14px] font-semibold tracking-[0.18em] text-white transition-colors duration-300 hover:bg-[#241206] disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-10.5 shrink-0 items-center justify-center rounded-sm bg-black px-5 text-[13px] font-semibold tracking-[0.18em] text-white transition-colors duration-300 hover:bg-[#241206] disabled:cursor-not-allowed disabled:opacity-50 sm:ml-2.5 sm:text-[14px]"
               >
                 {isSubmitting ? "SUBMITTING" : "SUBSCRIBE"}
               </button>

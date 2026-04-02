@@ -148,6 +148,10 @@ function SummaryRow({
   );
 }
 
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export default function QuoteReservePage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -178,10 +182,37 @@ export default function QuoteReservePage() {
   useEffect(() => {
     async function loadConfig() {
       try {
-        const response = await fetch("/api/calculator/config");
-        const data = (await response.json()) as CalculatorConfig;
+        let data: CalculatorConfig | null = null;
 
-        if (!response.ok) {
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          const response = await fetch("/api/calculator/config", {
+            cache: "no-store",
+          });
+          const payload = (await response.json().catch(() => ({}))) as
+            | CalculatorConfig
+            | { error?: string; message?: string };
+
+          if (response.ok) {
+            data = payload as CalculatorConfig;
+            break;
+          }
+
+          if (response.status === 503 && attempt < 2) {
+            await delay(500 * (attempt + 1));
+            continue;
+          }
+
+          const message =
+            (typeof (payload as { error?: string }).error === "string" &&
+              (payload as { error?: string }).error) ||
+            (typeof (payload as { message?: string }).message === "string" &&
+              (payload as { message?: string }).message) ||
+            "Failed to load calculator configuration.";
+
+          throw new Error(message);
+        }
+
+        if (!data) {
           throw new Error("Failed to load calculator configuration.");
         }
 
@@ -199,7 +230,11 @@ export default function QuoteReservePage() {
         }));
       } catch (error) {
         console.error(error);
-        setConfigError("Unable to load quote data right now. Please refresh and try again.");
+        setConfigError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load quote data right now. Please refresh and try again."
+        );
       }
     }
 
@@ -531,16 +566,16 @@ export default function QuoteReservePage() {
 
   return (
     <main className="flex flex-col">
-      <section className="QuoteReserveImage relative flex h-screen min-h-155 items-center justify-center">
+      <section className="QuoteReserveImage relative flex min-h-[340px] items-center justify-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[620px]">
         <div className="absolute inset-0 " />
         <div className="absolute inset-0 " />
 
-        <div className="relative z-10 flex flex-col items-center px-6 text-center">
-          <h1 className="text-[46px] font-normal uppercase leading-none text-[#281703] md:text-[76px]">
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <h1 className="text-[36px] font-normal uppercase leading-none text-[#281703] sm:text-[46px] md:text-[64px] lg:text-[76px]">
             Quote-Reserve
           </h1>
 
-          <div className="mt-6 flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#281703]">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
             <Link
               href="/"
               className="flex items-center gap-2 transition-colors hover:text-[#F16724]"
@@ -567,9 +602,9 @@ export default function QuoteReservePage() {
         </div> */}
       </section>
 
-      <section className="bg-[#E7DCCF] px-4 pb-24 pt-20 md:px-6">
+      <section className="bg-[#E7DCCF] px-4 pb-20 pt-14 sm:pt-16 md:px-6 md:pb-24 md:pt-20">
         <div className="mx-auto max-w-295">
-          <h2 className="text-center text-[30px] font-black uppercase tracking-[0.04em] text-[#281703] underline decoration-[3px] underline-offset-[6px] md:text-[54px]">
+          <h2 className="text-center text-[24px] font-black uppercase tracking-[0.04em] text-[#281703] underline decoration-[3px] underline-offset-[6px] sm:text-[30px] md:text-[54px]">
             {step === 1 && (labels?.stepHeadings.step1 ?? "Step 1: Quote\u2013Reserve Group Options")}
             {step === 2 && (labels?.stepHeadings.step2 ?? "Step 2: Quote\u2013Reserve Enter Hunters")}
             {step === 3 && (labels?.stepHeadings.step3 ?? "Step 3: Quote\u2013Reserve Review Totals")}
@@ -590,11 +625,11 @@ export default function QuoteReservePage() {
           <div className="mt-8 overflow-hidden rounded-[18px] bg-[#f5f5f5] shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
             {step === 1 && (
               <>
-                <div className="bg-[#4c2c11] px-8 py-6 text-center text-[26px] font-bold uppercase text-white md:text-[44px]">
+                <div className="bg-[#4c2c11] px-4 py-5 text-center text-[20px] font-bold uppercase text-white sm:px-8 sm:text-[26px] md:py-6 md:text-[44px]">
                   {labels?.step1.cardTitle ?? "Price Your Own Hunt in 3 Simple Steps"}
                 </div>
 
-                <div className="bg-[#f5f5f5] px-8 pb-8 pt-4">
+                <div className="bg-[#f5f5f5] px-4 pb-6 pt-4 sm:px-6 md:px-8 md:pb-8">
                   <SectionDivider label={labels?.step1.requiredLabel ?? "Required Fields"} />
 
                   <div className="overflow-hidden rounded-b-xl border border-[#d9d9d9] bg-[#f5f5f5]">
@@ -709,7 +744,7 @@ export default function QuoteReservePage() {
                     <SectionDivider label={labels?.step1.optionalLabel ?? "Optional Fields"} />
                   </div>
 
-                  <div className="grid grid-cols-1 items-center gap-6 px-8 py-4 md:grid-cols-[1.2fr_1fr]">
+                  <div className="grid grid-cols-1 items-center gap-4 px-4 py-4 sm:px-6 md:grid-cols-[1.2fr_1fr] md:gap-6 md:px-8">
                     <label className="text-[15px] font-semibold text-[#2b1a0f]">
                       <span className="mr-1 text-[#f26f2d]">*</span>
                       {labels?.step1.earlyBirdLabel ?? "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
@@ -724,7 +759,7 @@ export default function QuoteReservePage() {
                           earlyBird: e.target.value as "Yes" | "No",
                         }))
                       }
-                      className="h-11 w-full max-w-35 rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
+                      className="h-11 w-full rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none md:max-w-35"
                     >
                       {(config?.settings.earlyBirdOptions ?? [
                         { label: "No", value: "No" as const },
@@ -738,16 +773,16 @@ export default function QuoteReservePage() {
                   </div>
 
                   {validationErrors.step1 ? (
-                    <div className="px-8 pb-4 text-sm font-semibold text-red-700">
+                    <div className="px-4 pb-4 text-sm font-semibold text-red-700 sm:px-6 md:px-8">
                       {validationErrors.step1}
                     </div>
                   ) : null}
 
-                  <div className="mt-8 flex justify-end px-8 pb-6">
+                  <div className="mt-8 flex justify-stretch px-4 pb-6 sm:px-6 md:justify-end md:px-8">
                     <button
                       onClick={goToStep2}
                       disabled={!config}
-                      className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:opacity-50"
+                      className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:opacity-50 md:w-auto"
                     >
                       {labels?.step1.nextButton ?? "To Step 2: Enter Hunters »"}
                     </button>
@@ -758,137 +793,141 @@ export default function QuoteReservePage() {
 
             {step === 2 && (
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
-                  <div className="grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-black uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
-                    <div className="text-center">#</div>
-                    <div>{labels?.step2.hunterNameHeader ?? "Hunter Name"}</div>
-                    <div>{labels?.step2.individualDiscountHeader ?? "Individual Discount"}</div>
-                    <div>{labels?.step2.extraDaysHeader ?? "Extra Days Hunting"}</div>
-                    <div>{labels?.step2.extraNightsHeader ?? "Extra Nights Lodging"}</div>
-                  </div>
-
-                  <div className="bg-[#ffffff]">
-                    {hunters.map((hunter, index) => (
-                      <div
-                        key={hunter.id}
-                        className={`grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] items-center gap-2 border-b border-[#d9d9d9] px-5 py-4 text-[14px] md:px-6 ${index % 2 === 0 ? "bg-[#fff7ee]" : "bg-white"}`}
-                      >
-                        <div className="text-center text-[14px] font-bold text-[#4c2c11]">{index + 1})</div>
-
-                        <input
-                          value={hunter.name}
-                          onChange={(e) =>
-                            setHunters((prev) =>
-                              prev.map((item, i) =>
-                                i === index ? { ...item, name: e.target.value } : item
-                              )
-                            )
-                          }
-                          placeholder="Hunter Name"
-                          maxLength={120}
-                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
-                        />
-
-                        <select
-                          value={hunter.discountCode}
-                          onChange={(e) =>
-                            setHunters((prev) =>
-                              prev.map((item, i) =>
-                                i === index ? { ...item, discountCode: e.target.value } : item
-                              )
-                            )
-                          }
-                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
-                        >
-                          {discountOptions.map((option) => (
-                            <option key={option.code} value={option.code}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-
-                        <select
-                          value={hunter.extraDays}
-                          onChange={(e) =>
-                            setHunters((prev) =>
-                              prev.map((item, i) =>
-                                i === index ? { ...item, extraDays: Number(e.target.value) } : item
-                              )
-                            )
-                          }
-                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
-                        >
-                          {(config?.settings.extraDayOptions ?? [0, 1, 2, 3]).map((value) => (
-                            <option key={value} value={value}>
-                              {value === 0 ? "Extra Days Hunting" : `${value} Extra Day`}
-                            </option>
-                          ))}
-                        </select>
-
-                        <select
-                          value={hunter.extraNights}
-                          onChange={(e) =>
-                            setHunters((prev) =>
-                              prev.map((item, i) =>
-                                i === index ? { ...item, extraNights: Number(e.target.value) } : item
-                              )
-                            )
-                          }
-                          className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
-                        >
-                          {(config?.settings.extraNightOptions ?? [0, 1, 2, 3]).map((value) => (
-                            <option key={value} value={value}>
-                              {value === 0 ? "Extra Nights Lodging" : `${value} Extra Night`}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    ))}
-
-                    <div className="grid grid-cols-1 items-center gap-4 px-8 py-7 md:grid-cols-[auto_340px]">
-                      <label className="text-[15px] font-semibold text-[#2b1a0f]">
-                        {labels?.step2.emailLabel ?? "Enter your email address to receive a copy of the quote:"}
-                      </label>
-
-                      <input
-                        type="email"
-                        value={quoteEmail}
-                        onChange={(e) => setQuoteEmail(e.target.value)}
-                        maxLength={254}
-                        autoCapitalize="none"
-                        autoComplete="email"
-                        spellCheck={false}
-                        className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
-                      />
+                <div className="overflow-x-auto">
+                  <div className="min-w-[760px]">
+                    <div className="grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-black uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
+                      <div className="text-center">#</div>
+                      <div>{labels?.step2.hunterNameHeader ?? "Hunter Name"}</div>
+                      <div>{labels?.step2.individualDiscountHeader ?? "Individual Discount"}</div>
+                      <div>{labels?.step2.extraDaysHeader ?? "Extra Days Hunting"}</div>
+                      <div>{labels?.step2.extraNightsHeader ?? "Extra Nights Lodging"}</div>
                     </div>
 
-                    {validationErrors.quoteEmail ? (
-                      <div className="px-8 pb-2 text-sm font-semibold text-red-700">
-                        {validationErrors.quoteEmail}
-                      </div>
-                    ) : null}
+                    <div className="bg-[#ffffff]">
+                      {hunters.map((hunter, index) => (
+                        <div
+                          key={hunter.id}
+                          className={`grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] items-center gap-2 border-b border-[#d9d9d9] px-5 py-4 text-[14px] md:px-6 ${index % 2 === 0 ? "bg-[#fff7ee]" : "bg-white"}`}
+                        >
+                          <div className="text-center text-[14px] font-bold text-[#4c2c11]">{`${index + 1})`}</div>
 
-                    {validationErrors.step2 ? (
-                      <div className="px-8 pb-4 text-sm font-semibold text-red-700">
-                        {validationErrors.step2}
-                      </div>
-                    ) : null}
+                          <input
+                            value={hunter.name}
+                            onChange={(e) =>
+                              setHunters((prev) =>
+                                prev.map((item, i) =>
+                                  i === index ? { ...item, name: e.target.value } : item
+                                )
+                              )
+                            }
+                            placeholder="Hunter Name"
+                            maxLength={120}
+                            className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                          />
 
-                    <div className="flex items-center justify-between px-8 pb-8">
-                      <button
-                        onClick={() => setStep(1)}
-                        className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
-                      >
-                        {labels?.step2.backButton ?? "Back to Step 1"}
-                      </button>
+                          <select
+                            value={hunter.discountCode}
+                            onChange={(e) =>
+                              setHunters((prev) =>
+                                prev.map((item, i) =>
+                                  i === index ? { ...item, discountCode: e.target.value } : item
+                                )
+                              )
+                            }
+                            className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                          >
+                            {discountOptions.map((option) => (
+                              <option key={option.code} value={option.code}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
 
-                      <button
-                        onClick={goToStep3}
-                        className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95"
-                      >
-                        {labels?.step2.nextButton ?? "To Step 3: Review Total »"}
-                      </button>
+                          <select
+                            value={hunter.extraDays}
+                            onChange={(e) =>
+                              setHunters((prev) =>
+                                prev.map((item, i) =>
+                                  i === index ? { ...item, extraDays: Number(e.target.value) } : item
+                                )
+                              )
+                            }
+                            className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                          >
+                            {(config?.settings.extraDayOptions ?? [0, 1, 2, 3]).map((value) => (
+                              <option key={value} value={value}>
+                                {value === 0 ? "Extra Days Hunting" : `${value} Extra Day`}
+                              </option>
+                            ))}
+                          </select>
+
+                          <select
+                            value={hunter.extraNights}
+                            onChange={(e) =>
+                              setHunters((prev) =>
+                                prev.map((item, i) =>
+                                  i === index ? { ...item, extraNights: Number(e.target.value) } : item
+                                )
+                              )
+                            }
+                            className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                          >
+                            {(config?.settings.extraNightOptions ?? [0, 1, 2, 3]).map((value) => (
+                              <option key={value} value={value}>
+                                {value === 0 ? "Extra Nights Lodging" : `${value} Extra Night`}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ))}
                     </div>
                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 items-center gap-4 px-4 py-6 sm:px-6 md:grid-cols-[auto_340px] md:px-8 md:py-7">
+                  <label className="text-[15px] font-semibold text-[#2b1a0f]">
+                    {labels?.step2.emailLabel ?? "Enter your email address to receive a copy of the quote:"}
+                  </label>
+
+                  <input
+                    type="email"
+                    value={quoteEmail}
+                    onChange={(e) => setQuoteEmail(e.target.value)}
+                    maxLength={254}
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    spellCheck={false}
+                    className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
+                  />
+                </div>
+
+                {validationErrors.quoteEmail ? (
+                  <div className="px-4 pb-2 text-sm font-semibold text-red-700 sm:px-6 md:px-8">
+                    {validationErrors.quoteEmail}
+                  </div>
+                ) : null}
+
+                {validationErrors.step2 ? (
+                  <div className="px-4 pb-4 text-sm font-semibold text-red-700 sm:px-6 md:px-8">
+                    {validationErrors.step2}
+                  </div>
+                ) : null}
+
+                <div className="flex flex-col-reverse gap-4 px-4 pb-8 sm:px-6 md:flex-row md:items-center md:justify-between md:px-8">
+                  <button
+                    onClick={() => setStep(1)}
+                    className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
+                  >
+                    {labels?.step2.backButton ?? "Back to Step 1"}
+                  </button>
+
+                  <button
+                    onClick={goToStep3}
+                    className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 md:w-auto"
+                  >
+                    {labels?.step2.nextButton ?? "To Step 3: Review Total »"}
+                  </button>
+                </div>
               </div>
             )}
 
@@ -1003,19 +1042,19 @@ export default function QuoteReservePage() {
                       </tbody>
                     </table>
 
-                    <div className="mt-4 flex justify-end">
+                    <div className="mt-4 flex justify-center md:justify-end">
                       <button className="rounded-md bg-[#f26f2d] px-8 py-3 text-[15px] font-black uppercase text-white">
                         {labels?.step3.totalsBadgeLabel ?? "Totals"}
                       </button>
                     </div>
 
-                    <div className="mt-5 text-right text-[18px] font-semibold text-[#2b1a0f]">
+                    <div className="mt-5 text-center text-[16px] font-semibold text-[#2b1a0f] md:text-right md:text-[18px]">
                       Subtotal before tax: <span className="text-[24px] font-black">${subtotalBeforeTax.toFixed(2)}</span>
                     </div>
-                    <div className="mt-2 text-right text-[18px] font-semibold text-[#2b1a0f]">
+                    <div className="mt-2 text-center text-[16px] font-semibold text-[#2b1a0f] md:text-right md:text-[18px]">
                       Minimum adjustment: <span className="text-[24px] font-black">${minimumAdjustment.toFixed(2)}</span>
                     </div>
-                    <div className="mt-2 text-right text-[18px] font-semibold text-[#2b1a0f]">
+                    <div className="mt-2 text-center text-[16px] font-semibold text-[#2b1a0f] md:text-right md:text-[18px]">
                       {labels?.step3.totalPriceLabel ?? "Total price after applicable discounts and state sales tax:"}{" "}
                       <span className="text-[28px] font-black">${grandSubtotal.toFixed(2)}</span>
                     </div>
@@ -1025,7 +1064,7 @@ export default function QuoteReservePage() {
                     {labels?.step3.depositTitle ?? "Deposit/Booking Information"}
                   </div>
 
-                  <div className="px-8 py-6 text-[14px] text-[#2b1a0f]">
+                  <div className="px-4 py-6 text-[14px] text-[#2b1a0f] sm:px-6 md:px-8">
                     <p className="mb-5 font-semibold">
                       {labels?.step3.depositDescription ?? "Deposit % calculated is based on the time of year that you are booking a hunt. Up to May 1st it is 25%. From May 1-August 31 it is 50%. From Sept. 1 thru end of season it is 100%."}
                     </p>
@@ -1088,7 +1127,7 @@ export default function QuoteReservePage() {
                       </div>
                     ) : null}
 
-                    <div className="mt-8 flex items-center justify-between">
+                    <div className="mt-8 flex flex-col-reverse gap-4 md:flex-row md:items-center md:justify-between">
                       <button
                         onClick={() => setStep(2)}
                         className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
@@ -1099,7 +1138,7 @@ export default function QuoteReservePage() {
                       <button
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
                       >
                         {isSubmitting ? "Submitting..." : (labels?.step3.submitButton ?? "Submit Quote Request »")}
                       </button>

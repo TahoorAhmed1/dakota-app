@@ -106,15 +106,15 @@ const mapTile = {
 
 function MapSkeleton() {
   return (
-    <div className="relative h-[420px] w-full overflow-hidden rounded-[6px] bg-[#d6ebe2] sm:h-[520px] md:h-[580px]">
-      <div className="absolute left-4 top-4 flex overflow-hidden rounded-[4px] border border-[#cfcfcf] bg-white text-[14px] font-semibold text-[#444] shadow-sm">
-        <span className="border-r border-[#d9d9d9] px-5 py-2">Map</span>
-        <span className="px-5 py-2 text-[#777]">Satellite</span>
+    <div className="relative h-[320px] w-full overflow-hidden rounded-[6px] bg-[#d6ebe2] sm:h-[420px] md:h-[520px] lg:h-[580px]">
+      <div className="absolute left-3 top-3 flex overflow-hidden rounded-[4px] border border-[#cfcfcf] bg-white text-[12px] font-semibold text-[#444] shadow-sm sm:left-4 sm:top-4 sm:text-[14px]">
+        <span className="border-r border-[#d9d9d9] px-3 py-2 sm:px-5">Map</span>
+        <span className="px-3 py-2 text-[#777] sm:px-5">Satellite</span>
       </div>
-      <div className="absolute right-4 top-4 rounded-[4px] border border-[#d9d9d9] bg-white px-3 py-2 text-[#777] shadow-sm">
+      <div className="absolute right-3 top-3 rounded-[4px] border border-[#d9d9d9] bg-white px-3 py-2 text-[#777] shadow-sm sm:right-4 sm:top-4">
         ⛶
       </div>
-      <div className="absolute bottom-4 right-4 flex flex-col overflow-hidden rounded-[4px] border border-[#d9d9d9] bg-white shadow-sm">
+      <div className="absolute bottom-3 right-3 flex flex-col overflow-hidden rounded-[4px] border border-[#d9d9d9] bg-white shadow-sm sm:bottom-4 sm:right-4">
         <span className="border-b border-[#d9d9d9] px-4 py-2 text-lg text-[#777]">+</span>
         <span className="px-4 py-2 text-lg text-[#777]">−</span>
       </div>
@@ -124,7 +124,7 @@ function MapSkeleton() {
       <div className="absolute left-[18%] top-[22%] h-[2px] w-[68%] bg-[#d9d9d9]/70" />
       <div className="absolute left-[8%] top-[44%] h-[2px] w-[84%] bg-[#d9d9d9]/70" />
       <div className="absolute left-[25%] top-[72%] h-[2px] w-[54%] bg-[#d9d9d9]/70" />
-      <div className="absolute left-[38%] top-[50%] -translate-x-1/2 -translate-y-1/2 text-[26px] font-bold uppercase tracking-[0.22em] text-[#517562]/80 md:text-[34px]">
+      <div className="absolute left-[38%] top-[50%] -translate-x-1/2 -translate-y-1/2 text-[20px] font-bold uppercase tracking-[0.18em] text-[#517562]/80 sm:text-[26px] md:text-[34px]">
         South Dakota
       </div>
     </div>
@@ -196,12 +196,12 @@ function PropertyMap() {
   }
 
   return (
-    <div ref={mapWrapRef} className="relative h-[420px] w-full overflow-hidden rounded-[6px] sm:h-[520px] md:h-[580px]">
-      <div className="absolute left-4 top-4 z-[1000] flex overflow-hidden rounded-[4px] border border-[#cfcfcf] bg-white text-[14px] font-semibold text-[#444] shadow-sm">
+    <div ref={mapWrapRef} className="relative h-[320px] w-full overflow-hidden rounded-[6px] sm:h-[420px] md:h-[520px] lg:h-[580px]">
+      <div className="absolute left-3 top-3 z-[1000] flex overflow-hidden rounded-[4px] border border-[#cfcfcf] bg-white text-[12px] font-semibold text-[#444] shadow-sm sm:left-4 sm:top-4 sm:text-[14px]">
         <button
           type="button"
           onClick={() => setViewMode('map')}
-          className={`border-r border-[#d9d9d9] px-5 py-2 transition-colors ${
+          className={`border-r border-[#d9d9d9] px-3 py-2 transition-colors sm:px-5 ${
             viewMode === 'map' ? 'bg-white text-[#3d3d3d]' : 'bg-[#f6f6f6] text-[#7c7c7c]'
           }`}
           aria-pressed={viewMode === 'map'}
@@ -211,7 +211,7 @@ function PropertyMap() {
         <button
           type="button"
           onClick={() => setViewMode('satellite')}
-          className={`px-5 py-2 transition-colors ${
+          className={`px-3 py-2 transition-colors sm:px-5 ${
             viewMode === 'satellite'
               ? 'bg-white text-[#3d3d3d]'
               : 'bg-[#f6f6f6] text-[#7c7c7c]'
@@ -225,13 +225,13 @@ function PropertyMap() {
       <button
         type="button"
         onClick={toggleFullscreen}
-        className="absolute right-4 top-4 z-[1000] rounded-[4px] border border-[#d9d9d9] bg-white px-3 py-2 text-[#777] shadow-sm transition hover:bg-[#fafafa]"
+        className="absolute right-3 top-3 z-[1000] rounded-[4px] border border-[#d9d9d9] bg-white px-3 py-2 text-[#777] shadow-sm transition hover:bg-[#fafafa] sm:right-4 sm:top-4"
         aria-label="Toggle fullscreen map"
       >
         ⛶
       </button>
 
-      <div className="absolute bottom-4 right-4 z-[1000] flex flex-col overflow-hidden rounded-[4px] border border-[#d9d9d9] bg-white shadow-sm">
+      <div className="absolute bottom-3 right-3 z-[1000] flex flex-col overflow-hidden rounded-[4px] border border-[#d9d9d9] bg-white shadow-sm sm:bottom-4 sm:right-4">
         <button
           type="button"
           onClick={zoomIn}
@@ -316,18 +316,18 @@ export default function MapPage() {
   return (
     <>
       <main className="flex flex-col ">
-        <section className="MapImage relative flex min-h-[440px] items-center justify-center overflow-hidden bg-cover bg-center px-6 pb-24 pt-32 sm:min-h-[500px] md:min-h-[560px] md:pb-28 md:pt-36">
+        <section className="MapImage relative flex min-h-[320px] items-center justify-center overflow-hidden bg-cover bg-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] md:pb-28 md:pt-34 lg:min-h-[560px] md:px-8">
           <div className="absolute inset-0 " />
           <div className="absolute inset-0 " />
 
           <div className="relative z-10 flex flex-col items-center text-center">
-            <h1 className="text-[46px] font-bold uppercase leading-none tracking-[-0.02em] text-[#281703] sm:text-[62px] md:text-[78px]">
+            <h1 className="text-[38px] font-bold uppercase leading-none tracking-[-0.02em] text-[#281703] sm:text-[54px] md:text-[72px] lg:text-[78px]">
               MAP
             </h1>
 
             <nav
               aria-label="Breadcrumb"
-              className="mt-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#281703] sm:text-[12px]"
+              className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#281703] sm:gap-3 sm:text-[12px]"
             >
               <Link
                 href="/"
@@ -366,7 +366,7 @@ export default function MapPage() {
               detailed page with camp information, photos and video.
             </p>
 
-            <div className="mx-auto mt-8 max-w-[706px] border-[3px] border-[#bcae9f] bg-white p-[6px] shadow-[0_1px_0_rgba(0,0,0,0.05)] sm:mt-10 sm:p-[8px]">
+            <div className="mx-auto mt-8 max-w-[706px] border-[3px] border-[#bcae9f] bg-white p-[4px] shadow-[0_1px_0_rgba(0,0,0,0.05)] sm:mt-10 sm:p-[8px]">
               <PropertyMap />
             </div>
           </div>

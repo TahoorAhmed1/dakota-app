@@ -6,37 +6,37 @@ import Link from "next/link";
 
 function CampingExp() {
   return (
-    <div className="relative h-75 mx-auto max-w-262.5 w-full overflow-hidden">
+    <div className="relative mx-auto h-[360px] w-full max-w-262.5 overflow-hidden rounded-2xl sm:h-[420px] lg:h-75">
       <Image
         src={campingImage}
         alt="Camping"
         fill
         priority
-        className="object-cover  rounded-2xl "
+        className="rounded-2xl object-cover"
       />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,10,6,0.72)_0%,rgba(15,10,6,0.28)_55%,rgba(15,10,6,0.08)_100%)]" />
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full max-w-6xl mx-auto px-6 flex items-center justify-between text-white">
-          <div className="pl-8">
-            <p className="text-orange-400 tracking-widest text-sm mb-2">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-6 px-5 text-white sm:px-8 lg:flex-row lg:items-center lg:px-10">
+          <div className="max-w-[620px]">
+            <p className="mb-2 text-xs tracking-[0.35em] text-orange-400 sm:text-sm">
               HUNTING
             </p>
 
-            <h1 className="text-[30px] md:text-[36px] font-semibold leading-tight">
+            <h1 className="text-[28px] font-semibold leading-tight sm:text-[34px] md:text-[36px]">
               Your Best{" "}
               <span className="bg-blue-500/30 px-2 rounded">Camping</span>{" "}
               Experience
             </h1>
 
-            <p className="mt-4 max-w-lg text-gray-200 text-sm md:text-[15px]">
+            <p className="mt-4 max-w-lg text-sm text-gray-200 sm:text-[15px]">
               Your best camping experience starts where comfort meets adventure.
               Unplug, explore the wild, and create memories that last a
               lifetime.
             </p>
           </div>
 
-          <div className="pr-8">
-            {/* RIGHT BUTTON */}
-            <Link href="/quote-reserve" className="inline-block border border-orange-400 text-orange-400 px-6 py-3 rounded-md hover:bg-orange-400 hover:text-white transition whitespace-nowrap">
+          <div className="w-full lg:w-auto">
+            <Link href="/quote-reserve" className="inline-flex w-full items-center justify-center rounded-md border border-orange-400 px-5 py-3 text-sm text-orange-400 transition hover:bg-orange-400 hover:text-white sm:w-auto sm:px-6 whitespace-nowrap">
               Book Your Hunt Online →
             </Link>
           </div>
