@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import LatestNews from '@/components/NewsEvent';
 import OurPartners from '@/components/ourPartners';
-import type { DivIcon, LatLngExpression, Map as LeafletMap } from 'leaflet';
+import type { DivIcon, LatLngExpression, LatLngTuple, Map as LeafletMap } from 'leaflet';
 
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
@@ -172,7 +172,7 @@ function PropertyMap() {
   }, []);
 
   const bounds = useMemo(
-    () => properties.map((property) => property.position),
+    () => properties.map((property) => property.position as LatLngTuple),
     []
   );
 
