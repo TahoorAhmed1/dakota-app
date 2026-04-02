@@ -57,11 +57,11 @@ export default function AboutPage() {
         <div className="absolute inset-0" />
 
         <div className="relative z-10 flex flex-col items-center text-center">
-          <h1 className="text-[42px] font-black uppercase leading-none tracking-[0.02em] text-[#1f1208] sm:text-[58px] md:text-[72px] lg:text-[82px]">
+          <h1 className="text-[38px] font-bold uppercase  text-[#1f1208] sm:text-[58px] md:text-[72px] ">
             About Us
           </h1>
 
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#2a1a0c] sm:text-[11px]">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#2a1a0c] sm:text-[11px]">
             <Link
               href="/"
               className="flex items-center gap-2 transition-colors hover:text-[#f37021]"
@@ -124,7 +124,7 @@ export default function AboutPage() {
           </header>
 
           <div className="mt-10 sm:mt-12">
-            <h3 className="text-[26px] font-black uppercase leading-none tracking-[0.05em] text-[#24170c] sm:text-[34px] md:text-[46px] lg:text-[54px]">
+            <h3 className="text-[26px] font-bold uppercase leading-none tracking-[0.05em] text-[#24170c] sm:text-[34px] md:text-[46px] lg:text-[54px]">
               The UGUIDE Difference?
             </h3>
           </div>

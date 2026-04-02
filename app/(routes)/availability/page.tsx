@@ -15,7 +15,7 @@ export default function AvailabilityPage() {
             Availability
           </h1>
 
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
             <Link
               href="/"
               className="flex items-center gap-2 transition-colors hover:text-[#F16724]"

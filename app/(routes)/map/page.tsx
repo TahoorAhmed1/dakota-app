@@ -327,7 +327,7 @@ export default function MapPage() {
 
             <nav
               aria-label="Breadcrumb"
-              className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#281703] sm:gap-3 sm:text-[12px]"
+              className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#281703] sm:gap-3 sm:text-[12px]"
             >
               <Link
                 href="/"

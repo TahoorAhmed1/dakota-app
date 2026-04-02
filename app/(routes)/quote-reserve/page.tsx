@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { CalculatorSettings, calculateDepositRate } from "@/lib/calculator-settings";
+import { InfoIcon  } from "lucide-react";
 
 type StepOneData = {
   seasonLabel: string;
@@ -575,7 +576,7 @@ export default function QuoteReservePage() {
             Quote-Reserve
           </h1>
 
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
             <Link
               href="/"
               className="flex items-center gap-2 transition-colors hover:text-[#F16724]"
@@ -604,7 +605,7 @@ export default function QuoteReservePage() {
 
       <section className="bg-[#E7DCCF] px-4 pb-20 pt-14 sm:pt-16 md:px-6 md:pb-24 md:pt-20">
         <div className="mx-auto max-w-295">
-          <h2 className="text-center text-[24px] font-black uppercase tracking-[0.04em] text-[#281703] underline decoration-[3px] underline-offset-[6px] sm:text-[30px] md:text-[54px]">
+          <h2 className="text-center text-[24px] font-bold uppercase tracking-[0.04em] text-[#281703] underline decoration-[3px] underline-offset-[6px] sm:text-[30px] md:text-[54px]">
             {step === 1 && (labels?.stepHeadings.step1 ?? "Step 1: Quote\u2013Reserve Group Options")}
             {step === 2 && (labels?.stepHeadings.step2 ?? "Step 2: Quote\u2013Reserve Enter Hunters")}
             {step === 3 && (labels?.stepHeadings.step3 ?? "Step 3: Quote\u2013Reserve Review Totals")}
@@ -622,180 +623,186 @@ export default function QuoteReservePage() {
             </div>
           ) : null}
 
+          {validationErrors.step1 ? (
+            <div className="mt-6 rounded-md bg-red-100 px-6 py-4 text-center text-sm font-semibold text-red-800">
+              {validationErrors.step1}
+            </div>
+          ) : null}
+
           <div className="mt-8 overflow-hidden rounded-[18px] bg-[#f5f5f5] shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
-            {step === 1 && (
-              <>
-                <div className="bg-[#4c2c11] px-4 py-5 text-center text-[20px] font-bold uppercase text-white sm:px-8 sm:text-[26px] md:py-6 md:text-[44px]">
-                  {labels?.step1.cardTitle ?? "Price Your Own Hunt in 3 Simple Steps"}
-                </div>
+         {step === 1 && (
+              <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
+    {/* Header */}
+    <div className="bg-[#4c2c11] px-4 py-5 text-center font-normal uppercase text-white md:py-6">
+      <h1 className="text-[20px] tracking-tight sm:text-[26px] md:text-[34px]">
+        {labels?.step1.cardTitle ?? "Price Your Own Hunt in 3 Simple Steps"}
+      </h1>
+    </div>
 
-                <div className="bg-[#f5f5f5] px-4 pb-6 pt-4 sm:px-6 md:px-8 md:pb-8">
-                  <SectionDivider label={labels?.step1.requiredLabel ?? "Required Fields"} />
+    <div className="bg-white px-4 py-6 md:px-12">
+      {/* Required Fields Section */}
+      <div className="mb-4">
+        <SectionDivider label={labels?.step1.requiredLabel ?? "REQUIRED FIELDS"} />
+      </div>
 
-                  <div className="overflow-hidden rounded-b-xl border border-[#d9d9d9] bg-[#f5f5f5]">
-                    <FieldRow label={labels?.step1.seasonLabel ?? "What Season Is Your Group Hunting In?"}>
-                      <select
-                        value={groupData.seasonLabel}
-                        onChange={(e) => {
-                          const newSeason = e.target.value;
-                          const firstWeekForSeason =
-                            config?.weeks.find((week) => week.seasonLabel === newSeason)?.id ?? "";
+      <div className="divide-y divide-[#d9d9d9] border border-[#d9d9d9]">
+        {/* Field Row: Season */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+            <span className="mr-1 text-[#f26f2d]">*</span>
+            {labels?.step1.seasonLabel ?? "What Season Is Your Group Hunting In?"}
+            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
+          </label>
+          <div className="border-l border-[#d9d9d9] p-3 md:col-span-2">
+            <select
+              value={groupData.seasonLabel}
+              onChange={(e) => {
+                const newSeason = e.target.value;
+                const firstWeek = config?.weeks.find((w) => w.seasonLabel === newSeason)?.id ?? "";
+                setGroupData((prev) => ({ ...prev, seasonLabel: newSeason, weekId: firstWeek }));
+              }}
+              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+            >
+              {seasonOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
 
-                          setGroupData((prev) => ({
-                            ...prev,
-                            seasonLabel: newSeason,
-                            weekId: firstWeekForSeason,
-                          }));
-                        }}
-                        className="h-11 w-full rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
-                      >
-                        {seasonOptions.map((season) => (
-                          <option key={season} value={season}>
-                            {season}
-                          </option>
-                        ))}
-                      </select>
-                    </FieldRow>
+        {/* Field Row: Camp */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+            <span className="mr-1 text-[#f26f2d]">*</span>
+            {labels?.step1.campLabel ?? "What Camp Is Your Group Going To?"}
+            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
+          </label>
+          <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+            <select
+              value={groupData.campId}
+              onChange={(e) => setGroupData((prev) => ({ ...prev, campId: e.target.value }))}
+              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+            >
+              <option value="">Select a Camp</option>
+              {(config?.camps ?? []).map((camp) => (
+                <option key={camp.id} value={camp.id}>{formatCampOptionLabel(camp.name)}</option>
+              ))}
+            </select>
+            <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
+              (Reference Camps)
+            </span>
+          </div>
+        </div>
 
-                    <FieldRow
-                      label={labels?.step1.campLabel ?? "What Camp Is Your Group Going To?"}
-                      reference={labels?.step1.campReference ?? "Reference Camps"}
-                    >
-                      <select
-                        value={groupData.campId}
-                        onChange={(e) =>
-                          setGroupData((prev) => ({ ...prev, campId: e.target.value }))
-                        }
-                        className="h-11 w-full rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
-                      >
-                        {(config?.camps ?? []).map((camp) => (
-                          <option key={camp.id} value={camp.id}>
-                            {formatCampOptionLabel(camp.name)}
-                          </option>
-                        ))}
-                      </select>
-                    </FieldRow>
+        {/* Field Row: Week */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+            <span className="mr-1 text-[#f26f2d]">*</span>
+            {labels?.step1.weekLabel ?? "What Week Is Your Group Going?"}
+            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+          </label>
+          <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+            <select
+              value={groupData.weekId}
+              onChange={(e) => setGroupData((prev) => ({ ...prev, weekId: e.target.value }))}
+              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+            >
+              <option value="">Select Which Week</option>
+              {weekOptions.map((week) => (
+                <option key={week.id} value={week.id}>{week.label}</option>
+              ))}
+            </select>
+            <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
+              (Reference Days Camps)
+            </span>
+          </div>
+        </div>
 
-                    <FieldRow
-                      label={labels?.step1.weekLabel ?? "What Week Is Your Group Going?"}
-                      reference={labels?.step1.weekReference ?? "Reference Days Camps"}
-                    >
-                      <select
-                        value={groupData.weekId}
-                        onChange={(e) =>
-                          setGroupData((prev) => ({ ...prev, weekId: e.target.value }))
-                        }
-                        className="h-11 w-full rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
-                      >
-                        {weekOptions.map((week) => (
-                          <option key={week.id} value={week.id}>
-                            {week.label}
-                          </option>
-                        ))}
-                      </select>
-                    </FieldRow>
+        {/* Field Row: Hunters */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+            <span className="mr-1 text-[#f26f2d]">*</span>
+            {labels?.step1.hunterCountLabel ?? "How Many Hunters In Your Group?"}
+            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
+          </label>
+          <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+            <select
+              value={groupData.hunterCount}
+              onChange={(e) => setGroupData((prev) => ({ ...prev, hunterCount: Number(e.target.value) }))}
+              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+            >
+              {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>{n} {n === 1 ? "Hunter" : "Hunters"}</option>
+              ))}
+            </select>
+            <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
+              (Minimums and Capacities Chart)
+            </span>
+          </div>
+        </div>
 
-                    <FieldRow
-                      label={labels?.step1.hunterCountLabel ?? "How Many Hunters In Your Group?"}
-                      reference={labels?.step1.hunterCountReference ?? "Minimums and Capacities Chart"}
-                    >
-                      <select
-                        value={groupData.hunterCount}
-                        onChange={(e) =>
-                          setGroupData((prev) => ({
-                            ...prev,
-                            hunterCount: Number(e.target.value),
-                          }))
-                        }
-                        className="h-11 w-full rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
-                      >
-                        {(config?.settings.hunterCountOptions ?? [1, 2, 3, 4, 5, 6, 7, 8, 9]).map((count) => (
-                          <option key={count} value={count}>
-                            {count} Hunters
-                          </option>
-                        ))}
-                      </select>
-                    </FieldRow>
+        {/* Field Row: Package */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+            <span className="mr-1 text-[#f26f2d]">*</span>
+            {labels?.step1.packageLabel ?? "What Package?"}
+            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
+          </label>
+          <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+            <select
+              value={groupData.packageId}
+              onChange={(e) => setGroupData((prev) => ({ ...prev, packageId: e.target.value }))}
+              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+            >
+              <option value="">Select Package</option>
+              {(config?.packages ?? []).map((pkg) => (
+                <option key={pkg.id} value={pkg.id}>{pkg.label}</option>
+              ))}
+            </select>
+            <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
+              (Minimums and Capacities Chart)
+            </span>
+          </div>
+        </div>
+      </div>
 
-                    <FieldRow
-                      label={labels?.step1.packageLabel ?? "What Package?"}
-                      reference={labels?.step1.packageReference ?? "Minimums and Capacities Chart"}
-                    >
-                      <select
-                        value={groupData.packageId}
-                        onChange={(e) =>
-                          setGroupData((prev) => ({
-                            ...prev,
-                            packageId: e.target.value,
-                          }))
-                        }
-                        className="h-11 w-full rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none"
-                      >
-                        {(config?.packages ?? []).map((pkg) => (
-                          <option key={pkg.id} value={pkg.id}>
-                            {pkg.label}
-                          </option>
-                        ))}
-                      </select>
-                    </FieldRow>
-                  </div>
+      {/* Optional Fields Section */}
+      <div className="mt-10 mb-6">
+        <SectionDivider label={labels?.step1.optionalLabel ?? "OPTIONAL FIELDS"} />
+      </div>
 
-                  <div className="mt-8">
-                    <SectionDivider label={labels?.step1.optionalLabel ?? "Optional Fields"} />
-                  </div>
+      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
+        <label className="flex items-center text-[15px] font-bold text-[#2b1a0f]">
+          <span className="mr-1 text-[#f26f2d]">*</span>
+          {labels?.step1.earlyBirdLabel ?? "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
+          <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
+        </label>
+        <select
+          value={groupData.earlyBird}
+          onChange={(e) => setGroupData((prev) => ({ ...prev, earlyBird: e.target.value as "Yes" | "No" }))}
+          className="h-10 w-24 rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+        >
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
 
-                  <div className="grid grid-cols-1 items-center gap-4 px-4 py-4 sm:px-6 md:grid-cols-[1.2fr_1fr] md:gap-6 md:px-8">
-                    <label className="text-[15px] font-semibold text-[#2b1a0f]">
-                      <span className="mr-1 text-[#f26f2d]">*</span>
-                      {labels?.step1.earlyBirdLabel ?? "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
-                      <span className="ml-1 text-[#f26f2d]">●</span>
-                    </label>
-
-                    <select
-                      value={groupData.earlyBird}
-                      onChange={(e) =>
-                        setGroupData((prev) => ({
-                          ...prev,
-                          earlyBird: e.target.value as "Yes" | "No",
-                        }))
-                      }
-                      className="h-11 w-full rounded-md border border-[#9f9f9f] bg-white px-4 text-[14px] text-[#5a5a5a] outline-none md:max-w-35"
-                    >
-                      {(config?.settings.earlyBirdOptions ?? [
-                        { label: "No", value: "No" as const },
-                        { label: "Yes", value: "Yes" as const },
-                      ]).map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {validationErrors.step1 ? (
-                    <div className="px-4 pb-4 text-sm font-semibold text-red-700 sm:px-6 md:px-8">
-                      {validationErrors.step1}
-                    </div>
-                  ) : null}
-
-                  <div className="mt-8 flex justify-stretch px-4 pb-6 sm:px-6 md:justify-end md:px-8">
-                    <button
-                      onClick={goToStep2}
-                      disabled={!config}
-                      className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:opacity-50 md:w-auto"
-                    >
-                      {labels?.step1.nextButton ?? "To Step 2: Enter Hunters »"}
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
+      {/* Navigation Button */}
+      <div className="mt-12 flex justify-center md:justify-end">
+        <button
+          onClick={goToStep2}
+          className="w-full rounded-md bg-[#f26f2d] px-10 py-4 text-[18px] font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-[#e16528] md:w-auto"
+        >
+          {labels?.step1.nextButton ?? "To Step 2: Enter Hunters »"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}  
 
             {step === 2 && (
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
                 <div className="overflow-x-auto">
                   <div className="min-w-[760px]">
-                    <div className="grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-black uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
+                    <div className="grid grid-cols-[70px_1.5fr_1.5fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-bold uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
                       <div className="text-center">#</div>
                       <div>{labels?.step2.hunterNameHeader ?? "Hunter Name"}</div>
                       <div>{labels?.step2.individualDiscountHeader ?? "Individual Discount"}</div>
@@ -923,7 +930,7 @@ export default function QuoteReservePage() {
 
                   <button
                     onClick={goToStep3}
-                    className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 md:w-auto"
+                    className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 md:w-auto"
                   >
                     {labels?.step2.nextButton ?? "To Step 3: Review Total »"}
                   </button>
@@ -1043,7 +1050,7 @@ export default function QuoteReservePage() {
                     </table>
 
                     <div className="mt-4 flex justify-center md:justify-end">
-                      <button className="rounded-md bg-[#f26f2d] px-8 py-3 text-[15px] font-black uppercase text-white">
+                      <button className="rounded-md bg-[#f26f2d] px-8 py-3 text-[15px] font-bold uppercase text-white">
                         {labels?.step3.totalsBadgeLabel ?? "Totals"}
                       </button>
                     </div>
@@ -1138,7 +1145,7 @@ export default function QuoteReservePage() {
                       <button
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-black uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+                        className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
                       >
                         {isSubmitting ? "Submitting..." : (labels?.step3.submitButton ?? "Submit Quote Request »")}
                       </button>

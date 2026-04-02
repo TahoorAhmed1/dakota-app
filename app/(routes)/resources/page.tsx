@@ -268,13 +268,13 @@ export default function ResourcesPage() {
         <div className="absolute inset-0 " />
 
         <div className="relative z-10 flex flex-col items-center text-center">
-          <h1 className="text-[38px] font-bold uppercase leading-none text-[#241304] sm:text-[54px] md:text-[72px] lg:text-[82px]">
+          <h1 className="text-[38px] font-bold uppercase leading-none text-[#241304] sm:text-[58px] md:text-[72px] ">
             Resources
           </h1>
 
           <nav
             aria-label="Breadcrumb"
-            className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]"
+            className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]"
           >
             <Link href="/" className="flex items-center gap-2 transition-colors hover:text-[#F16724]">
               <HomeIcon />

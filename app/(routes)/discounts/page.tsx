@@ -66,7 +66,7 @@ export default function DiscountsPage() {
 
         <div className="relative mx-auto flex min-h-[360px] max-w-[1600px] items-center justify-center px-5 pb-24 pt-24 text-center sm:min-h-[430px] sm:px-8 sm:pb-28 md:min-h-[510px] md:pt-28 lg:min-h-[560px] lg:px-10 lg:pb-32">
           <div className="translate-y-6 sm:translate-y-8 md:translate-y-10">
-            <h1 className="text-[42px] font-black uppercase leading-none tracking-[-0.04em] text-[#1f1308] sm:text-[54px] md:text-[68px] lg:text-[74px]">
+            <h1 className="text-[38px] font-bold uppercase leading-none tracking-[-0.04em] text-[#1f1308] sm:text-[54px] md:text-[68px] lg:text-[74px]">
               Discounts
             </h1>
 

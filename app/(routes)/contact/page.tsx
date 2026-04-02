@@ -253,11 +253,11 @@ export default function ContactPage() {
         <div className="absolute inset-0 " />
 
         <div className="relative z-10 flex w-full flex-col items-center px-5 pt-20 text-center sm:px-6 sm:pt-24 lg:pt-28">
-          <h1 className="text-[42px] font-black uppercase leading-none tracking-[-0.03em] text-[#1f1204] sm:text-[58px] md:text-[72px] lg:text-[78px]">
+          <h1 className="text-[38px] font-bold uppercase leading-none tracking-[-0.03em] text-[#1f1204] sm:text-[58px] md:text-[72px] lg:text-[78px]">
             Contact
           </h1>
 
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2a1807] sm:gap-3">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2a1807] sm:gap-3">
             <Link href="/" className="inline-flex items-center gap-2 transition-colors hover:text-[#f16724]">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 3.172 3 10.2V21h6v-6h6v6h6V10.2l-9-7.028Z" />
@@ -277,7 +277,7 @@ export default function ContactPage() {
       <section className="bg-[#e8ded1] px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:px-8 xl:px-10">
         <div className="mx-auto max-w-[1220px] rounded-[18px] bg-[#f5f5f5] shadow-[0_10px_35px_rgba(69,42,13,0.16)]">
           <div className="overflow-hidden rounded-t-[18px] bg-[linear-gradient(180deg,#6f3f08_0%,#3d1d00_100%)] px-4 py-4 text-center sm:px-6 lg:px-8">
-            <h2 className="text-[24px] font-black uppercase tracking-[-0.03em] text-white sm:text-[30px] md:text-[36px]">
+            <h2 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-white sm:text-[30px] md:text-[36px]">
               Contact Us / Request Information
             </h2>
           </div>
@@ -286,7 +286,7 @@ export default function ContactPage() {
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
                 <div>
-                  <h3 className="text-[24px] font-black uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">1. Hunt</h3>
+                  <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">1. Hunt</h3>
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">
                     <span className="text-[#d25f2d]">*</span>Are you looking for a self or fully guided hunt?
                   </p>
@@ -323,7 +323,7 @@ export default function ContactPage() {
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
                 <div className="max-w-[560px]">
-                  <h3 className="text-[24px] font-black uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">2. Experience</h3>
+                  <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">2. Experience</h3>
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">
                     <span className="text-[#d25f2d]">*</span>How many years have you hunted South Dakota?
                   </p>
@@ -344,7 +344,7 @@ export default function ContactPage() {
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
                 <div>
-                  <h3 className="text-[24px] font-black uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">3. Group Info</h3>
+                  <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">3. Group Info</h3>
                   <p className="mt-2 text-[13px] italic leading-6 text-[#352b24]">
                     Please note the minimum group size is anywhere from 6 to 10 hunters per group.
                   </p>
@@ -387,7 +387,7 @@ export default function ContactPage() {
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
                 <div className="max-w-[560px]">
-                  <h3 className="text-[24px] font-black uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">4. Dog Power</h3>
+                  <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">4. Dog Power</h3>
                   <div className="mt-4 grid gap-3 md:grid-cols-[1fr_150px] md:items-center md:gap-4">
                     <p className="text-[13px] leading-6 text-[#352b24]">
                       <span className="text-[#d25f2d]">*</span>How many dogs do you plan to bring?
@@ -412,7 +412,7 @@ export default function ContactPage() {
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
                 <div>
-                  <h3 className="text-[21px] font-black uppercase tracking-[-0.03em] text-[#231506] sm:text-[25px] lg:text-[28px]">
+                  <h3 className="text-[21px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[25px] lg:text-[28px]">
                     5. Hunting Timeframe Preferences
                   </h3>
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">Please select your preferred weeks.</p>
@@ -458,7 +458,7 @@ export default function ContactPage() {
             </div>
 
             <div className="py-6 sm:py-8">
-              <h3 className="text-[21px] font-black uppercase tracking-[-0.03em] text-[#231506] sm:text-[25px] lg:text-[28px]">6. Contact Info</h3>
+              <h3 className="text-[21px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[25px] lg:text-[28px]">6. Contact Info</h3>
               <p className="mt-3 max-w-[760px] text-[13px] leading-6 text-[#352b24]">
                 By putting your contact information here, you will be receiving a response within 24 hours via email or phone call from Chris UGUIDE Founder/Owner.
               </p>
@@ -529,7 +529,7 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="h-[46px] w-full rounded-[2px] bg-[linear-gradient(180deg,#ff8c3f_0%,#f16724_100%)] px-6 text-[16px] font-black uppercase tracking-[0.04em] text-white shadow-[0_6px_14px_rgba(241,103,36,0.35)] transition hover:brightness-[1.03] focus:outline-none focus:ring-2 focus:ring-[#f16724]/40 md:w-auto"
+                  className="h-[46px] w-full rounded-[2px] bg-[linear-gradient(180deg,#ff8c3f_0%,#f16724_100%)] px-6 text-[16px] font-bold uppercase tracking-[0.04em] text-white shadow-[0_6px_14px_rgba(241,103,36,0.35)] transition hover:brightness-[1.03] focus:outline-none focus:ring-2 focus:ring-[#f16724]/40 md:w-auto"
                 >
                   Submit Form
                 </button>
