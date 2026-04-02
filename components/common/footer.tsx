@@ -2,38 +2,46 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { toast } from "sonner";
+
 import logo from "@/assets/logo-black.png";
 
 function Footer() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
     setIsSubmitting(true);
-    setMessage('');
 
     try {
-      const response = await fetch('/api/newsletter', {
-        method: 'POST',
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: normalizedEmail }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(data.message);
-        setEmail('');
+        toast.success(data.message ?? "You are subscribed.");
+        setEmail("");
       } else {
-        setMessage(data.error || 'Something went wrong. Please try again.');
+        toast.error(data.error || "Something went wrong. Please try again.");
       }
     } catch (error) {
-      console.error('Newsletter signup error:', error);
-      setMessage('Network error. Please check your connection and try again.');
+      console.error("Newsletter signup error:", error);
+      toast.error("Network error. Please check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -108,19 +116,24 @@ function Footer() {
   ];
 
   return (
-    <footer className="Footerback relative bg-cover bg-center py-4 text-black">
+    <footer className="Footerback relative bg-cover bg-center py-10 text-black">
       <div className="relative z-10 max-w-6xl mx-auto px-6">
-        <div className="flex flex-col items-center text-center">
-          <Image src={logo} alt="U Guide" className="mb-3 mt-20" />
+        <div className="flex flex-col mt-20 items-center text-center">
+          <Image
+            src={logo}
+            alt="U Guide"
+            className="mb-2 h-auto w-64  max-w-full"
+            priority={false}
+          />
 
-          <div className="flex gap-4 mt-2">
+          <div className="flex justify-between items-center gap-6 ml-2">
             {socialLinks.map((social, i) => (
               <a
                 key={i}
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-full bg-black text-white hover:bg-orange-600 transition-colors duration-300"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-white transition-colors duration-300 hover:bg-[#8a5326]"
                 aria-label={social.name}
               >
                 {social.icon}
@@ -129,12 +142,12 @@ function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-black/40 my-10"></div>
+        <div className="my-7 border-t border-black/40" />
 
-        <div className="grid md:grid-cols-3 gap-10">
+        <div className="grid gap-9 md:grid-cols-[1fr_1fr_1.24fr] md:gap-14.5">
           <div>
-            <h3 className="font-semibold mb-4">Contact</h3>
-            <p className="text-sm leading-7">
+            <h3 className="mb-3.5 text-[23px] font-semibold leading-none tracking-[-0.02em]">Contact</h3>
+            <p className="text-[18px] leading-[2.05] tracking-[-0.02em] text-black/88">
               021 Hollywood Boulevard, LA <br />
               customer@example.com <br />
               (021) 345-6789
@@ -142,8 +155,8 @@ function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Services</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="mb-3.5 text-[23px] font-semibold leading-none tracking-[-0.02em]">Services</h3>
+            <ul className="space-y-0.5 text-[18px] leading-[1.9] tracking-[-0.02em] text-black/88">
               <li>Availability</li>
               <li>Quote-Reserve</li>
               <li>UGUIDE Pheasant Outlook</li>
@@ -154,38 +167,39 @@ function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Newsletters</h3>
-            <p className="text-sm mb-4">
+            <h3 className="mb-3.5 text-[23px] font-semibold leading-none tracking-[-0.02em]">Newsletters</h3>
+            <p className="mb-4.5 text-[18px] leading-[1.65] tracking-[-0.02em] text-black/88">
               Sign up your email and get news and updates
             </p>
 
-            <div className="flex bg-white rounded-md overflow-hidden w-full max-w-sm">
+            <form
+              onSubmit={handleSubmit}
+              className="flex h-14.5 w-full max-w-94.5 items-center rounded-lg bg-white px-2.5 py-2 shadow-[0_1px_0_rgba(0,0,0,0.05)]"
+            >
               <input
                 type="email"
                 placeholder="Your email here"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 text-sm outline-none"
+                className="h-full min-w-0 flex-1 border-b border-black/55 px-0.5 pb-px text-[18px] tracking-[-0.02em] text-black placeholder:text-black/55 focus:border-black focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={isSubmitting}
+                aria-label="Email address"
               />
               <button
-                onClick={handleSubmit}
+                type="submit"
                 disabled={isSubmitting}
-                className="bg-[#3b220c] text-white px-6 text-sm font-semibold disabled:opacity-50"
+                className="ml-2.5 inline-flex h-10.5 shrink-0 items-center justify-center rounded-sm bg-black px-5 text-[14px] font-semibold tracking-[0.18em] text-white transition-colors duration-300 hover:bg-[#241206] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isSubmitting ? '...' : 'SUBSCRIBE'}
+                {isSubmitting ? "SUBMITTING" : "SUBSCRIBE"}
               </button>
-            </div>
-
-            {message && (
-              <p className={`text-sm mt-2 ${message.includes('Thank you') ? 'text-green-600' : 'text-red-600'}`}>
-                {message}
-              </p>
-            )}
+            </form>
           </div>
         </div>
       </div>
-      <p className="text-center text-sm mt-8">
+      <div className="relative z-10 mx-auto max-w-243.5 px-6 sm:px-10 lg:px-0">
+        <div className="border-t border-black/40" />
+      </div>
+      <p className="relative z-10 pb-2.5 pt-4.5 text-center text-[15px] tracking-[-0.01em] text-black/85">
         © 2026 UGUIDE South Dakota Pheasant Hunting®
       </p>
     </footer>
