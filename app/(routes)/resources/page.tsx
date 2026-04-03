@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Header from "@/components/common/header";
+import Footer from "@/components/common/footer";
 import LatestNews from "@/components/NewsEvent";
 import OurPartners from "@/components/ourPartners";
 
@@ -28,10 +30,10 @@ const resourceSections: ResourceSection[] = [
   },
   {
     label: "UGUIDE Outfitter",
-    href: "/about",
+    href: "/resources/uguide-outfitter",
     children: [
-      { label: "Guided options", href: "/about" },
-      { label: "Trip planning", href: "/quote-reserve" },
+      { label: "Guided options", href: "/resources/uguide-outfitter" },
+      { label: "Trip planning", href: "/resources/uguide-outfitter" },
     ],
   },
   {
@@ -262,8 +264,10 @@ export default function ResourcesPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <main className="flex flex-col">
-      <section className="ResourcesImage relative flex min-h-[320px] items-center justify-center overflow-hidden bg-cover bg-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[620px] lg:pb-28 lg:pt-32">
+    <>
+      <Header />
+      <main className="flex flex-col">
+        <section className="ResourcesImage relative flex min-h-[320px] items-center justify-center overflow-hidden bg-cover bg-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[620px] lg:pb-28 lg:pt-32">
         <div className="absolute inset-0 " />
         <div className="absolute inset-0 " />
 
@@ -332,6 +336,8 @@ export default function ResourcesPage() {
 
       <OurPartners />
       <LatestNews />
-    </main>
+      </main>
+      <Footer />
+    </>
   );
 }
