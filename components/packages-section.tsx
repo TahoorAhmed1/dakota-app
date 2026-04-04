@@ -3,31 +3,38 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export default async function PackagesSection() {
-  const packages = await prisma.packageOption.findMany({
-    where: { isActive: true },
-    orderBy: { displayOrder: "asc" },
-  });
+  let packages: Awaited<ReturnType<typeof prisma.packageOption.findMany>> = [];
+  let minGroupData: { name: string; minGroupSize: number }[] = [];
 
-  const camps = await prisma.camp.findMany({
-    where: { isActive: true },
-    select: {
-      name: true,
-      pricingRows: {
-        where: { isAvailable: true },
-        select: { minGroupSize: true },
-        orderBy: { minGroupSize: "asc" },
-        take: 1,
+  try {
+    packages = await prisma.packageOption.findMany({
+      where: { isActive: true },
+      orderBy: { displayOrder: "asc" },
+    });
+
+    const camps = await prisma.camp.findMany({
+      where: { isActive: true },
+      select: {
+        name: true,
+        pricingRows: {
+          where: { isAvailable: true },
+          select: { minGroupSize: true },
+          orderBy: { minGroupSize: "asc" },
+          take: 1,
+        },
       },
-    },
-    orderBy: { displayOrder: "asc" },
-  });
+      orderBy: { displayOrder: "asc" },
+    });
 
-  const minGroupData = camps
-    .filter((c) => c.pricingRows.length > 0)
-    .map((c) => ({ name: c.name, minGroupSize: c.pricingRows[0].minGroupSize }));
+    minGroupData = camps
+      .filter((c) => c.pricingRows.length > 0)
+      .map((c) => ({ name: c.name, minGroupSize: c.pricingRows[0].minGroupSize }));
+  } catch {
+    // Database unavailable – render section with empty data
+  }
 
   return (
-    <section className="bg-[#F5EFE7] px-4 py-16 sm:px-6 sm:py-20">
+    <section className="bg-white px-4 py-16 sm:px-6 sm:py-20">
       <div className="mx-auto max-w-6xl">
         {/* Packages */}
         <div className="text-center">

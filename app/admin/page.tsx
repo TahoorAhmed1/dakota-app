@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AdminLoadingState from "@/components/admin/admin-loading-state";
-import { fetchAdminConfig, getAdminKeyFromStorage } from "@/lib/admin-client";
+import { fetchAdminConfig, getAdminKeyFromStorage, clearAdminKey } from "@/lib/admin-client";
 
 type CalculatorConfig = {
   camps: Array<{ id: string; name: string }>;
@@ -29,10 +29,9 @@ export default function AdminDashboard() {
         setConfig(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load configuration");
-        // Redirect to login if unauthorized
-        setTimeout(() => {
-          router.push("/admin/login");
-        }, 2000);
+        clearAdminKey();
+        router.push("/admin/login");
+        return;
       } finally {
         setLoading(false);
       }

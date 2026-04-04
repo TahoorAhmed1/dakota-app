@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import AdminLoadingState from "@/components/admin/admin-loading-state";
-import { fetchAdminConfig, updateAdminConfig, getAdminKeyFromStorage } from "@/lib/admin-client";
+import { fetchAdminConfig, updateAdminConfig, getAdminKeyFromStorage, clearAdminKey } from "@/lib/admin-client";
 
 type Camp = {
   id: string;
@@ -42,7 +42,9 @@ export default function CampsPage() {
         setCamps(data.camps);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load configuration");
-        setTimeout(() => router.push("/admin/login"), 2000);
+        clearAdminKey();
+        router.push("/admin/login");
+        return;
       } finally {
         setLoading(false);
       }

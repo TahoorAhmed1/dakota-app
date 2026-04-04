@@ -36,6 +36,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push("/admin/login");
   };
 
+  // Login page gets its own full-screen layout
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex min-h-screen overflow-x-hidden bg-[#fff7ef] text-black">
       {isSidebarOpen ? (

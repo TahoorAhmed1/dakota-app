@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import AdminLoadingState from "@/components/admin/admin-loading-state";
-import { getAdminKeyFromStorage } from "@/lib/admin-client";
+import { getAdminKeyFromStorage, clearAdminKey } from "@/lib/admin-client";
 
 type NewsPost = {
   id: string;
@@ -70,7 +70,9 @@ export default function AdminNewsPage() {
       const msg = err instanceof Error ? err.message : "Failed to load posts";
       setError(msg);
       if (msg.toLowerCase().includes("unauthorized")) {
-        setTimeout(() => router.push("/admin/login"), 2000);
+        clearAdminKey();
+        router.push("/admin/login");
+        return;
       }
     } finally {
       setLoading(false);

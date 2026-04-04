@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import AdminLoadingState from "@/components/admin/admin-loading-state";
-import { fetchAdminConfig, getAdminKeyFromStorage, updateAdminConfig } from "@/lib/admin-client";
+import { fetchAdminConfig, getAdminKeyFromStorage, updateAdminConfig, clearAdminKey } from "@/lib/admin-client";
 import { CalculatorSettings } from "@/lib/calculator-settings";
 
 type AdminConfig = {
@@ -48,7 +48,9 @@ export default function CalculatorSettingsPage() {
         setLabelsJson(JSON.stringify(data.settings.labels, null, 2));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load configuration");
-        setTimeout(() => router.push("/admin/login"), 2000);
+        clearAdminKey();
+        router.push("/admin/login");
+        return;
       } finally {
         setLoading(false);
       }

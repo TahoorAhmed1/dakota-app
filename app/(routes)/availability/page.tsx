@@ -49,7 +49,15 @@ export default function AvailabilityPage() {
       <SeasonSchedule />
 
       {/* Photo slideshow section */}
-      <section className="bg-[#281703] px-4 py-16 sm:px-6 sm:py-20">
+
+
+      <section className="bg-white px-4 pb-20 sm:px-6 sm:pb-24">
+        <div className="mx-auto max-w-7xl">
+          <ImagesCatalog />
+        </div>
+      </section>
+
+            <section className="bg-[#281703] px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center sm:mb-12">
             <p className="mb-2 text-xs font-bold tracking-widest uppercase text-orange-400">
@@ -65,16 +73,10 @@ export default function AvailabilityPage() {
           <PhotoSlideshow />
         </div>
       </section>
-
       {/* Testimonials */}
       <Testimonials />
 
       {/* Gallery section */}
-      <section className="bg-[#e8ded1] px-4 pb-20 sm:px-6 sm:pb-24">
-        <div className="mx-auto max-w-7xl">
-          <ImagesCatalog />
-        </div>
-      </section>
     </main>
   );
 }

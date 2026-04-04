@@ -6,7 +6,7 @@ import Link from "next/link";
 
 function CampingExp() {
   return (
-    <div className="relative mx-auto h-90 w-full max-w-262.5 overflow-hidden rounded-2xl sm:h-105 lg:h-75">
+    <div className="relative mx-auto h-80 w-full max-w-262.5 overflow-hidden rounded-2xl sm:h-90 lg:h-70">
       <Image
         src={campingImage}
         alt="Camping"

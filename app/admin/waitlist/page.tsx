@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import AdminLoadingState from "@/components/admin/admin-loading-state";
-import { getAdminKeyFromStorage } from "@/lib/admin-client";
+import { getAdminKeyFromStorage, clearAdminKey } from "@/lib/admin-client";
 
 type WaitlistEntry = {
   id: string;
@@ -26,19 +26,17 @@ export default function WaitlistPage() {
     const load = async () => {
       try {
         const adminKey = getAdminKeyFromStorage();
-        if (!adminKey) {
-          router.push("/admin/login");
-          return;
-        }
         const res = await fetch("/api/admin/waitlist", {
-          headers: { "x-admin-key": adminKey },
+          headers: adminKey ? { "x-admin-key": adminKey } : {},
         });
         if (!res.ok) throw new Error("Access denied");
         const data = await res.json();
         setEntries(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load");
-        setTimeout(() => router.push("/admin/login"), 2000);
+        clearAdminKey();
+        router.push("/admin/login");
+        return;
       } finally {
         setLoading(false);
       }
