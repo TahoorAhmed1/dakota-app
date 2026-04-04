@@ -8,6 +8,8 @@ import { clearAdminKey } from "@/lib/admin-client";
 
 const navItems = [
   { label: "Dashboard", href: "/admin" },
+  { label: "News & Events", href: "/admin/news" },
+  { label: "Waitlist", href: "/admin/waitlist" },
   { label: "Camps", href: "/admin/camps" },
   { label: "Hunt Weeks", href: "/admin/weeks" },
   { label: "Packages", href: "/admin/packages" },

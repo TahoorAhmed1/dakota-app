@@ -1,12 +1,14 @@
 import Link from "next/link";
 import ImagesCatalog from "@/components/common/images-catalog";
 import SeasonSchedule from "@/components/common/seasonSchedule";
+import PhotoSlideshow from "@/components/photo-slideshow";
+import Testimonials from "@/components/testimonial";
 
 export default function AvailabilityPage() {
   return (
     <main className="flex flex-col">
       {/* Hero */}
-      <section className="AvailabilityImage relative flex min-h-[320px] items-center justify-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[500px] lg:min-h-[560px]">
+      <section className="AvailabilityImage relative flex min-h-80 items-center justify-center px-4 pb-20 pt-24 sm:min-h-105 sm:px-6 sm:pb-24 sm:pt-28 md:min-h-125 lg:min-h-140">
         <div className="absolute inset-0 " />
         <div className="absolute inset-0 " />
 
@@ -45,6 +47,27 @@ export default function AvailabilityPage() {
 
       {/* Season schedule section */}
       <SeasonSchedule />
+
+      {/* Photo slideshow section */}
+      <section className="bg-[#281703] px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-10 text-center sm:mb-12">
+            <p className="mb-2 text-xs font-bold tracking-widest uppercase text-orange-400">
+              Life at Camp
+            </p>
+            <h2 className="text-3xl font-bold uppercase text-white sm:text-4xl">
+              UGUIDE Photo Gallery
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-white/60 sm:text-base">
+              A look at the people, dogs, birds, and places that make UGUIDE South Dakota&apos;s premier pheasant hunting experience.
+            </p>
+          </div>
+          <PhotoSlideshow />
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <Testimonials />
 
       {/* Gallery section */}
       <section className="bg-[#e8ded1] px-4 pb-20 sm:px-6 sm:pb-24">

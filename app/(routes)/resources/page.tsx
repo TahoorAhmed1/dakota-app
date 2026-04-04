@@ -1,118 +1,59 @@
-"use client";
-
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import LatestNews from "@/components/NewsEvent";
 import OurPartners from "@/components/ourPartners";
+import ResourcesAccordionSection from "./_components/resources-accordion";
 
-type ResourceChild = {
-  label: string;
-  href: string;
-};
-
-type ResourceSection = {
-  label: string;
-  href?: string;
-  children?: ResourceChild[];
-};
-
-const resourceSections: ResourceSection[] = [
+const huntingPolicies = [
   {
-    label: "About UGUIDE",
-    href: "/about",
-    children: [
-      { label: "Who we are", href: "/about" },
-      { label: "What is included", href: "/about" },
-    ],
+    tag: "Hunting Ethics",
+    title: "Fair Chase Policy",
+    body: "UGUIDE hunts exclusively wild, free-ranging South Dakota pheasants. We do not stock or release pen-raised birds. Bag counts vary by group skill level, weather, and natural field conditions — we do not guarantee limits.",
+    link: null,
   },
   {
-    label: "UGUIDE Outfitter",
-    href: "/about",
-    children: [
-      { label: "Guided options", href: "/about" },
-      { label: "Trip planning", href: "/quote-reserve" },
-    ],
+    tag: "Dog Requirements",
+    title: "Upland Bird Dog Policy",
+    body: "A skilled, trained upland bird dog is required for every hunt. Dogs must be steady to wing and reliable in the field. No exceptions. We can recommend professional trainers if needed.",
+    link: null,
   },
   {
-    label: "Photos",
-    href: "/resources/photos",
-    children: [
-      { label: "Camp photos", href: "/camps" },
-      { label: "Hunt photos", href: "/resources/photos" },
-    ],
+    tag: "Group Size",
+    title: "Minimum Group Size Policy",
+    body: "Minimum group sizes vary by camp and season. Reservations below the minimum may be merged with other groups or rescheduled. Check the Availability page for current minimums.",
+    link: { label: "View Availability", href: "/availability" },
   },
   {
-    label: "Dogs",
-    href: "/resources/dogs",
-    children: [
-      { label: "Dog tips", href: "/resources/dogs" },
-      { label: "Field prep", href: "/resources/dogs" },
-    ],
+    tag: "Licensing",
+    title: "South Dakota Hunting License",
+    body: "All hunters must possess a valid South Dakota non-resident hunting license before arriving at camp. Licenses are the sole responsibility of the hunter and are not included in the package price.",
+    link: { label: "Purchase SD License (SD GFP)", href: "https://gfp.sd.gov/licenses/" },
   },
   {
-    label: "Wild Game Recipes",
-    href: "/resources/recipes",
-    children: [
-      { label: "Pheasant recipes", href: "/resources/recipes" },
-      { label: "Waterfowl recipes", href: "/resources/recipes" },
-    ],
+    tag: "Reservations",
+    title: "Deposit & Payment Policy",
+    body: "A 25% non-refundable deposit is required to hold your reservation by May 1. The remaining balance is due in full by September 1. Groups booking after September 1 must pay in full at the time of reservation.",
+    link: null,
   },
   {
-    label: "Romans 1:20",
-    href: "/resources/romans-1-20",
+    tag: "Cancellations",
+    title: "Cancellation Policy",
+    body: "Cancellations made before July 1 may receive a full deposit refund at UGUIDE's discretion. Cancellations after July 1 forfeit the deposit. Cancellations after September 1 may be subject to full forfeiture. We strongly recommend travel insurance.",
+    link: null,
   },
   {
-    label: "Articles",
-    href: "/resources/articles",
-    children: [
-      { label: "Hunting articles", href: "/resources/articles" },
-      { label: "Travel articles", href: "/resources/articles" },
-    ],
+    tag: "Safety",
+    title: "Hunter Safety & Orange Requirements",
+    body: "All hunters must wear a minimum of 400 sq. in. of blaze orange above the waist while in the field — South Dakota state law. Safe firearms handling and muzzle discipline are strictly enforced at all times.",
+    link: null,
   },
   {
-    label: "Videos",
-    href: "/resources/videos",
-    children: [
-      { label: "Camp videos", href: "/resources/videos" },
-      { label: "Field videos", href: "/resources/videos" },
-    ],
-  },
-  {
-    label: "Pheasant Outlook",
-    href: "/resources/pheasant-outlook",
-  },
-  {
-    label: "License Info",
-    href: "/resources/license-info",
-  },
-  {
-    label: "FAQ",
-    href: "/resources/faq",
-    children: [
-      { label: "Travel questions", href: "/resources/faq" },
-      { label: "Booking questions", href: "/resources/faq" },
-    ],
-  },
-  {
-    label: "Testimonials",
-    href: "/resources/testimonials",
-  },
-  {
-    label: "Waterfowl Hunting",
-    href: "/resources/waterfowl-hunting",
-    children: [
-      { label: "Waterfowl overview", href: "/resources/waterfowl-hunting" },
-      { label: "Trip details", href: "/quote-reserve" },
-    ],
+    tag: "Conduct",
+    title: "Property & Conduct Policy",
+    body: "Hunters are guests on private property. Fences, gates, crops, and livestock must be respected at all times. Alcohol in the field is prohibited. Violations of conduct or safety rules may result in immediate removal without refund.",
+    link: null,
   },
 ];
-
-const collageImages = {
-  topLeft: "/images/resources-top-left.jpg",
-  topRight: "/images/resources-top-right.jpg",
-  bottomLeft: "/images/resources-bottom-left.jpg",
-};
 
 function HomeIcon() {
   return (
@@ -129,141 +70,10 @@ function HomeIcon() {
   );
 }
 
-function ChevronIcon({ open }: { open: boolean }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="11"
-      height="11"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`mt-[2px] shrink-0 transition-transform duration-200 ${open ? "rotate-180" : "rotate-0"}`}
-      aria-hidden="true"
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-function ResourceAccordionItem({
-  item,
-  isOpen,
-  onToggle,
-}: {
-  item: ResourceSection;
-  isOpen: boolean;
-  onToggle: () => void;
-}) {
-  const hasChildren = Boolean(item.children?.length);
-
-  return (
-    <li className="border-b border-transparent last:border-b-0">
-      <div className="flex items-start gap-2">
-        <button
-          type="button"
-          onClick={hasChildren ? onToggle : undefined}
-          aria-expanded={hasChildren ? isOpen : undefined}
-          aria-label={hasChildren ? `${isOpen ? "Collapse" : "Expand"} ${item.label}` : item.label}
-          className={`mt-[2px] flex shrink-0 items-center justify-center text-[#6f5c49] ${hasChildren ? "cursor-pointer" : "cursor-default"}`}
-        >
-          <ChevronIcon open={isOpen} />
-        </button>
-
-        <div className="min-w-0 flex-1">
-          {item.href ? (
-            <Link
-              href={item.href}
-              className="inline-block text-[15px] font-semibold leading-[1.45] text-[#E4803A] underline decoration-[#E4803A] decoration-[1.2px] underline-offset-[3px] transition-colors hover:text-[#281703] hover:decoration-[#281703]"
-            >
-              {item.label}
-            </Link>
-          ) : (
-            <button
-              type="button"
-              onClick={onToggle}
-              className="inline-block text-left text-[15px] font-semibold leading-[1.45] text-[#E4803A] underline decoration-[#E4803A] decoration-[1.2px] underline-offset-[3px] transition-colors hover:text-[#281703] hover:decoration-[#281703]"
-            >
-              {item.label}
-            </button>
-          )}
-
-          {hasChildren ? (
-            <div
-              className={`grid overflow-hidden transition-[grid-template-rows,margin-top,opacity] duration-300 ${isOpen ? "mt-3 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}
-            >
-              <div className="overflow-hidden">
-                <ul className="space-y-2 pl-1">
-                  {item.children?.map((child) => (
-                    <li key={child.label}>
-                      <Link
-                        href={child.href}
-                        className="text-[13px] font-medium leading-5 text-[#5f4e40] transition-colors hover:text-[#E4803A]"
-                      >
-                        {child.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ) : null}
-        </div>
-      </div>
-    </li>
-  );
-}
-
-function ResourcesCollage() {
-  return (
-    <div className="mx-auto w-full max-w-[420px] md:mx-0 lg:max-w-[455px]">
-      <div className="grid grid-cols-[0.9fr_1fr] grid-rows-[165px_145px] gap-[16px] sm:grid-rows-[185px_165px] lg:grid-rows-[190px_176px]">
-        <div className="relative overflow-hidden rounded-[34px] sm:rounded-[38px]">
-          <Image
-            src={collageImages.topLeft}
-            alt="UGUIDE hunters seated with a dog"
-            fill
-            sizes="(max-width: 768px) 45vw, 220px"
-            className="object-cover"
-            priority
-          />
-        </div>
-
-        <div className="relative row-span-2 overflow-hidden rounded-[34px] sm:rounded-[38px]">
-          <Image
-            src={collageImages.topRight}
-            alt="UGUIDE hunter holding a shotgun"
-            fill
-            sizes="(max-width: 768px) 52vw, 260px"
-            className="object-cover"
-            priority
-          />
-        </div>
-
-        <div className="relative overflow-hidden rounded-[34px] sm:rounded-[38px]">
-          <Image
-            src={collageImages.bottomLeft}
-            alt="UGUIDE hunters in a snowy field"
-            fill
-            sizes="(max-width: 768px) 45vw, 220px"
-            className="object-cover"
-            priority
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function ResourcesPage() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   return (
     <main className="flex flex-col">
-      <section className="ResourcesImage relative flex min-h-[320px] items-center justify-center overflow-hidden bg-cover bg-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[620px] lg:pb-28 lg:pt-32">
+      <section className="ResourcesImage relative flex min-h-80 items-center justify-center overflow-hidden bg-cover bg-center px-4 pb-20 pt-24 sm:min-h-105 sm:px-6 sm:pb-24 sm:pt-28 md:min-h-130 lg:min-h-155 lg:pb-28 lg:pt-32">
         <div className="absolute inset-0 " />
         <div className="absolute inset-0 " />
 
@@ -290,42 +100,47 @@ export default function ResourcesPage() {
         </div> */}
       </section>
 
-      <section className="bg-[#E7DCCF] px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:pb-24 lg:pt-24">
-        <div className="mx-auto max-w-[1120px]">
-          <div className="mx-auto max-w-[880px] text-center">
-            <h2 className="text-[32px] font-bold leading-[1.08] tracking-[-0.02em] text-[#281703] sm:text-[42px] lg:text-[58px]">
-              UGUIDE South Dakota Pheasant Hunting Specials
-            </h2>
+      <ResourcesAccordionSection />
 
-            <p className="mx-auto mt-4 max-w-[760px] text-[14px] font-semibold leading-[1.5] text-[#2f2b27] sm:text-[15px]">
-              Click on specific links to get more info about the special or related camp. Remember to go to{" "}
-              <Link
-                href="/availability"
-                className="text-[#E4803A] underline decoration-[#E4803A] underline-offset-[2px] transition-colors hover:text-[#281703] hover:decoration-[#281703]"
-              >
-                Availability
-              </Link>{" "}
-              page to check current rates and openings.
+      {/* ── Hunting Policies ── */}
+      <section className="bg-[#281703] px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-10 text-center sm:mb-12">
+            <p className="mb-2 text-xs font-bold uppercase tracking-widest text-orange-400">
+              Publicly Posted
+            </p>
+            <h2 className="text-3xl font-bold uppercase tracking-[-0.02em] text-white sm:text-4xl">
+              UGUIDE Hunting Policies
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-white/55 sm:text-base">
+              The following policies govern all UGUIDE South Dakota pheasant hunting reservations
+              and on-property conduct. By booking a hunt you agree to these terms.
             </p>
           </div>
 
-          <div className="mt-12 grid items-start gap-10 md:mt-14 md:grid-cols-[minmax(0,1fr)_360px] md:gap-10 lg:grid-cols-[minmax(0,1fr)_455px] lg:gap-14">
-            <div className="mx-auto w-full max-w-[390px] md:mx-0 md:pt-2">
-              <ul className="space-y-[12px] sm:space-y-[13px]">
-                {resourceSections.map((item, index) => (
-                  <ResourceAccordionItem
-                    key={item.label}
-                    item={item}
-                    isOpen={openIndex === index}
-                    onToggle={() => setOpenIndex((current) => (current === index ? null : index))}
-                  />
-                ))}
-              </ul>
-            </div>
-
-            <div className="md:justify-self-end">
-              <ResourcesCollage />
-            </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {huntingPolicies.map((policy) => (
+              <div
+                key={policy.title}
+                className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5"
+              >
+                <p className="mb-1.5 text-[11px] font-bold uppercase tracking-widest text-orange-400">
+                  {policy.tag}
+                </p>
+                <h3 className="mb-2 text-base font-bold text-white sm:text-lg">{policy.title}</h3>
+                <p className="text-sm leading-relaxed text-white/60">{policy.body}</p>
+                {policy.link ? (
+                  <a
+                    href={policy.link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-block text-xs font-semibold text-orange-400 underline underline-offset-2 transition-colors hover:text-orange-300"
+                  >
+                    {policy.link.label} →
+                  </a>
+                ) : null}
+              </div>
+            ))}
           </div>
         </div>
       </section>

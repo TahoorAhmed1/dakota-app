@@ -572,7 +572,7 @@ export default function QuoteReservePage() {
         <div className="absolute inset-0 " />
 
         <div className="relative z-10 flex flex-col items-center text-center">
-          <h1 className="text-[36px] font-normal uppercase leading-none text-[#281703] sm:text-[46px] md:text-[64px] lg:text-[76px]">
+          <h1 className="text-[38px] font-bold uppercase leading-none tracking-[-0.03em] text-[#281703] sm:text-[54px] md:text-[68px] lg:text-[76px]">
             Quote-Reserve
           </h1>
 

@@ -41,9 +41,9 @@ function getPrismaClientOptions(): Prisma.PrismaClientOptions {
 }
 
 export const prisma =
-  global.prismaGlobal ??
+  globalThis.prismaGlobal ??
   new PrismaClient(getPrismaClientOptions());
 
 if (process.env.NODE_ENV !== "production") {
-  global.prismaGlobal = prisma;
+  globalThis.prismaGlobal = prisma;
 }

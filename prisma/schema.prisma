@@ -107,6 +107,17 @@ model CalculatorSetting {
   updatedAt DateTime @updatedAt
 }
 
+model NewsPost {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  imageUrl    String?
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Quote {
   id                 String       @id @default(cuid())
   quoteNumber        String       @unique
@@ -183,4 +194,14 @@ model NewsletterSubscriber {
   email      String   @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  weekPref  String?
+  notes     String?
+  createdAt DateTime @default(now())
 }

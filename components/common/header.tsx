@@ -6,22 +6,35 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
-const menu = [
+type MenuItem = {
+  label: string;
+  href: string;
+  dropdown?: Array<{ label: string; href: string; desc: string }>;
+};
+
+const menu: MenuItem[] = [
   { label: "HOME", href: "/" },
   { label: "ABOUT", href: "/about" },
   { label: "AVAILABILITY", href: "/availability" },
   { label: "CONTACT", href: "/contact" },
   { label: "QUOTE-RESERVE", href: "/quote-reserve" },
-  { label: "CAMPS", href: "/camps" },
-  { label: "MAP", href: "/map" },
-  { label: "RATES", href: "/rates" },
-  { label: "DISCOUNTS", href: "/discounts" },
-  { label: "RESOURCES", href: "/resources" },
+  { label: "CAMPS & MAP", href: "/camps" },
+  { label: "NEWS", href: "/news" },
+  {
+    label: "RESOURCES",
+    href: "/resources",
+    dropdown: [
+      { label: "Rates & Pricing", href: "/rates", desc: "Package rates & booking info" },
+      { label: "Discounts & Offers", href: "/discounts", desc: "Special offers & savings" },
+      { label: "Policies & Info", href: "/resources", desc: "Hunting policies, FAQ & more" },
+    ],
+  },
 ];
 
 function Header() {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = isSidebarOpen ? "hidden" : "";
@@ -46,18 +59,43 @@ function Header() {
 
           <nav className="hidden items-center gap-6 text-[13px] font-semibold tracking-wide xl:flex">
             {menu.map((item) => {
-              const isActive = item.href !== "#" && pathname === item.href;
+              const isActive = pathname === item.href;
+              const hasDropdown = Boolean(item.dropdown?.length);
 
-              if (item.href === "#") {
+              if (hasDropdown) {
                 return (
-                  <a
+                  <div
                     key={item.label}
-                    href={item.href}
-                    className="text-gray-700 transition-colors hover:text-orange-500"
+                    className="relative"
+                    onMouseEnter={() => setOpenDropdown(item.label)}
+                    onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    {item.label}
-                    {item.label === "RESOURCES" && <span className="ml-1">▾</span>}
-                  </a>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-1 transition-colors ${
+                        isActive ? "text-orange-500" : "text-gray-700 hover:text-orange-500"
+                      }`}
+                    >
+                      {item.label}
+                      <span className="text-[10px]">▾</span>
+                    </Link>
+                    {openDropdown === item.label && (
+                      <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
+                        <div className="min-w-56 overflow-hidden rounded-xl border border-[#e9e2db] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.12)]">
+                          {item.dropdown!.map((child) => (
+                            <Link
+                              key={child.href + child.label}
+                              href={child.href}
+                              className="block border-b border-[#f0e8df] px-5 py-3.5 transition-colors last:border-0 hover:bg-[#fdf5ee]"
+                            >
+                              <p className="text-xs font-bold text-[#281703]">{child.label}</p>
+                              <p className="mt-0.5 text-[11px] text-[#281703]/55">{child.desc}</p>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 );
               }
 
@@ -70,7 +108,6 @@ function Header() {
                   }`}
                 >
                   {item.label}
-                  {item.label === "RESOURCES" && <span className="ml-1">▾</span>}
                 </Link>
               );
             })}
@@ -122,35 +159,37 @@ function Header() {
 
         <nav className="flex flex-1 flex-col gap-1.5">
           {menu.map((item) => {
-            const isActive = item.href !== "#" && pathname === item.href;
-
-            if (item.href === "#") {
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="rounded-xl px-4 py-3 text-sm font-semibold tracking-[0.08em] text-white/84 transition hover:bg-white/8 hover:text-white"
-                >
-                  {item.label}
-                  {item.label === "RESOURCES" && <span className="ml-2">▾</span>}
-                </a>
-              );
-            }
+            const isActive = pathname === item.href;
 
             return (
-              <Link
-                key={item.label}
-                href={item.href}
+              <div key={item.label}>
+                <Link
+                  href={item.href}
                   onClick={() => setIsSidebarOpen(false)}
-                className={`rounded-xl px-4 py-3 text-sm font-semibold tracking-[0.08em] transition ${
-                  isActive
-                    ? "bg-[#f16724] text-white shadow-[0_10px_24px_rgba(241,103,36,0.28)]"
-                    : "text-white/84 hover:bg-white/8 hover:text-white"
-                }`}
-              >
-                {item.label}
-                {item.label === "RESOURCES" && <span className="ml-2">▾</span>}
-              </Link>
+                  className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold tracking-[0.08em] transition ${
+                    isActive
+                      ? "bg-[#f16724] text-white shadow-[0_10px_24px_rgba(241,103,36,0.28)]"
+                      : "text-white/84 hover:bg-white/8 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                  {item.dropdown?.length ? <span className="text-[10px]">▾</span> : null}
+                </Link>
+                {item.dropdown?.length ? (
+                  <div className="mb-1 mt-0.5 space-y-0.5 pl-3">
+                    {item.dropdown.map((child) => (
+                      <Link
+                        key={child.href + child.label}
+                        href={child.href}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="block rounded-lg px-4 py-2 text-xs font-semibold text-white/60 transition hover:bg-white/8 hover:text-white/90"
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             );
           })}
         </nav>
