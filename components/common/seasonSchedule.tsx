@@ -358,7 +358,7 @@ export default function SeasonSchedule() {
           </div>
         </div>
       </div>
-      <div className="mt-12 lg:absolute lg:-bottom-48 lg:left-0 lg:right-0 lg:mt-0">
+      <div className="mt-12 lg:absolute lg:-bottom-56 lg:left-0 lg:right-0 lg:mt-0">
       <CampingExp />
       </div>
 

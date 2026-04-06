@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -245,18 +245,15 @@ export default function AdminNewsPage() {
               </label>
 
               <label className="block space-y-1 text-sm font-medium text-black">
-                <span>Image URL</span>
-                <input
-                  type="url"
-                  value={form.imageUrl}
-                  onChange={(e) => setForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                <span>Image *</span>
+                <NewsImageUpload
+                  imageUrl={form.imageUrl}
+                  onImageChange={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
                 />
               </label>
 
               {form.imageUrl ? (
-                <div className="overflow-hidden rounded-xl border border-black/10">
+                <div className="relative overflow-hidden rounded-xl border border-black/10">
                   <Image
                     src={form.imageUrl}
                     alt="Preview"
@@ -265,6 +262,13 @@ export default function AdminNewsPage() {
                     className="h-40 w-full object-cover"
                     unoptimized
                   />
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, imageUrl: "" }))}
+                    className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-sm text-white transition hover:bg-red-600"
+                  >
+                    ×
+                  </button>
                 </div>
               ) : null}
 
@@ -375,6 +379,184 @@ export default function AdminNewsPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- Image Upload Component ----------
+function NewsImageUpload({
+  imageUrl,
+  onImageChange,
+}: {
+  imageUrl: string;
+  onImageChange: (url: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [mode, setMode] = useState<"upload" | "url">("upload");
+  const [urlInput, setUrlInput] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadFile = useCallback(
+    async (file: File) => {
+      const MAX_SIZE = 10 * 1024 * 1024;
+      const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
+
+      if (!ALLOWED.includes(file.type)) {
+        toast.error(`Unsupported file type: ${file.type}`);
+        return;
+      }
+      if (file.size > MAX_SIZE) {
+        toast.error("File exceeds 10 MB limit");
+        return;
+      }
+
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("files", file);
+      formData.append("category", "news");
+
+      try {
+        const adminKey = getAdminKeyFromStorage();
+        const headers: HeadersInit = {};
+        if (adminKey) headers["x-admin-key"] = adminKey;
+
+        const res = await fetch("/api/admin/gallery", {
+          method: "POST",
+          headers,
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (data.uploaded?.[0]?.url) {
+          onImageChange(data.uploaded[0].url);
+          toast.success("Image uploaded");
+        } else if (data.errors?.length) {
+          toast.error(data.errors[0].error);
+        } else {
+          toast.error("Upload failed");
+        }
+      } catch {
+        toast.error("Upload failed");
+      } finally {
+        setUploading(false);
+      }
+    },
+    [onImageChange]
+  );
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+    else if (e.type === "dragleave") setDragActive(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) uploadFile(file);
+  };
+
+  if (imageUrl) return null;
+
+  return (
+    <div className="space-y-3">
+      {/* Mode toggle */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setMode("upload")}
+          className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+            mode === "upload"
+              ? "bg-orange-500 text-white"
+              : "border border-black/15 text-black/60 hover:bg-black/5"
+          }`}
+        >
+          Upload File
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("url")}
+          className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+            mode === "url"
+              ? "bg-orange-500 text-white"
+              : "border border-black/15 text-black/60 hover:bg-black/5"
+          }`}
+        >
+          Paste URL
+        </button>
+      </div>
+
+      {mode === "upload" ? (
+        <div
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+          onClick={() => !uploading && fileInputRef.current?.click()}
+          className={`flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
+            uploading
+              ? "pointer-events-none border-orange-400 bg-orange-50"
+              : dragActive
+                ? "border-orange-500 bg-orange-50"
+                : "border-black/20 hover:border-orange-400 hover:bg-orange-50/50"
+          }`}
+        >
+          {uploading ? (
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+              <span className="text-sm font-medium text-orange-600">Uploading...</span>
+            </div>
+          ) : (
+            <>
+              <svg className="mb-1 h-8 w-8 text-black/25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16V4m0 0-4 4m4-4 4 4M4 14v4a2 2 0 002 2h12a2 2 0 002-2v-4" />
+              </svg>
+              <p className="text-xs font-medium text-black/50">
+                Drag & drop or <span className="text-orange-500 underline">browse</span>
+              </p>
+              <p className="mt-0.5 text-[10px] text-black/35">JPEG, PNG, WebP, GIF — max 10 MB</p>
+            </>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) uploadFile(file);
+              e.target.value = "";
+            }}
+          />
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="https://example.com/image.jpg"
+            className="min-w-0 flex-1 rounded-xl border border-black/20 px-3 py-2 text-sm text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              if (urlInput.trim()) {
+                onImageChange(urlInput.trim());
+                setUrlInput("");
+              }
+            }}
+            disabled={!urlInput.trim()}
+            className="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:opacity-50"
+          >
+            Use
+          </button>
         </div>
       )}
     </div>
