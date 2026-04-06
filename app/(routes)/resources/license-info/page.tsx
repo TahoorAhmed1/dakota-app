@@ -16,7 +16,8 @@ export default function LicenseInfoPage() {
         <section className="relative flex min-h-[280px] items-center justify-center overflow-hidden bg-[#E7DCCF] px-4 pb-12 pt-24 sm:min-h-[320px] sm:px-6 sm:pb-14 sm:pt-28 md:min-h-[360px]">
           <div className="relative z-10 flex flex-col items-center text-center">
             <h1 className="text-3xl sm:text-4xl font-bold text-[#241304] mb-4">
-              South Dakota Hunting Licenses
+              How to buy a South Dakota Pheasant Hunting License
+
             </h1>
             <nav className="text-sm text-[#281703]" aria-label="Breadcrumb">
               <Link href="/" className="hover:text-[#E4803A]">Home</Link>
@@ -31,10 +32,11 @@ export default function LicenseInfoPage() {
         {/* Content Section */}
         <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-12">
 
-        <div className="space-y-4 text-[#31261d] text-lg">
-          <p>
-            South Dakota offers non-resident and resident hunting licenses for pheasant and waterfowl. UGUIDE provides guidance on the licensing process for our South Dakota camps.
-          </p>
+        <div className="space-y-4  text-[#31261d] text-2xl font-bold">
+          <h1>
+            For the Non-Resident
+          </h1>
+        <div className="space-y-4  text-[#31261d] ">
 
           <p>
             For non-resident waterfowl licenses, visit the South Dakota Game, Fish and Parks website:{" "}
@@ -50,6 +52,7 @@ export default function LicenseInfoPage() {
           <p>
             Make sure your license covers all the species you plan to hunt and any combo hunts (pheasant + waterfowl) you are booked for.
           </p>
+        </div>
         </div>
         </section>
       </main>
