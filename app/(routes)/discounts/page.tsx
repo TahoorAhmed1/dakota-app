@@ -51,7 +51,7 @@ function ImageTile({
 
 export default function DiscountsPage() {
   return (
-    <main className="overflow-hidden bg-[#ddd2c7] text-[#281703]">
+    <main className="overflow-hidden bg-[#E7DCCF] text-[#281703]">
       <section className="relative isolate flex min-h-[360px] items-center justify-center overflow-hidden px-4 pb-24 pt-20 sm:min-h-[430px] sm:px-6 sm:pt-24 lg:min-h-[520px] lg:pb-28">
         <Image
           src={heroImage}

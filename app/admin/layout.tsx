@@ -8,6 +8,8 @@ import { clearAdminKey } from "@/lib/admin-client";
 
 const navItems = [
   { label: "Dashboard", href: "/admin" },
+  { label: "News & Events", href: "/admin/news" },
+  { label: "Waitlist", href: "/admin/waitlist" },
   { label: "Camps", href: "/admin/camps" },
   { label: "Hunt Weeks", href: "/admin/weeks" },
   { label: "Packages", href: "/admin/packages" },
@@ -33,6 +35,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     clearAdminKey();
     router.push("/admin/login");
   };
+
+  // Login page gets its own full-screen layout
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
 
   return (
     <div className="flex min-h-screen overflow-x-hidden bg-[#fff7ef] text-black">

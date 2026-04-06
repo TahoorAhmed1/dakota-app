@@ -67,8 +67,10 @@ export function getAdminKeyFromStorage(): string | null {
 
 export function setAdminKeyInStorage(key: string) {
   localStorage.setItem("adminKey", key);
+  document.cookie = `admin-key=${encodeURIComponent(key)}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Strict`;
 }
 
 export function clearAdminKey() {
   localStorage.removeItem("adminKey");
+  document.cookie = "admin-key=; path=/; max-age=0; SameSite=Strict";
 }

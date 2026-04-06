@@ -111,14 +111,14 @@ type Errors = Partial<Record<keyof FormState, string>>;
 
 function SectionImage({ src, alt }: { src: StaticImageData; alt: string }) {
   return (
-    <div className="relative h-[96px] overflow-hidden rounded-[18px] sm:h-[118px] lg:h-[124px] xl:h-[132px]">
-      <Image src={src} alt={alt} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 280px" />
+    <div className="relative hidden overflow-hidden rounded-[18px] lg:block lg:h-31 xl:h-33">
+      <Image src={src} alt={alt} fill className="object-cover" sizes="280px" />
     </div>
   );
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="mb-[6px] block text-[12px] font-medium leading-[1.2] text-[#2d241b]">{children}</label>;
+  return <label className="mb-1.5 block text-[12px] font-medium leading-[1.2] text-[#2d241b]">{children}</label>;
 }
 
 function RequiredLabel({ children }: { children: React.ReactNode }) {
@@ -238,7 +238,7 @@ export default function ContactPage() {
 
   return (
     <main className="flex flex-col  text-[#281703]">
-      <section className="relative isolate flex min-h-[430px] items-center justify-center overflow-hidden  sm:min-h-[520px] lg:min-h-[560px] xl:min-h-[590px]">
+      <section className="relative isolate flex min-h-72 items-center justify-center overflow-hidden sm:min-h-130 lg:min-h-140 xl:min-h-147.5">
         <div className="absolute inset-0">
           <Image
             src={pic2}
@@ -275,7 +275,7 @@ export default function ContactPage() {
       </section>
 
       <section className="bg-[#e8ded1] px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:px-8 xl:px-10">
-        <div className="mx-auto max-w-[1220px] rounded-[18px] bg-[#f5f5f5] shadow-[0_10px_35px_rgba(69,42,13,0.16)]">
+          <div className="mx-auto max-w-305 rounded-[18px] bg-[#f5f5f5] shadow-[0_10px_35px_rgba(69,42,13,0.16)]">
           <div className="overflow-hidden rounded-t-[18px] bg-[linear-gradient(180deg,#6f3f08_0%,#3d1d00_100%)] px-4 py-4 text-center sm:px-6 lg:px-8">
             <h2 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-white sm:text-[30px] md:text-[36px]">
               Contact Us / Request Information
@@ -322,12 +322,12 @@ export default function ContactPage() {
 
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
-                <div className="max-w-[560px]">
+                <div className="max-w-140">
                   <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">2. Experience</h3>
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">
                     <span className="text-[#d25f2d]">*</span>How many years have you hunted South Dakota?
                   </p>
-                  <select name="experience" value={formData.experience} onChange={handleChange} className={`${fieldClassName} mt-2 w-full sm:max-w-[208px]`}>
+                  <select name="experience" value={formData.experience} onChange={handleChange} className={`${fieldClassName} mt-2 w-full sm:max-w-52`}>
                     <option value="">Select</option>
                     {selectChoices.experience.map((option) => (
                       <option key={option} value={option}>
@@ -348,7 +348,7 @@ export default function ContactPage() {
                   <p className="mt-2 text-[13px] italic leading-6 text-[#352b24]">
                     Please note the minimum group size is anywhere from 6 to 10 hunters per group.
                   </p>
-                  <div className="mt-4 grid gap-4 md:grid-cols-[1fr_140px] md:items-center md:gap-x-4 md:gap-y-3 lg:max-w-[680px]">
+                  <div className="mt-4 grid gap-4 md:grid-cols-[1fr_140px] md:items-center md:gap-x-4 md:gap-y-3 lg:max-w-170">
                     <p className="text-[13px] leading-6 text-[#352b24]">
                       <span className="text-[#d25f2d]">*</span>What would be the least number of hunters in your group?
                     </p>
@@ -386,7 +386,7 @@ export default function ContactPage() {
 
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
-                <div className="max-w-[560px]">
+                <div className="max-w-140">
                   <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">4. Dog Power</h3>
                   <div className="mt-4 grid gap-3 md:grid-cols-[1fr_150px] md:items-center md:gap-4">
                     <p className="text-[13px] leading-6 text-[#352b24]">
@@ -416,7 +416,7 @@ export default function ContactPage() {
                     5. Hunting Timeframe Preferences
                   </h3>
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">Please select your preferred weeks.</p>
-                  <div className="mt-4 space-y-3 lg:max-w-[420px]">
+                  <div className="mt-4 space-y-3 lg:max-w-105">
                     <div className="grid gap-2 sm:grid-cols-[86px_minmax(0,1fr)] sm:items-center lg:grid-cols-[86px_minmax(0,1fr)_72px]">
                       <label htmlFor="firstChoice" className="text-[13px] font-medium text-[#352b24]">1st Choice</label>
                       <div>
@@ -459,7 +459,7 @@ export default function ContactPage() {
 
             <div className="py-6 sm:py-8">
               <h3 className="text-[21px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[25px] lg:text-[28px]">6. Contact Info</h3>
-              <p className="mt-3 max-w-[760px] text-[13px] leading-6 text-[#352b24]">
+              <p className="mt-3 max-w-190 text-[13px] leading-6 text-[#352b24]">
                 By putting your contact information here, you will be receiving a response within 24 hours via email or phone call from Chris UGUIDE Founder/Owner.
               </p>
 
@@ -499,7 +499,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div className="mt-4 max-w-[700px]">
+              <div className="mt-4 max-w-175">
                 <Label>Additional Comments</Label>
                 <textarea
                   name="additionalComments"
@@ -514,7 +514,7 @@ export default function ContactPage() {
                   <p className="mb-2 text-[12px] font-medium text-[#2d241b]">
                     <span className="text-[#d25f2d]">*</span>reCAPTCHA
                   </p>
-                  <label className="flex min-h-[78px] items-center gap-3 rounded-[2px] border border-[#2a2a2a] bg-[#252525] px-4 py-3 text-white">
+                  <label className="flex min-h-19.5 items-center gap-3 rounded-xs border border-[#2a2a2a] bg-[#252525] px-4 py-3 text-white">
                     <input
                       type="checkbox"
                       name="captchaChecked"
@@ -529,14 +529,14 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="h-[46px] w-full rounded-[2px] bg-[linear-gradient(180deg,#ff8c3f_0%,#f16724_100%)] px-6 text-[16px] font-bold uppercase tracking-[0.04em] text-white shadow-[0_6px_14px_rgba(241,103,36,0.35)] transition hover:brightness-[1.03] focus:outline-none focus:ring-2 focus:ring-[#f16724]/40 md:w-auto"
+                  className="h-11.5 w-full rounded-xs bg-[linear-gradient(180deg,#ff8c3f_0%,#f16724_100%)] px-6 text-[16px] font-bold uppercase tracking-[0.04em] text-white shadow-[0_6px_14px_rgba(241,103,36,0.35)] transition hover:brightness-[1.03] focus:outline-none focus:ring-2 focus:ring-[#f16724]/40 md:w-auto"
                 >
                   Submit Form
                 </button>
               </div>
 
               {submitState === "success" && (
-                <div className="mt-5 rounded-[8px] border border-[#c9ddb7] bg-[#f3faea] px-4 py-3 text-[13px] text-[#406127]">
+                <div className="mt-5 rounded-lg border border-[#c9ddb7] bg-[#f3faea] px-4 py-3 text-[13px] text-[#406127]">
                   Your request information has been captured successfully.
                 </div>
               )}
