@@ -181,7 +181,81 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const config = await getCalculatorConfig();
+    const camps = await prisma.camp.findMany({
+      orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
+      select: { name: true, slug: true, displayOrder: true, isActive: true },
+    });
+
+    const weeks = await prisma.huntWeek.findMany({
+      orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
+      select: { label: true, slug: true, seasonLabel: true, displayOrder: true, isActive: true },
+    });
+
+    const packages = await prisma.packageOption.findMany({
+      orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
+      select: { code: true, label: true, nights: true, days: true, displayOrder: true, isActive: true },
+    });
+
+    const pricingRows = await prisma.campWeekPricing.findMany({
+      orderBy: [{ weekId: "asc" }, { campId: "asc" }, { packageId: "asc" }],
+      select: {
+        camp: { select: { slug: true } },
+        week: { select: { slug: true } },
+        package: { select: { code: true } },
+        baseRate: true,
+        minGroupSize: true,
+        isAvailable: true,
+        availabilityTag: true,
+      },
+    });
+
+    const volumeRules = await prisma.volumeDiscountRule.findMany({
+      orderBy: [{ displayOrder: "asc" }, { minHunters: "asc" }],
+      select: {
+        minHunters: true,
+        maxHunters: true,
+        amountOffPerHead: true,
+        displayOrder: true,
+        isActive: true,
+      },
+    });
+
+    const discountRules = await prisma.discountRule.findMany({
+      orderBy: [{ stackOrder: "asc" }, { label: "asc" }],
+      select: {
+        code: true,
+        label: true,
+        category: true,
+        type: true,
+        value: true,
+        stackOrder: true,
+        isActive: true,
+      },
+    });
+
+    const settings = await prisma.calculatorSetting.findUnique({
+      where: { id: "default" },
+      select: { config: true },
+    });
+
+    const config = {
+      camps,
+      weeks,
+      packages,
+      pricingRows: pricingRows.map((row) => ({
+        campSlug: row.camp.slug,
+        weekSlug: row.week.slug,
+        packageCode: row.package.code,
+        baseRate: row.baseRate,
+        minGroupSize: row.minGroupSize,
+        isAvailable: row.isAvailable,
+        availabilityTag: row.availabilityTag,
+      })),
+      volumeRules,
+      discountRules,
+      settings: settings?.config ?? defaultCalculatorSettings,
+    };
+
     return NextResponse.json(config);
   } catch (error) {
     console.error("ADMIN CONFIG GET ERROR", error);
