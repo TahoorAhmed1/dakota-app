@@ -194,7 +194,7 @@ export default function FAQPage() {
       </main>
       <OurPartners />
       <LatestNews />
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

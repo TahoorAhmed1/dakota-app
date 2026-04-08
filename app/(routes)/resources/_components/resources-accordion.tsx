@@ -26,9 +26,9 @@ const resourceSections: ResourceSection[] = [
   },
   {
     label: "UGUIDE Outfitter",
-    href: "/about",
+    href: "/resources/uguide-outfitter",
     children: [
-      { label: "Guided options", href: "/about" },
+      { label: "Guided options", href: "/resources/uguide-outfitter" },
       { label: "Trip planning", href: "/quote-reserve" },
     ],
   },
