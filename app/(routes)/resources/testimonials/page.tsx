@@ -5,6 +5,7 @@ import Header from "@/components/common/header";
 import Footer from "@/components/common/footer";
 import OurPartners from "@/components/ourPartners";
 import LatestNews from "@/components/NewsEvent";
+import Link from "next/link";
 
 const testimonials = [
   {
@@ -66,7 +67,7 @@ export default function TestimonialsPage() {
         <div className="space-y-8">
           {testimonials.map((t, index) => (
             <div key={index} className="p-6 bg-[#F7F5F1] rounded-lg shadow-md">
-              <p className="text-lg text-[#2b1a0f] mb-2">"{t.text}"</p>
+              <p className="text-lg text-[#2b1a0f] mb-2">{t.text}</p>
               <p className="font-semibold text-[#E4803A]">{t.name}</p>
               <p className="text-sm text-[#31261d]">{t.role}</p>
             </div>

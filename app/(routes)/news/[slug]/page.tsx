@@ -12,21 +12,7 @@ async function getPost(slug: string) {
   }
 }
 
-function BreadcrumbHomeIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      xmlns="http://www.w3.org/2000/svg"
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="shrink-0"
-    >
-      <path d="M12 3.172 3 10.2V21h6v-6h6v6h6V10.2l-9-7.028Z" />
-    </svg>
-  );
-}
+
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -48,7 +34,7 @@ export default async function NewsPostPage({ params }: { params: Promise<{ slug:
     <main className="min-h-screen bg-[#fff7ef]">
 
 
-      <article className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
+      <article className="mx-auto max-w-4xl py-40">
         {post.imageUrl ? (
           <div className="mb-8 overflow-hidden rounded-2xl">
             <Image
