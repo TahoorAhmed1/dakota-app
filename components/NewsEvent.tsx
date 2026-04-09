@@ -24,7 +24,7 @@ export default async function LatestNews() {
   return (
     <section className="w-full bg-[#E7DCCF] px-4 py-16 sm:px-6 sm:py-20">
       <div className="max-w-6xl mx-auto text-center">
-        <p className="text-xs tracking-[3px] text-orange-500 uppercase mb-3">Updates</p>
+        <p className="text-xs tracking-[3px] text-orange-500 uppercase mb-3 font-medium">Updates</p>
 
         <h2 className="text-3xl font-bold text-[#2b2b2b] sm:text-4xl">
           Latest News &amp; Events
@@ -81,14 +81,7 @@ export default async function LatestNews() {
           ))}
         </div>
 
-        <div className="mt-10">
-          <Link
-            href="/news"
-            className="inline-block rounded-xl border border-orange-500 px-6 py-2.5 text-sm font-semibold text-orange-500 transition hover:bg-orange-500 hover:text-white"
-          >
-            View All News
-          </Link>
-        </div>
+    
       </div>
     </section>
   );

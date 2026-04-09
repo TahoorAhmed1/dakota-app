@@ -26,6 +26,14 @@ const testimonials = [
     text: "We've been coming to UGUIDE for 5 years now. The camps are always clean, well-maintained, and the hunting grounds are some of the best in South Dakota. Chris and his team make every detail perfect.",
     rating: 5,
   },
+  {
+    id: 3,
+    name: "Sarah & David Martinez",
+    role: "Returning Customers",
+    headline: '"Outstanding organization and beautiful camps"',
+    text: "We've been coming to UGUIDE for 5 years now. The camps are always clean, well-maintained, and the hunting grounds are some of the best in South Dakota. Chris and his team make every detail perfect.",
+    rating: 5,
+  },
 ];
 
 function getRelativeOffset(index: number, activeIndex: number) {
