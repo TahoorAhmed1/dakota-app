@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const testimonials = [
   {
@@ -45,7 +45,7 @@ function getRelativeOffset(index: number, activeIndex: number) {
 }
 
 export default function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const prev = () =>
     setCurrentIndex((i) => (i - 1 + testimonials.length) % testimonials.length);
