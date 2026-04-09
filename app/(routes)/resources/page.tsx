@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+
 import LatestNews from "@/components/NewsEvent";
 import OurPartners from "@/components/ourPartners";
 import ResourcesAccordionSection from "./_components/resources-accordion";
@@ -72,6 +73,7 @@ function HomeIcon() {
 
 export default function ResourcesPage() {
   return (
+    <>
     <main className="flex flex-col">
       <section className="ResourcesImage relative flex min-h-80 items-center justify-center overflow-hidden bg-cover bg-center px-4 pb-20 pt-24 sm:min-h-105 sm:px-6 sm:pb-24 sm:pt-28 md:min-h-130 lg:min-h-155 lg:pb-28 lg:pt-32">
         <div className="absolute inset-0 " />
@@ -146,7 +148,9 @@ export default function ResourcesPage() {
       </section>
 
       <OurPartners />
-      <LatestNews />
-    </main>
+      <LatestNews />      
+      </main>
+      {/* <Footer /> */}
+    </>
   );
 }
