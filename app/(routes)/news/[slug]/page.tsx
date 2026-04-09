@@ -46,21 +46,7 @@ export default async function NewsPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <main className="min-h-screen bg-[#fff7ef]">
-      {/* Breadcrumb */}
-      <div className="border-b border-black/10 bg-white">
-        <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-black/60">
-            <Link href="/" className="flex items-center gap-1 hover:text-orange-500">
-              <BreadcrumbHomeIcon />
-              Home
-            </Link>
-            <span>/</span>
-            <Link href="/news" className="hover:text-orange-500">News &amp; Events</Link>
-            <span>/</span>
-            <span className="truncate text-black">{post.title}</span>
-          </nav>
-        </div>
-      </div>
+
 
       <article className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-20">
         {post.imageUrl ? (
