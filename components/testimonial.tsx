@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const testimonials = [
   {
@@ -45,19 +45,11 @@ function getRelativeOffset(index: number, activeIndex: number) {
 }
 
 export default function Testimonials() {
-  const [currentIndex, setCurrentIndex] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const prev = () =>
     setCurrentIndex((i) => (i - 1 + testimonials.length) % testimonials.length);
   const next = () => setCurrentIndex((i) => (i + 1) % testimonials.length);
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 8000);
-
-    return () => window.clearTimeout(timeout);
-  }, [currentIndex]);
 
   return (
     <section className="relative bg-[#E7DCCF] px-4 py-16 text-center text-[#1a1a1a] sm:px-6 sm:py-20">

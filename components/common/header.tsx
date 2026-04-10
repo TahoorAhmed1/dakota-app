@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { X } from "lucide-react";
 
 type MenuItem = {
   label: string;
@@ -82,7 +83,6 @@ function Header() {
                     key={item.label}
                     className="relative"
                     onMouseEnter={() => setOpenDropdown(item.label)}
-                    onMouseLeave={() => setOpenDropdown(null)}
                   >
                     <Link
                       href={item.href}
@@ -96,7 +96,7 @@ function Header() {
                       <span className="text-[10px]">▾</span>
                     </Link>
                     {openDropdown === item.label && (
-                      <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
+                      <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3" onMouseLeave={() => setOpenDropdown(null)}>
                         <div className="min-w-56 overflow-hidden rounded-xl border border-[#e9e2db] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.12)]">
                           {item.dropdown!.map((child) => (
                             <Link
@@ -177,11 +177,11 @@ function Header() {
           />
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/8 text-white transition hover:bg-white/14"
+            className="inline-flex p-3  items-center text-xl justify-center rounded-full border border-white/20 bg-white/8 text-white transition hover:bg-white/14"
             onClick={() => setIsSidebarOpen(false)}
             aria-label="Close navigation menu"
           >
-            <span className="text-2xl leading-none">×</span>
+           <X className="w-4 h-4"/>
           </button>
         </div>
 
