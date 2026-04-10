@@ -67,7 +67,7 @@ function Header() {
             <Image
               src={logo}
               alt="U Guide"
-              className="h-9 w-auto object-contain sm:h-10 lg:h-12"
+              className="h-9 w-auto object-contain sm:h-12 lg:h-16"
               priority
             />
           </Link>
