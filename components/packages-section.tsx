@@ -1,37 +1,46 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { prisma } from "@/lib/prisma";
+type PackageItem = {
+  id: string;
+  label: string;
+  nights: number;
+  days: number;
+};
 
-export default async function PackagesSection() {
-  let packages: Awaited<ReturnType<typeof prisma.packageOption.findMany>> = [];
-  let minGroupData: { name: string; minGroupSize: number }[] = [];
+type MinGroupRow = {
+  name: string;
+  minGroupSize: number;
+};
 
-  try {
-    packages = await prisma.packageOption.findMany({
-      where: { isActive: true },
-      orderBy: { displayOrder: "asc" },
-    });
+export default function PackagesSection() {
+  const [packages, setPackages] = useState<PackageItem[]>([]);
+  const [minGroupData, setMinGroupData] = useState<MinGroupRow[]>([]);
 
-    const camps = await prisma.camp.findMany({
-      where: { isActive: true },
-      select: {
-        name: true,
-        pricingRows: {
-          where: { isAvailable: true },
-          select: { minGroupSize: true },
-          orderBy: { minGroupSize: "asc" },
-          take: 1,
-        },
-      },
-      orderBy: { displayOrder: "asc" },
-    });
+  useEffect(() => {
+    let mounted = true;
 
-    minGroupData = camps
-      .filter((c) => c.pricingRows.length > 0)
-      .map((c) => ({ name: c.name, minGroupSize: c.pricingRows[0].minGroupSize }));
-  } catch {
-    // Database unavailable – render section with empty data
-  }
+    async function fetchPackages() {
+      try {
+        const res = await fetch("/api/packages");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!mounted) return;
+        setPackages(data.packages ?? []);
+        setMinGroupData(data.minGroupData ?? []);
+      } catch {
+        // Ignore fetch errors and show nothing
+      }
+    }
+
+    fetchPackages();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <section className="bg-white px-4 py-16 sm:px-6 sm:py-20">

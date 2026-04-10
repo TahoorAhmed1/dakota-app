@@ -11,9 +11,10 @@ type DiscountRule = {
   code: string;
   label: string;
   type: "FIXED" | "PERCENT";
-  amount: number;
+  value: number;
   category: "INDIVIDUAL" | "JUNIOR";
-  active: boolean;
+  isActive: boolean;
+  stackOrder: number;
 };
 
 type CalculatorConfig = {
@@ -36,9 +37,10 @@ export default function DiscountsPage() {
     code: "",
     label: "",
     type: "FIXED",
-    amount: 0,
+    value: 0,
     category: "INDIVIDUAL",
-    active: true,
+    isActive: true,
+    stackOrder: 0,
   });
 
   useEffect(() => {
@@ -81,7 +83,7 @@ export default function DiscountsPage() {
   };
 
   const handleAddDiscount = () => {
-    if (!newDiscount.code || !newDiscount.label || newDiscount.amount === 0) {
+    if (!newDiscount.code || !newDiscount.label || newDiscount.value === 0) {
       setError("Please fill in all discount fields");
       return;
     }
@@ -90,9 +92,10 @@ export default function DiscountsPage() {
       code: "",
       label: "",
       type: "FIXED",
-      amount: 0,
+      value: 0,
       category: "INDIVIDUAL",
-      active: true,
+      isActive: true,
+      stackOrder: 0,
     });
   };
 
@@ -159,8 +162,8 @@ export default function DiscountsPage() {
           <input
             type="number"
             placeholder="Amount"
-            value={newDiscount.amount || ""}
-            onChange={(e) => setNewDiscount({ ...newDiscount, amount: parseInt(e.target.value) })}
+            value={newDiscount.value || ""}
+            onChange={(e) => setNewDiscount({ ...newDiscount, value: parseInt(e.target.value) || 0 })}
             className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
           />
           <select
@@ -226,8 +229,8 @@ export default function DiscountsPage() {
                 <td className="px-6 py-4">
                   <input
                     type="number"
-                    value={discount.amount}
-                    onChange={(e) => handleUpdateDiscount(idx, "amount", parseInt(e.target.value))}
+                    value={discount.value}
+                    onChange={(e) => handleUpdateDiscount(idx, "value", parseInt(e.target.value))}
                     className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                   />
                 </td>
@@ -244,8 +247,8 @@ export default function DiscountsPage() {
                 <td className="px-6 py-4">
                   <input
                     type="checkbox"
-                    checked={discount.active}
-                    onChange={(e) => handleUpdateDiscount(idx, "active", e.target.checked)}
+                    checked={discount.isActive}
+                    onChange={(e) => handleUpdateDiscount(idx, "isActive", e.target.checked)}
                     className="h-4 w-4 accent-orange-500"
                   />
                 </td>

@@ -21,7 +21,7 @@ type GalleryImage = {
   createdAt: string;
 };
 
-const CATEGORIES = ["general", "hunting", "camps", "dogs", "scenery", "groups"];
+const CATEGORIES = ["general", "hunting", "camps", "dogs", "scenery", "groups","catalog"];
 
 function formatBytes(bytes: number) {
   if (bytes === 0) return "0 B";

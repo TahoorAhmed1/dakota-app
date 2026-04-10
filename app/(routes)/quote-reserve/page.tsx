@@ -598,9 +598,23 @@ export default function QuoteReservePage() {
           </div>
         </div>
 
-        {/* <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
-          <div className="h-20 w-full rounded-t-[100%] border-t-[4px] border-[#281703] bg-[#E7DCCF]" />
-        </div> */}
+       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/70 animate-bounce">
+          <span className="text-[11px] tracking-widest uppercase">Scroll</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
       </section>
 
       <section className="bg-[#E7DCCF] px-4 pb-20 pt-14 sm:pt-16 md:px-6 md:pb-24 md:pt-20">

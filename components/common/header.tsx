@@ -19,14 +19,23 @@ const menu: MenuItem[] = [
   { label: "CONTACT", href: "/contact" },
   { label: "QUOTE-RESERVE", href: "/quote-reserve" },
   { label: "CAMPS & MAP", href: "/camps" },
-  { label: "NEWS", href: "/news" },
+  { label: "DISCOUNTS", href: "/discounts" },
   {
     label: "RESOURCES",
     href: "/resources",
     dropdown: [
-      { label: "Rates & Pricing", href: "/rates", desc: "Package rates & booking info" },
-      { label: "Discounts & Offers", href: "/discounts", desc: "Special offers & savings" },
-      { label: "Policies & Info", href: "/resources", desc: "Hunting policies, FAQ & more" },
+      {
+        label: "Rates & Pricing",
+        href: "/rates",
+        desc: "Package rates & booking info",
+      },
+      { label: "NEWS", href: "/news", desc: "Latest news & updates" },
+
+      {
+        label: "Policies & Info",
+        href: "/resources",
+        desc: "Hunting policies, FAQ & more",
+      },
     ],
   },
 ];
@@ -48,7 +57,12 @@ function Header() {
     <>
       <header className="absolute z-30 flex w-full justify-center px-3 py-4 sm:px-5 sm:py-6 lg:py-10">
         <div className="flex w-full max-w-345 items-center justify-between rounded-2xl bg-white/96 px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)] backdrop-blur sm:px-6 lg:w-[90%] lg:px-7">
-          <Link href="/" className="flex items-center" aria-label="Go to homepage" onClick={() => setIsSidebarOpen(false)}>
+          <Link
+            href="/"
+            className="flex items-center"
+            aria-label="Go to homepage"
+            onClick={() => setIsSidebarOpen(false)}
+          >
             <Image
               src={logo}
               alt="U Guide"
@@ -73,7 +87,9 @@ function Header() {
                     <Link
                       href={item.href}
                       className={`flex items-center gap-1 transition-colors ${
-                        isActive ? "text-orange-500" : "text-gray-700 hover:text-orange-500"
+                        isActive
+                          ? "text-orange-500"
+                          : "text-gray-700 hover:text-orange-500"
                       }`}
                     >
                       {item.label}
@@ -88,8 +104,12 @@ function Header() {
                               href={child.href}
                               className="block border-b border-[#f0e8df] px-5 py-3.5 transition-colors last:border-0 hover:bg-[#fdf5ee]"
                             >
-                              <p className="text-xs font-bold text-[#281703]">{child.label}</p>
-                              <p className="mt-0.5 text-[11px] text-[#281703]/55">{child.desc}</p>
+                              <p className="text-xs font-bold text-[#281703]">
+                                {child.label}
+                              </p>
+                              <p className="mt-0.5 text-[11px] text-[#281703]/55">
+                                {child.desc}
+                              </p>
                             </Link>
                           ))}
                         </div>
@@ -104,7 +124,9 @@ function Header() {
                   key={item.label}
                   href={item.href}
                   className={`transition-colors ${
-                    isActive ? "text-orange-500" : "text-gray-700 hover:text-orange-500"
+                    isActive
+                      ? "text-orange-500"
+                      : "text-gray-700 hover:text-orange-500"
                   }`}
                 >
                   {item.label}
@@ -132,7 +154,9 @@ function Header() {
 
       <div
         className={`fixed inset-0 z-40 bg-black/45 transition-opacity duration-300 xl:hidden ${
-          isSidebarOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          isSidebarOpen
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
         }`}
         onClick={() => setIsSidebarOpen(false)}
         aria-hidden="true"
@@ -146,7 +170,11 @@ function Header() {
         aria-hidden={!isSidebarOpen}
       >
         <div className="mb-8 flex items-center justify-between">
-          <Image src={logo} alt="U Guide" className="h-9 w-auto object-contain" />
+          <Image
+            src={logo}
+            alt="U Guide"
+            className="h-9 w-auto object-contain"
+          />
           <button
             type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/8 text-white transition hover:bg-white/14"
@@ -173,7 +201,9 @@ function Header() {
                   }`}
                 >
                   {item.label}
-                  {item.dropdown?.length ? <span className="text-[10px]">▾</span> : null}
+                  {item.dropdown?.length ? (
+                    <span className="text-[10px]">▾</span>
+                  ) : null}
                 </Link>
                 {item.dropdown?.length ? (
                   <div className="mb-1 mt-0.5 space-y-0.5 pl-3">

@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Toaster } from "sonner";
 import { clearAdminKey } from "@/lib/admin-client";
+import { useImageCatalogStore } from "@/lib/image-catalog-store";
 
 const navItems = [
   { label: "Dashboard", href: "/admin" },
   { label: "News & Events", href: "/admin/news" },
   { label: "Gallery", href: "/admin/gallery" },
+  { label: "Image Catalog", href: "/admin/image-catalog" },
   { label: "Waitlist", href: "/admin/waitlist" },
   { label: "Camps", href: "/admin/camps" },
   { label: "Hunt Weeks", href: "/admin/weeks" },
@@ -19,7 +21,11 @@ const navItems = [
   { label: "Calculator Settings", href: "/admin/settings" },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -32,12 +38,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
   }, [isSidebarOpen]);
 
+
   const handleLogout = () => {
     clearAdminKey();
     router.push("/admin/login");
   };
 
-  // Login page gets its own full-screen layout
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
@@ -54,7 +60,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       ) : null}
 
       <aside
-        aria-hidden={!isSidebarOpen && typeof window !== "undefined" ? true : undefined}
+        aria-hidden={
+          !isSidebarOpen && typeof window !== "undefined" ? true : undefined
+        }
         className={`fixed inset-y-0 left-0 z-40 flex w-72 max-w-[82vw] flex-col overflow-y-auto bg-black p-5 text-white transition-transform duration-300 sm:p-6 lg:static lg:w-64 lg:max-w-none lg:translate-x-0 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
@@ -104,8 +112,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="border-b border-black/10 bg-white px-4 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.08)] sm:px-6">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <h1 className="truncate text-base font-bold text-black sm:text-2xl">Dakota Hunting Adventures Admin</h1>
-              <p className="mt-1 text-xs text-black/55 sm:hidden">Dashboard and calculator controls</p>
+              <h1 className="truncate text-base font-bold text-black sm:text-2xl">
+                Dakota Hunting Adventures Admin
+              </h1>
+              <p className="mt-1 text-xs text-black/55 sm:hidden">
+                Dashboard and calculator controls
+              </p>
             </div>
             <button
               type="button"
@@ -113,7 +125,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-black/10 text-black lg:hidden"
               aria-label="Open admin navigation"
             >
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
               </svg>
             </button>
@@ -130,7 +148,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         richColors
         toastOptions={{
           classNames: {
-            toast: "border border-black bg-white text-black shadow-[0_16px_40px_rgba(0,0,0,0.16)]",
+            toast:
+              "border border-black bg-white text-black shadow-[0_16px_40px_rgba(0,0,0,0.16)]",
             title: "text-black",
             description: "text-black/70",
             success: "border-orange-500",

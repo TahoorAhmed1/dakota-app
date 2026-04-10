@@ -303,7 +303,7 @@ export default function SeasonSchedule() {
                   cy="12"
                   r="9"
                   stroke="#0077FF"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 />
@@ -313,13 +313,13 @@ export default function SeasonSchedule() {
                   width="0.01"
                   height="0.01"
                   stroke="#0077FF"
-                  stroke-width="3"
+                  strokeWidth="3"
                   stroke-linejoin="round"
                 />
                 <path
                   d="M12 12V16"
                   stroke="#0077FF"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 />
@@ -341,14 +341,14 @@ export default function SeasonSchedule() {
                   r="9"
                   fill="#29B100"
                   stroke="#29B100"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 />
                 <path
                   d="M15 10L11 14L9 12"
                   stroke="white"
-                  stroke-width="2"
+                  strokeWidth="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 />

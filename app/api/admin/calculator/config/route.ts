@@ -280,57 +280,57 @@ export async function PUT(req: NextRequest) {
 
     const payload = parsed.data;
 
-    await prisma.$transaction(async (tx) => {
-      await tx.quoteHunter.deleteMany();
-      await tx.quote.deleteMany();
-      await tx.campWeekPricing.deleteMany();
-      await tx.volumeDiscountRule.deleteMany();
-      await tx.discountRule.deleteMany();
-      await tx.packageOption.deleteMany();
-      await tx.huntWeek.deleteMany();
-      await tx.camp.deleteMany();
+    await prisma.$transaction(
+      async (tx) => {
+        // Delete all existing data
+        await tx.quoteHunter.deleteMany();
+        await tx.quote.deleteMany();
+        await tx.campWeekPricing.deleteMany();
+        await tx.volumeDiscountRule.deleteMany();
+        await tx.discountRule.deleteMany();
+        await tx.packageOption.deleteMany();
+        await tx.huntWeek.deleteMany();
+        await tx.camp.deleteMany();
 
-      const camps = await Promise.all(
-        payload.camps.map((camp) =>
-          tx.camp.create({
-            data: camp,
-          })
-        )
-      );
+        // Batch create camps and get them back
+        await tx.camp.createMany({ data: payload.camps });
+        const camps = await tx.camp.findMany({
+          where: { slug: { in: payload.camps.map(c => c.slug) } },
+          select: { id: true, slug: true },
+        });
 
-      const weeks = await Promise.all(
-        payload.weeks.map((week) =>
-          tx.huntWeek.create({
-            data: week,
-          })
-        )
-      );
+        // Batch create weeks and get them back
+        await tx.huntWeek.createMany({ data: payload.weeks });
+        const weeks = await tx.huntWeek.findMany({
+          where: { slug: { in: payload.weeks.map(w => w.slug) } },
+          select: { id: true, slug: true },
+        });
 
-      const packages = await Promise.all(
-        payload.packages.map((pkg) =>
-          tx.packageOption.create({
-            data: pkg,
-          })
-        )
-      );
+        // Batch create packages and get them back
+        await tx.packageOption.createMany({ data: payload.packages });
+        const packages = await tx.packageOption.findMany({
+          where: { code: { in: payload.packages.map(p => p.code) } },
+          select: { id: true, code: true },
+        });
 
-      const campBySlug = new Map(camps.map((camp) => [camp.slug, camp.id]));
-      const weekBySlug = new Map(weeks.map((week) => [week.slug, week.id]));
-      const packageByCode = new Map(packages.map((pkg) => [pkg.code, pkg.id]));
+        // Create lookup maps
+        const campBySlug = new Map(camps.map((camp) => [camp.slug, camp.id]));
+        const weekBySlug = new Map(weeks.map((week) => [week.slug, week.id]));
+        const packageByCode = new Map(packages.map((pkg) => [pkg.code, pkg.id]));
 
-      for (const row of payload.pricingRows) {
-        const campId = campBySlug.get(row.campSlug);
-        const weekId = weekBySlug.get(row.weekSlug);
-        const packageId = packageByCode.get(row.packageCode);
+        // Prepare pricing rows data
+        const pricingRowsData = payload.pricingRows.map((row) => {
+          const campId = campBySlug.get(row.campSlug);
+          const weekId = weekBySlug.get(row.weekSlug);
+          const packageId = packageByCode.get(row.packageCode);
 
-        if (!campId || !weekId || !packageId) {
-          throw new Error(
-            `Pricing row references unknown camp/week/package: ${row.campSlug}/${row.weekSlug}/${row.packageCode}`
-          );
-        }
+          if (!campId || !weekId || !packageId) {
+            throw new Error(
+              `Pricing row references unknown camp/week/package: ${row.campSlug}/${row.weekSlug}/${row.packageCode}`
+            );
+          }
 
-        await tx.campWeekPricing.create({
-          data: {
+          return {
             campId,
             weekId,
             packageId,
@@ -338,41 +338,52 @@ export async function PUT(req: NextRequest) {
             minGroupSize: row.minGroupSize,
             isAvailable: row.isAvailable,
             availabilityTag: row.availabilityTag ?? null,
+          };
+        });
+
+        // Batch create pricing rows
+        await tx.campWeekPricing.createMany({
+          data: pricingRowsData,
+        });
+
+        // Batch create volume rules
+        await tx.volumeDiscountRule.createMany({
+          data: payload.volumeRules.map((rule) => ({
+            minHunters: rule.minHunters,
+            maxHunters: rule.maxHunters ?? null,
+            amountOffPerHead: rule.amountOffPerHead,
+            displayOrder: rule.displayOrder,
+            isActive: rule.isActive,
+          })),
+        });
+
+        // Batch create discount rules
+        await tx.discountRule.createMany({
+          data: payload.discountRules.map((rule) => ({
+            code: rule.code,
+            label: rule.label,
+            category: rule.category,
+            type: rule.type,
+            value: rule.value,
+            stackOrder: rule.stackOrder,
+            isActive: rule.isActive,
+          })),
+        });
+
+        // Update settings
+        await tx.calculatorSetting.upsert({
+          where: { id: "default" },
+          update: { config: payload.settings },
+          create: {
+            id: "default",
+            config: payload.settings,
           },
         });
+      },
+      {
+        timeout: 30000, // 30 seconds timeout
       }
-
-      await tx.volumeDiscountRule.createMany({
-        data: payload.volumeRules.map((rule) => ({
-          minHunters: rule.minHunters,
-          maxHunters: rule.maxHunters ?? null,
-          amountOffPerHead: rule.amountOffPerHead,
-          displayOrder: rule.displayOrder,
-          isActive: rule.isActive,
-        })),
-      });
-
-      await tx.discountRule.createMany({
-        data: payload.discountRules.map((rule) => ({
-          code: rule.code,
-          label: rule.label,
-          category: rule.category,
-          type: rule.type,
-          value: rule.value,
-          stackOrder: rule.stackOrder,
-          isActive: rule.isActive,
-        })),
-      });
-
-      await tx.calculatorSetting.upsert({
-        where: { id: "default" },
-        update: { config: payload.settings },
-        create: {
-          id: "default",
-          config: payload.settings,
-        },
-      });
-    });
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {

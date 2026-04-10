@@ -126,6 +126,23 @@ export default function RatesPage() {
             </nav>
           </div>
         </div>
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/70 animate-bounce">
+          <span className="text-[11px] tracking-widest uppercase">Scroll</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
       </section>
       <section className="bg-[#e8ded1] px-4 pb-14 pt-5 sm:px-6 md:px-8 md:pb-16 md:pt-8 lg:px-10 lg:pb-20 lg:pt-10">
         <div className="mx-auto max-w-[1320px]">

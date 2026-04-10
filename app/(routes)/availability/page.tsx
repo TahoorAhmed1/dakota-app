@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ImagesCatalog from "@/components/common/images-catalog";
 import SeasonSchedule from "@/components/common/seasonSchedule";
-import PhotoSlideshow from "@/components/photo-slideshow";
+
 import Testimonials from "@/components/testimonial";
 
 export default function AvailabilityPage() {
@@ -39,10 +39,23 @@ export default function AvailabilityPage() {
           </div>
         </div>
 
-        {/* Curved divider */}
-        {/* <div className="absolute bottom-0 left-0 right-0 translate-y-1/2">
-          <div className="h-20 w-full rounded-t-[100%] border-t-[4px] border-[#281703] bg-[#E7DCCF]" />
-        </div> */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/70 animate-bounce">
+          <span className="text-[11px] tracking-widest uppercase">Scroll</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
       </section>
 
       {/* Season schedule section */}
@@ -50,33 +63,13 @@ export default function AvailabilityPage() {
 
       {/* Photo slideshow section */}
 
-
       <section className="bg-white px-4 pb-20 sm:px-6 sm:pb-24">
         <div className="mx-auto max-w-7xl">
           <ImagesCatalog />
         </div>
       </section>
 
-            <section className="bg-[#281703] px-4 py-16 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-10 text-center sm:mb-12">
-            <p className="mb-2 text-xs font-bold tracking-widest uppercase text-orange-400">
-              Life at Camp
-            </p>
-            <h2 className="text-3xl font-bold uppercase text-white sm:text-4xl">
-              UGUIDE Photo Gallery
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-white/60 sm:text-base">
-              A look at the people, dogs, birds, and places that make UGUIDE South Dakota&apos;s premier pheasant hunting experience.
-            </p>
-          </div>
-          <PhotoSlideshow />
-        </div>
-      </section>
-      {/* Testimonials */}
       <Testimonials />
-
-      {/* Gallery section */}
     </main>
   );
 }

@@ -47,10 +47,32 @@ export async function updateAdminConfig(config: any, adminKey?: string) {
     headers["x-admin-key"] = adminKey;
   }
 
+  // Ensure all numeric fields are actually numbers
+  const sanitizedConfig = {
+    ...config,
+    pricingRows: (config.pricingRows || []).map((row: any) => ({
+      ...row,
+      baseRate: Number(row.baseRate) || 0,
+      minGroupSize: Number(row.minGroupSize) || 1,
+    })),
+    volumeRules: (config.volumeRules || []).map((rule: any) => ({
+      ...rule,
+      minHunters: Number(rule.minHunters) || 1,
+      maxHunters: rule.maxHunters ? Number(rule.maxHunters) : null,
+      amountOffPerHead: Number(rule.amountOffPerHead) || 0,
+      displayOrder: Number(rule.displayOrder) || 0,
+    })),
+    discountRules: (config.discountRules || []).map((discount: any) => ({
+      ...discount,
+      value: Number(discount.value) || 0,
+      stackOrder: Number(discount.stackOrder) || 0,
+    })),
+  };
+
   const response = await fetch("/api/admin/calculator/config", {
     method: "PUT",
     headers,
-    body: JSON.stringify(config),
+    body: JSON.stringify(sanitizedConfig),
   });
 
   if (!response.ok) {
