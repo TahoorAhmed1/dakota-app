@@ -17,7 +17,7 @@ export default function Home() {
         <ImagesCatalog />
       </div>
 
-      <section className="bg-[#E7DCCF] px-4 py-16 sm:px-6 sm:py-20">
+      <section className="bg-[#E7DCCF] px-4 py-8 md:px-6 md:py-16">
         <div className="mx-auto max-w-6xl text-center">
           <p className="mb-2 text-xs font-bold tracking-widest uppercase text-orange-500">
             Featured
@@ -43,7 +43,7 @@ export default function Home() {
       <Testimonials />
 
       {/* Waitlist */}
-      <section className="bg-white px-4 py-16 sm:px-6 sm:py-20">
+      <section className="bg-white px-4 py-8 md:px-6 md:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center sm:mb-12">
             <p className="mb-2 text-xs font-bold tracking-widest uppercase text-orange-400">

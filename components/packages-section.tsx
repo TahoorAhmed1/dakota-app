@@ -43,7 +43,7 @@ export default function PackagesSection() {
   }, []);
 
   return (
-    <section className="bg-white px-4 py-16 sm:px-6 sm:py-20">
+    <section className="bg-white px-4 py-8 md:px-6 md:py-16">
       <div className="mx-auto max-w-6xl">
         {/* Packages */}
         <div className="text-center">

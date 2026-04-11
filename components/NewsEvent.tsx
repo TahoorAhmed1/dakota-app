@@ -22,7 +22,7 @@ export default async function LatestNews() {
   if (posts.length === 0) return null;
 
   return (
-    <section className="w-full bg-[#E7DCCF] px-4 py-16 sm:px-6 sm:py-20">
+    <section className="w-full bg-[#E7DCCF] px-4 py-8 md:px-6 md:py-16">
       <div className="max-w-6xl mx-auto text-center">
         <p className="text-xs tracking-[3px] text-orange-500 uppercase mb-3 font-medium">Updates</p>
 

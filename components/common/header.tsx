@@ -164,7 +164,7 @@ function Header() {
 
       <aside
         id="mobile-navigation"
-        className={`fixed right-0 top-0 z-50 flex h-full w-[min(84vw,340px)] flex-col bg-[linear-gradient(180deg,#3b220c_0%,#1f1206_100%)] px-5 pb-6 pt-5 text-white shadow-[-12px_0_40px_rgba(0,0,0,0.28)] transition-transform duration-300 xl:hidden ${
+        className={`fixed right-0 top-0 z-50 flex h-full w-[min(84vw,340px)] flex-col bg-white px-5 pb-6 pt-5 text-black shadow-[-12px_0_40px_rgba(0,0,0,0.28)] transition-transform duration-300 xl:hidden ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
         aria-hidden={!isSidebarOpen}
@@ -177,7 +177,7 @@ function Header() {
           />
           <button
             type="button"
-            className="inline-flex p-3  items-center text-xl justify-center rounded-full border border-white/20 bg-white/8 text-white transition hover:bg-white/14"
+            className="inline-flex p-3  items-center text-xl justify-center rounded-full border border-white/20 bg-white/8 text-black transition hover:bg-white/14"
             onClick={() => setIsSidebarOpen(false)}
             aria-label="Close navigation menu"
           >
@@ -196,8 +196,8 @@ function Header() {
                   onClick={() => setIsSidebarOpen(false)}
                   className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold tracking-[0.08em] transition ${
                     isActive
-                      ? "bg-[#f16724] text-white shadow-[0_10px_24px_rgba(241,103,36,0.28)]"
-                      : "text-white/84 hover:bg-white/8 hover:text-white"
+                      ? "bg-[#f16724] text-black shadow-[0_10px_24px_rgba(241,103,36,0.28)]"
+                      : "text-black/84 hover:bg-white/8 hover:text-black"
                   }`}
                 >
                   {item.label}
@@ -212,7 +212,7 @@ function Header() {
                         key={child.href + child.label}
                         href={child.href}
                         onClick={() => setIsSidebarOpen(false)}
-                        className="block rounded-lg px-4 py-2 text-xs font-semibold text-white/60 transition hover:bg-white/8 hover:text-white/90"
+                        className="block rounded-lg px-4 py-2 text-xs font-semibold text-black/60 transition hover:bg-white/8 hover:text-black/90"
                       >
                         {child.label}
                       </Link>

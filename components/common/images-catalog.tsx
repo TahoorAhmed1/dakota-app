@@ -8,7 +8,7 @@ export default async function ImagesCatalog() {
   });
 
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 px-4 pb-14 pt-20 sm:grid-cols-2 md:grid-cols-3 md:gap-8 md:px-6 md:pt-64 min-h-[500px]">
+    <div className="mx-auto grid max-w-7xl grid-cols-1 py-10 pb-10 gap-4 px-4 md:pb-14  sm:grid-cols-2 md:grid-cols-3 md:gap-8 md:px-6 md:pt-64 md:min-h-[500px]">
       {images.length === 0 ? (
         <p className="text-center col-span-full">No images found</p>
       ) : (

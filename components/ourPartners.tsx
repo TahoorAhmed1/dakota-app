@@ -6,7 +6,7 @@ import Image from "next/image";
 function OurPartners() {
   const image = [partner1, partner2, partner3, partner5];
   return (
-    <div className="bg-[#F5F5F5] px-4 py-16 sm:px-6 sm:py-20">
+    <div className="bg-[#F5F5F5] px-4 py-8 md:px-6 md:py-16">
       <div className="text-center">
         <p className="text-xs font-bold tracking-widest uppercase text-orange-500 mb-2">Affiliates</p>
         <h2 className="text-3xl font-bold text-[#281703] sm:text-4xl">Our Partners</h2>

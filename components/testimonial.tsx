@@ -52,7 +52,7 @@ export default function Testimonials() {
   const next = () => setCurrentIndex((i) => (i + 1) % testimonials.length);
 
   return (
-    <section className="relative bg-[#E7DCCF] px-4 py-16 text-center text-[#1a1a1a] sm:px-6 sm:py-20">
+    <section className="relative bg-[#E7DCCF] px-4 py-10 text-center text-[#1a1a1a] md:px-6 md:py-20">
       <p className="text-xs font-bold tracking-widest text-[#df6d2d] uppercase">
         TESTIMONIALS
       </p>

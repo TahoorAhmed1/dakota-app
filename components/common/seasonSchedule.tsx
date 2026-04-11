@@ -111,7 +111,7 @@ function getCampStatus(campIdx: number, rowIdx: number): "sold" | "available" {
 
 export default function SeasonSchedule() {
   return (
-    <div className="relative bg-[#E7DCCF] px-4 py-16 sm:px-6 sm:py-20">
+    <div className="relative bg-[#E7DCCF] px-4 py-8 md:px-6 md:py-16">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <p className="text-xs font-bold tracking-widest uppercase text-orange-500 mb-2">Welcome</p>

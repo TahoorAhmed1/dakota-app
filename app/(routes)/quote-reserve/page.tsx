@@ -451,11 +451,7 @@ export default function QuoteReservePage() {
   const validateStepTwo = (): ValidationErrors => {
     const errors = validateStepOne();
 
-    const missingHunter = hunters.find((hunter) => hunter.name.trim().length === 0);
-    if (missingHunter) {
-      errors.step2 = `Enter a name for Hunter ${missingHunter.id}.`;
-    }
-
+    // Hunter names are now optional, so we do not check for missing names.
     const overlongHunter = hunters.find((hunter) => hunter.name.trim().length > 120);
     if (overlongHunter) {
       errors.step2 = `Hunter ${overlongHunter.id} name must be 120 characters or less.`;

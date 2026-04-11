@@ -105,7 +105,7 @@ export default function ResourcesPage() {
       <ResourcesAccordionSection />
 
       {/* ── Hunting Policies ── */}
-      <section className="bg-[#281703] px-4 py-16 sm:px-6 sm:py-20">
+      <section className="bg-[#281703] px-4 py-8 md:px-6 md:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center sm:mb-12">
             <p className="mb-2 text-xs font-bold uppercase tracking-widest text-orange-400">

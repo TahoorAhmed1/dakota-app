@@ -424,7 +424,7 @@ export default function CampsPage() {
           </div>
         </section>
 
-        <section className="bg-[#e7dccf] px-4 py-16 sm:px-6 sm:py-20">
+        <section className="bg-[#e7dccf] px-4 py-8 md:px-6 md:py-16">
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 text-center sm:mb-12">
               <p className="mb-2 text-xs font-bold tracking-widest uppercase text-orange-500">

@@ -124,7 +124,7 @@ body {
   .MapImage,
   .ContactImage,
   .ResourcesImage {
-    height: 72vh;
+    height: 60vh;
     min-height: 440px;
     background-size: cover;
     background-position: center;
@@ -147,7 +147,7 @@ body {
   .MapImage,
   .ContactImage,
   .ResourcesImage {
-    height: 64vh;
+    height: 45vh;
     min-height: 360px;
     background-size: cover;
     background-position: center;

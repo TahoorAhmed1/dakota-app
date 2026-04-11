@@ -43,7 +43,7 @@ export default async function NewsPage() {
  
 
       {/* Hero */}
-      <section className="AvailabilityImage px-4 py-16 flex flex-col justify-center text-center sm:px-6 sm:py-20">
+      <section className="AvailabilityImage px-4 py-10 flex flex-col justify-center text-center md:px-6 md:py-20">
         <p className="text-xs font-bold tracking-widest uppercase text-orange-500 mb-2">Updates</p>
         <h1 className="text-3xl font-bold text-black sm:text-4xl md:text-5xl">News &amp; Events</h1>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-black/70 sm:text-base">
@@ -52,7 +52,7 @@ export default async function NewsPage() {
       </section>
 
       {/* Posts Grid */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <section className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-16">
         {posts.length === 0 ? (
           <p className="text-center text-black/50">No posts published yet. Check back soon.</p>
         ) : (
