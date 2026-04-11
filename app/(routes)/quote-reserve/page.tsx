@@ -837,7 +837,7 @@ export default function QuoteReservePage() {
                                 )
                               )
                             }
-                            placeholder="Hunter Name"
+                            placeholder="Hunter Name (Optional)"
                             maxLength={120}
                             className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
                           />
@@ -1042,7 +1042,7 @@ export default function QuoteReservePage() {
                           <tr key={row.id}>
                             <td className="border border-[#d9d9d9] px-2 py-2">{index + 1}</td>
                             <td className="border border-[#d9d9d9] px-2 py-2">
-                              {row.name || `Hunter ${index + 1}`}
+                              {row.name?.trim() || `Hunter ${index + 1}`}
                             </td>
                             <td className="border border-[#d9d9d9] px-2 py-2">{row.discountLabel}</td>
                             <td className="border border-[#d9d9d9] px-2 py-2">${row.baseRate.toFixed(2)}</td>
