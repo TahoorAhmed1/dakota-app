@@ -304,7 +304,7 @@ export default function SeasonSchedule() {
                   r="9"
                   stroke="#0077FF"
                   strokeWidth="2"
-                  stroke-linecap="round"
+                  strokeLinecap="round"
                   stroke-linejoin="round"
                 />
                 <rect
@@ -320,7 +320,7 @@ export default function SeasonSchedule() {
                   d="M12 12V16"
                   stroke="#0077FF"
                   strokeWidth="2"
-                  stroke-linecap="round"
+                  strokeLinecap="round"
                   stroke-linejoin="round"
                 />
               </svg>
@@ -342,14 +342,14 @@ export default function SeasonSchedule() {
                   fill="#29B100"
                   stroke="#29B100"
                   strokeWidth="2"
-                  stroke-linecap="round"
+                  strokeLinecap="round"
                   stroke-linejoin="round"
                 />
                 <path
                   d="M15 10L11 14L9 12"
                   stroke="white"
                   strokeWidth="2"
-                  stroke-linecap="round"
+                  strokeLinecap="round"
                   stroke-linejoin="round"
                 />
               </svg>
