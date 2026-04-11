@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { CalculatorSettings, calculateDepositRate } from "@/lib/calculator-settings";
-import { InfoIcon  } from "lucide-react";
+import { InfoIcon } from "lucide-react";
 
 type StepOneData = {
   seasonLabel: string;
@@ -122,7 +122,6 @@ function FieldRow({
       </label>
 
       <div className="mt-3 flex items-center gap-2 md:mt-0">
-
         {children}
         {reference ? (
           <span className="text-[12px] w-fit font-semibold text-[#f26f2d]">
@@ -345,23 +344,35 @@ export default function QuoteReservePage() {
   const settings = config?.settings;
 
   const pricingRows = useMemo(() => {
-    if (!config || !selectedPricing) return [];
+    if (!config || !selectedPricing || !settings) return [];
 
-    const volumeDiscount = getVolumeDiscount(config.volumeRules, groupData.hunterCount);
+    const volumeDiscountPerHunter = getVolumeDiscount(config.volumeRules, groupData.hunterCount);
+    const earlyBirdPercent = groupData.earlyBird === "Yes" ? (settings.earlyBirdRate ?? 0.05) : 0;
+
+    // Detect if the selected package is the 5N/4D extended package
+    const isExtendedPackage = selectedPackage?.code === "PKG_5N4D"; // adjust code to match your actual package code
+    const baseExtraDay = isExtendedPackage ? (settings.extraDayRate ?? 450) : 0;
+    const baseExtraNight = isExtendedPackage ? (settings.extraNightRate ?? 100) : 0;
 
     return hunters.map((hunter, idx) => {
       const baseRate = selectedPricing.baseRate;
-      const rule = discountMap.get(hunter.discountCode) ?? discountMap.get("NONE");
-      const extraHunting = hunter.extraDays * (settings?.extraDayRate ?? 225);
-      const extraLodging = hunter.extraNights * (settings?.extraNightRate ?? 165);
-      const rateAfterVolume = baseRate - volumeDiscount;
-      const earlyBirdDiscount =
-        groupData.earlyBird === "Yes" ? rateAfterVolume * (settings?.earlyBirdRate ?? 0.05) : 0;
+      const rule = discountMap.get(hunter.discountCode) ?? discountMap.get("NONE")!;
+
+      // Extra days/nights: manual selections + automatic extras for 5N/4D package
+      const extraHunting = (hunter.extraDays * (settings.extraDayRate ?? 450)) + baseExtraDay;
+      const extraLodging = (hunter.extraNights * (settings.extraNightRate ?? 100)) + baseExtraNight;
+
+      // 1. Volume discount
+      const rateAfterVolume = baseRate - volumeDiscountPerHunter;
+
+      // 2. Early Bird discount (applied to post‑volume rate)
+      const earlyBirdDiscount = rateAfterVolume * earlyBirdPercent;
 
       let individualDiscount = 0;
       let juniorDiscount = 0;
 
-      if (rule?.category === "INDIVIDUAL") {
+      // 3. Individual adult discounts (applied after Early Bird)
+      if (rule.category === "INDIVIDUAL") {
         const baseForIndividual = rateAfterVolume - earlyBirdDiscount;
         if (rule.type === "PERCENT") {
           individualDiscount = baseForIndividual * (rule.value / 100);
@@ -370,7 +381,8 @@ export default function QuoteReservePage() {
         }
       }
 
-      if (rule?.category === "JUNIOR") {
+      // 4. Junior / Youth discount (applied on post‑volume rate)
+      if (rule.category === "JUNIOR") {
         if (rule.type === "PERCENT") {
           juniorDiscount = rateAfterVolume * (rule.value / 100);
         } else {
@@ -378,6 +390,7 @@ export default function QuoteReservePage() {
         }
       }
 
+      // 5. Subtotal before tax
       const subtotalBeforeTax =
         rateAfterVolume -
         earlyBirdDiscount -
@@ -385,15 +398,17 @@ export default function QuoteReservePage() {
         juniorDiscount +
         extraHunting +
         extraLodging;
-      const tax = subtotalBeforeTax * (settings?.salesTaxRate ?? 0.057);
+
+      // 6. Tax applied last
+      const tax = subtotalBeforeTax * (settings.salesTaxRate ?? 0.057);
       const total = subtotalBeforeTax + tax;
 
       return {
         ...hunter,
         rowIndex: idx + 1,
-        discountLabel: rule?.label ?? "None",
+        discountLabel: rule.label,
         baseRate,
-        volumeDiscount,
+        volumeDiscount: volumeDiscountPerHunter,
         extraHunting,
         extraLodging,
         earlyBirdDiscount,
@@ -404,7 +419,7 @@ export default function QuoteReservePage() {
         total,
       };
     });
-  }, [config, selectedPricing, groupData, hunters, discountMap]);
+  }, [config, selectedPricing, selectedPackage, groupData, hunters, discountMap, settings]);
 
   const subtotalBeforeTax = pricingRows.reduce((sum, row) => sum + row.subtotalBeforeTax, 0);
   const minimumRevenueFloor = selectedPricing
@@ -437,12 +452,18 @@ export default function QuoteReservePage() {
 
     if (!groupData.seasonLabel || !groupData.campId || !groupData.weekId || !groupData.packageId) {
       errors.step1 = "Complete all required group selections before continuing.";
+      return errors;
     }
 
     if (!selectedPricing) {
-      errors.pricing = "The selected camp, week, and day combination does not have pricing configured yet.";
-    } else if (!selectedPricing.isAvailable) {
-      errors.pricing = "The selected camp, week, and day combination is currently unavailable.";
+      errors.pricing = "Pricing not configured for this selection.";
+      return errors;
+    }
+
+    // IMPORTANT: Do NOT block unavailable (NA) combinations
+    // Just show a warning - per your Q&A specs
+    if (!selectedPricing.isAvailable) {
+      errors.pricing = `Note: This camp/week/package is marked "NA", but a quote can still be generated using minimum revenue protection.`;
     }
 
     return errors;
@@ -594,7 +615,7 @@ export default function QuoteReservePage() {
           </div>
         </div>
 
-       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/70 animate-bounce">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/70 animate-bounce">
           <span className="text-[11px] tracking-widest uppercase">Scroll</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -627,7 +648,11 @@ export default function QuoteReservePage() {
             </div>
           ) : null}
 
-          {validationErrors.pricing ? (
+          {validationErrors.pricing && validationErrors.pricing.includes("NA") ? (
+            <div className="mt-6 rounded-md bg-yellow-100 border border-yellow-400 px-6 py-4 text-center text-sm font-semibold text-yellow-800">
+              {validationErrors.pricing}
+            </div>
+          ) : validationErrors.pricing ? (
             <div className="mt-6 rounded-md bg-red-100 px-6 py-4 text-center text-sm font-semibold text-red-800">
               {validationErrors.pricing}
             </div>
@@ -640,173 +665,173 @@ export default function QuoteReservePage() {
           ) : null}
 
           <div className="mt-8 overflow-hidden rounded-[18px] bg-[#f5f5f5] shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
-         {step === 1 && (
+            {step === 1 && (
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
-    {/* Header */}
-    <div className="bg-[#4c2c11] px-4 py-5 text-center font-normal uppercase text-white md:py-6">
-      <h1 className="text-[20px] tracking-tight sm:text-[26px] md:text-[34px]">
-        {labels?.step1.cardTitle ?? "Price Your Own Hunt in 3 Simple Steps"}
-      </h1>
-    </div>
+                {/* Header */}
+                <div className="bg-[#4c2c11] px-4 py-5 text-center font-normal uppercase text-white md:py-6">
+                  <h1 className="text-[20px] tracking-tight sm:text-[26px] md:text-[34px]">
+                    {labels?.step1.cardTitle ?? "Price Your Own Hunt in 3 Simple Steps"}
+                  </h1>
+                </div>
 
-    <div className="bg-white px-4 py-6 md:px-12">
-      {/* Required Fields Section */}
-      <div className="mb-4">
-        <SectionDivider label={labels?.step1.requiredLabel ?? "REQUIRED FIELDS"} />
-      </div>
+                <div className="bg-white px-4 py-6 md:px-12">
+                  {/* Required Fields Section */}
+                  <div className="mb-4">
+                    <SectionDivider label={labels?.step1.requiredLabel ?? "REQUIRED FIELDS"} />
+                  </div>
 
-      <div className="divide-y divide-[#d9d9d9] border border-[#d9d9d9]">
-        {/* Field Row: Season */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
-          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
-            <span className="mr-1 text-[#f26f2d]">*</span>
-            {labels?.step1.seasonLabel ?? "What Season Is Your Group Hunting In?"}
-            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
-          </label>
-          <div className="border-l border-[#d9d9d9] p-3 md:col-span-2">
-            <select
-              value={groupData.seasonLabel}
-              onChange={(e) => {
-                const newSeason = e.target.value;
-                const firstWeek = config?.weeks.find((w) => w.seasonLabel === newSeason)?.id ?? "";
-                setGroupData((prev) => ({ ...prev, seasonLabel: newSeason, weekId: firstWeek }));
-              }}
-              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-            >
-              {seasonOptions.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
-        </div>
+                  <div className="divide-y divide-[#d9d9d9] border border-[#d9d9d9]">
+                    {/* Field Row: Season */}
+                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                      <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+                        <span className="mr-1 text-[#f26f2d]">*</span>
+                        {labels?.step1.seasonLabel ?? "What Season Is Your Group Hunting In?"}
+                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                      </label>
+                      <div className="border-l border-[#d9d9d9] p-3 md:col-span-2">
+                        <select
+                          value={groupData.seasonLabel}
+                          onChange={(e) => {
+                            const newSeason = e.target.value;
+                            const firstWeek = config?.weeks.find((w) => w.seasonLabel === newSeason)?.id ?? "";
+                            setGroupData((prev) => ({ ...prev, seasonLabel: newSeason, weekId: firstWeek }));
+                          }}
+                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+                        >
+                          {seasonOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                      </div>
+                    </div>
 
-        {/* Field Row: Camp */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
-          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
-            <span className="mr-1 text-[#f26f2d]">*</span>
-            {labels?.step1.campLabel ?? "What Camp Is Your Group Going To?"}
-            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
-          </label>
-          <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
-            <select
-              value={groupData.campId}
-              onChange={(e) => setGroupData((prev) => ({ ...prev, campId: e.target.value }))}
-              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-            >
-              <option value="">Select a Camp</option>
-              {(config?.camps ?? []).map((camp) => (
-                <option key={camp.id} value={camp.id}>{formatCampOptionLabel(camp.name)}</option>
-              ))}
-            </select>
-            <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
-              (Reference Camps)
-            </span>
-          </div>
-        </div>
+                    {/* Field Row: Camp */}
+                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                      <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+                        <span className="mr-1 text-[#f26f2d]">*</span>
+                        {labels?.step1.campLabel ?? "What Camp Is Your Group Going To?"}
+                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                      </label>
+                      <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+                        <select
+                          value={groupData.campId}
+                          onChange={(e) => setGroupData((prev) => ({ ...prev, campId: e.target.value }))}
+                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+                        >
+                          <option value="">Select a Camp</option>
+                          {(config?.camps ?? []).map((camp) => (
+                            <option key={camp.id} value={camp.id}>{formatCampOptionLabel(camp.name)}</option>
+                          ))}
+                        </select>
+                        <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
+                          (Reference Camps)
+                        </span>
+                      </div>
+                    </div>
 
-        {/* Field Row: Week */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
-          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
-            <span className="mr-1 text-[#f26f2d]">*</span>
-            {labels?.step1.weekLabel ?? "What Week Is Your Group Going?"}
-            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
-          </label>
-          <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
-            <select
-              value={groupData.weekId}
-              onChange={(e) => setGroupData((prev) => ({ ...prev, weekId: e.target.value }))}
-              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-            >
-              <option value="">Select Which Week</option>
-              {weekOptions.map((week) => (
-                <option key={week.id} value={week.id}>{week.label}</option>
-              ))}
-            </select>
-            <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
-              (Reference Days Camps)
-            </span>
-          </div>
-        </div>
+                    {/* Field Row: Week */}
+                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                      <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+                        <span className="mr-1 text-[#f26f2d]">*</span>
+                        {labels?.step1.weekLabel ?? "What Week Is Your Group Going?"}
+                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                      </label>
+                      <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+                        <select
+                          value={groupData.weekId}
+                          onChange={(e) => setGroupData((prev) => ({ ...prev, weekId: e.target.value }))}
+                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+                        >
+                          <option value="">Select Which Week</option>
+                          {weekOptions.map((week) => (
+                            <option key={week.id} value={week.id}>{week.label}</option>
+                          ))}
+                        </select>
+                        <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
+                          (Reference Days Camps)
+                        </span>
+                      </div>
+                    </div>
 
-        {/* Field Row: Hunters */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
-          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
-            <span className="mr-1 text-[#f26f2d]">*</span>
-            {labels?.step1.hunterCountLabel ?? "How Many Hunters In Your Group?"}
-            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
-          </label>
-          <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
-            <select
-              value={groupData.hunterCount}
-              onChange={(e) => setGroupData((prev) => ({ ...prev, hunterCount: Number(e.target.value) }))}
-              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-            >
-              {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
-                <option key={n} value={n}>{n} {n === 1 ? "Hunter" : "Hunters"}</option>
-              ))}
-            </select>
-            <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
-              (Minimums and Capacities Chart)
-            </span>
-          </div>
-        </div>
+                    {/* Field Row: Hunters */}
+                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                      <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+                        <span className="mr-1 text-[#f26f2d]">*</span>
+                        {labels?.step1.hunterCountLabel ?? "How Many Hunters In Your Group?"}
+                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                      </label>
+                      <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+                        <select
+                          value={groupData.hunterCount}
+                          onChange={(e) => setGroupData((prev) => ({ ...prev, hunterCount: Number(e.target.value) }))}
+                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+                        >
+                          {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                            <option key={n} value={n}>{n} {n === 1 ? "Hunter" : "Hunters"}</option>
+                          ))}
+                        </select>
+                        <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
+                          (Minimums and Capacities Chart)
+                        </span>
+                      </div>
+                    </div>
 
-        {/* Field Row: Package */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
-          <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
-            <span className="mr-1 text-[#f26f2d]">*</span>
-            {labels?.step1.packageLabel ?? "What Package?"}
-            <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
-          </label>
-          <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
-            <select
-              value={groupData.packageId}
-              onChange={(e) => setGroupData((prev) => ({ ...prev, packageId: e.target.value }))}
-              className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-            >
-              <option value="">Select Package</option>
-              {(config?.packages ?? []).map((pkg) => (
-                <option key={pkg.id} value={pkg.id}>{pkg.label}</option>
-              ))}
-            </select>
-            <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
-              (Minimums and Capacities Chart)
-            </span>
-          </div>
-        </div>
-      </div>
+                    {/* Field Row: Package */}
+                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                      <label className="flex items-center px-6 py-4 text-[15px] font-bold text-[#2b1a0f]">
+                        <span className="mr-1 text-[#f26f2d]">*</span>
+                        {labels?.step1.packageLabel ?? "What Package?"}
+                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                      </label>
+                      <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+                        <select
+                          value={groupData.packageId}
+                          onChange={(e) => setGroupData((prev) => ({ ...prev, packageId: e.target.value }))}
+                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+                        >
+                          <option value="">Select Package</option>
+                          {(config?.packages ?? []).map((pkg) => (
+                            <option key={pkg.id} value={pkg.id}>{pkg.label}</option>
+                          ))}
+                        </select>
+                        <span className="ml-3 whitespace-nowrap text-[12px] text-[#f26f2d] underline cursor-pointer">
+                          (Minimums and Capacities Chart)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-      {/* Optional Fields Section */}
-      <div className="mt-10 mb-6">
-        <SectionDivider label={labels?.step1.optionalLabel ?? "OPTIONAL FIELDS"} />
-      </div>
+                  {/* Optional Fields Section */}
+                  <div className="mt-10 mb-6">
+                    <SectionDivider label={labels?.step1.optionalLabel ?? "OPTIONAL FIELDS"} />
+                  </div>
 
-      <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
-        <label className="flex items-center text-[15px] font-bold text-[#2b1a0f]">
-          <span className="mr-1 text-[#f26f2d]">*</span>
-          {labels?.step1.earlyBirdLabel ?? "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
-          <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]"  />
-        </label>
-        <select
-          value={groupData.earlyBird}
-          onChange={(e) => setGroupData((prev) => ({ ...prev, earlyBird: e.target.value as "Yes" | "No" }))}
-          className="h-10 w-24 rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-        >
-          <option value="No">No</option>
-          <option value="Yes">Yes</option>
-        </select>
-      </div>
+                  <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
+                    <label className="flex items-center text-[15px] font-bold text-[#2b1a0f]">
+                      <span className="mr-1 text-[#f26f2d]">*</span>
+                      {labels?.step1.earlyBirdLabel ?? "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
+                      <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                    </label>
+                    <select
+                      value={groupData.earlyBird}
+                      onChange={(e) => setGroupData((prev) => ({ ...prev, earlyBird: e.target.value as "Yes" | "No" }))}
+                      className="h-10 w-64 rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+                    >
+                      <option value="No">No</option>
+                      <option value="Yes">Yes (5% off post-volume rate)</option>
+                    </select>
+                  </div>
 
-      {/* Navigation Button */}
-      <div className="mt-12 flex justify-center md:justify-end">
-        <button
-          onClick={goToStep2}
-          className="w-full rounded-md bg-[#f26f2d] px-10 py-4 text-[18px] font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-[#e16528] md:w-auto"
-        >
-          {labels?.step1.nextButton ?? "To Step 2: Enter Hunters »"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}  
+                  {/* Navigation Button */}
+                  <div className="mt-12 flex justify-center md:justify-end">
+                    <button
+                      onClick={goToStep2}
+                      className="w-full rounded-md bg-[#f26f2d] px-10 py-4 text-[18px] font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-[#e16528] md:w-auto"
+                    >
+                      {labels?.step1.nextButton ?? "To Step 2: Enter Hunters »"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {step === 2 && (
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
@@ -873,7 +898,7 @@ export default function QuoteReservePage() {
                           >
                             {(config?.settings.extraDayOptions ?? [0, 1, 2, 3]).map((value) => (
                               <option key={value} value={value}>
-                                {value === 0 ? "Extra Days Hunting" : `${value} Extra Day`}
+                                {value === 0 ? "Extra Days Hunting" : `${value} Extra Day${value === 1 ? "" : "s"}`}
                               </option>
                             ))}
                           </select>
@@ -891,7 +916,7 @@ export default function QuoteReservePage() {
                           >
                             {(config?.settings.extraNightOptions ?? [0, 1, 2, 3]).map((value) => (
                               <option key={value} value={value}>
-                                {value === 0 ? "Extra Nights Lodging" : `${value} Extra Night`}
+                                {value === 0 ? "Extra Nights Lodging" : `${value} Extra Night${value === 1 ? "" : "s"}`}
                               </option>
                             ))}
                           </select>
@@ -1005,7 +1030,7 @@ export default function QuoteReservePage() {
                     label={`${labels?.step3.groupFields.totalHunters ?? "Total Hunters Selected"}:`}
                     value={`${groupData.hunterCount} Hunters`}
                   />
-                  <SummaryRow label={`${labels?.step3.groupFields.earlyBird ?? "Early Bird Discount"}:`} value={groupData.earlyBird} />
+                  <SummaryRow label={`${labels?.step3.groupFields.earlyBird ?? "Early Bird Discount"}:`} value={groupData.earlyBird === "Yes" ? "Yes (5%)" : "No"} />
                   <SummaryRow
                     label="Minimum Group Revenue Rule:"
                     value={selectedPricing ? `${selectedPricing.minGroupSize} minimum` : "-"}
@@ -1030,9 +1055,9 @@ export default function QuoteReservePage() {
                           <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.volumeDiscount ?? "Volume Discount"}</th>
                           <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.extraHunting ?? "Extra Hunting"}</th>
                           <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.extraLodging ?? "Extra Lodging"}</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.juniorDiscount ?? "Junior Discount"}</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.adultDiscount ?? "Adult Discount"}</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.earlyBirdDiscount ?? "Early Bird Discount"}</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">Junior/Youth Discount</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">Adult Discounts</th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">Early Bird Discount</th>
                           <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.taxes ?? taxLabel}</th>
                           <th className="border border-[#d9d9d9] px-2 py-2">{labels?.step3.tableHeaders.total ?? "Total"}</th>
                         </tr>
@@ -1049,15 +1074,29 @@ export default function QuoteReservePage() {
                             <td className="border border-[#d9d9d9] px-2 py-2">-${row.volumeDiscount.toFixed(2)}</td>
                             <td className="border border-[#d9d9d9] px-2 py-2">${row.extraHunting.toFixed(2)}</td>
                             <td className="border border-[#d9d9d9] px-2 py-2">${row.extraLodging.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">-${row.juniorDiscount.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">-${row.individualDiscount.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">-${row.earlyBirdDiscount.toFixed(2)}</td>
+                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">-${row.juniorDiscount.toFixed(2)}</td>
+                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">-${row.individualDiscount.toFixed(2)}</td>
+                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">-${row.earlyBirdDiscount.toFixed(2)}</td>
                             <td className="border border-[#d9d9d9] px-2 py-2">${row.tax.toFixed(2)}</td>
                             <td className="border border-[#d9d9d9] px-2 py-2 font-bold">${row.total.toFixed(2)}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
+
+                    {!selectedPricing?.isAvailable && (
+                      <div className="mt-6 rounded-lg bg-yellow-100 border border-yellow-400 p-4 text-center text-[#2b1a0f]">
+                        <strong>Note:</strong> This camp/week/package combination is marked NA in our schedule. 
+                        The quote above uses the minimum revenue protection rule.
+                      </div>
+                    )}
+
+                    {minimumAdjustment > 0 && (
+                      <div className="mt-4 text-center text-[#2b1a0f]">
+                        <span className="font-semibold">Minimum Revenue Adjustment Applied: </span>
+                        <span className="font-bold text-[#f26f2d]">${minimumAdjustment.toFixed(2)}</span>
+                      </div>
+                    )}
 
                     <div className="mt-4 flex justify-center md:justify-end">
                       <button className="rounded-md bg-[#f26f2d] px-8 py-3 text-[15px] font-bold uppercase text-white">
