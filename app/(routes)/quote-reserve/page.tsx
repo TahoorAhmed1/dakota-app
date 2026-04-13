@@ -1,8 +1,12 @@
 "use client";
+const round2 = (n: number) => Math.round(n * 100) / 100;
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { CalculatorSettings, calculateDepositRate } from "@/lib/calculator-settings";
+import {
+  CalculatorSettings,
+  calculateDepositRate,
+} from "@/lib/calculator-settings";
 import { InfoIcon } from "lucide-react";
 
 type StepOneData = {
@@ -33,8 +37,19 @@ type ValidationErrors = Partial<{
 
 type CalculatorConfig = {
   camps: Array<{ id: string; name: string; slug: string }>;
-  weeks: Array<{ id: string; label: string; slug: string; seasonLabel: string }>;
-  packages: Array<{ id: string; code: string; label: string; days: number; nights: number }>;
+  weeks: Array<{
+    id: string;
+    label: string;
+    slug: string;
+    seasonLabel: string;
+  }>;
+  packages: Array<{
+    id: string;
+    code: string;
+    label: string;
+    days: number;
+    nights: number;
+  }>;
   pricingRows: Array<{
     id: string;
     campId: string;
@@ -42,7 +57,6 @@ type CalculatorConfig = {
     packageId: string;
     baseRate: number;
     minGroupSize: number;
-    maxGroupSize: number | null;
     isAvailable: boolean;
     availabilityTag: string | null;
   }>;
@@ -69,7 +83,10 @@ type CalculatorConfig = {
   }>;
 };
 
-const getVolumeDiscount = (rules: CalculatorConfig["volumeRules"], count: number) => {
+const getVolumeDiscount = (
+  rules: CalculatorConfig["volumeRules"],
+  count: number
+) => {
   const matched = rules.find((rule) => {
     if (count < rule.minHunters) return false;
     if (rule.maxHunters == null) return true;
@@ -79,21 +96,32 @@ const getVolumeDiscount = (rules: CalculatorConfig["volumeRules"], count: number
 };
 
 const formatCampOptionLabel = (name: string) =>
-  name.replace(/ Pheasant Camp$/i, "").replace(/^Faulkton Pheasant Camp$/i, "Faulkton");
+  name
+    .replace(/ Pheasant Camp$/i, "")
+    .replace(/^Faulkton Pheasant Camp$/i, "Faulkton");
 
-const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+const isValidEmail = (value: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 function SectionDivider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-4 py-5">
       <div className="h-px flex-1 bg-[#d7b299]" />
-      <span className="text-[12px] font-normal uppercase tracking-[0.15em] text-[#e97933]">{label}</span>
+      <span className="text-[12px] font-normal uppercase tracking-[0.15em] text-[#e97933]">
+        {label}
+      </span>
       <div className="h-px flex-1 bg-[#d7b299]" />
     </div>
   );
 }
 
-function SummaryRow({ label, value }: { label: string; value: React.ReactNode }) {
+function SummaryRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="grid grid-cols-[1fr_auto] border-b border-[#d9d9d9] px-4 py-3 text-[14px] font-semibold text-[#2b1a0f] sm:px-8 sm:py-4">
       <span>{label}</span>
@@ -130,7 +158,9 @@ export default function QuoteReservePage() {
   const [quoteEmail, setQuoteEmail] = useState("");
   const [bookingName, setBookingName] = useState("");
   const [bookingEmail, setBookingEmail] = useState("");
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
+    {}
+  );
 
   // Load config
   useEffect(() => {
@@ -138,7 +168,9 @@ export default function QuoteReservePage() {
       try {
         let data: CalculatorConfig | null = null;
         for (let attempt = 0; attempt < 3; attempt++) {
-          const response = await fetch("/api/calculator/config", { cache: "no-store" });
+          const response = await fetch("/api/calculator/config", {
+            cache: "no-store",
+          });
           const payload = await response.json().catch(() => ({}));
           if (response.ok) {
             data = payload as CalculatorConfig;
@@ -148,12 +180,15 @@ export default function QuoteReservePage() {
             await delay(500 * (attempt + 1));
             continue;
           }
-          throw new Error(payload.error || payload.message || "Failed to load configuration.");
+          throw new Error(
+            payload.error || payload.message || "Failed to load configuration."
+          );
         }
         if (!data) throw new Error("Failed to load calculator configuration.");
         setConfig(data);
         const firstSeason = data.weeks[0]?.seasonLabel ?? "";
-        const firstWeek = data.weeks.find((w) => w.seasonLabel === firstSeason)?.id ?? "";
+        const firstWeek =
+          data.weeks.find((w) => w.seasonLabel === firstSeason)?.id ?? "";
         const firstCamp = data.camps[0]?.id ?? "";
         const firstPackage = data.packages[0]?.id ?? "";
         setGroupData((prev) => ({
@@ -166,7 +201,9 @@ export default function QuoteReservePage() {
         }));
       } catch (error) {
         console.error(error);
-        setConfigError(error instanceof Error ? error.message : "Unable to load quote data.");
+        setConfigError(
+          error instanceof Error ? error.message : "Unable to load quote data."
+        );
       }
     }
     loadConfig();
@@ -198,12 +235,12 @@ export default function QuoteReservePage() {
 
   const seasonOptions = useMemo(() => {
     if (!config) return [];
-    return Array.from(new Set(config.weeks.map((w) => w.seasonLabel)));
+    return Array.from(new Set(config?.weeks.map((w) => w.seasonLabel)));
   }, [config]);
 
   const weekOptions = useMemo(() => {
     if (!config) return [];
-    return config.weeks.filter((w) => w.seasonLabel === groupData.seasonLabel);
+    return config?.weeks.filter((w) => w.seasonLabel === groupData.seasonLabel);
   }, [config, groupData.seasonLabel]);
 
   const selectedCamp = useMemo(
@@ -218,29 +255,43 @@ export default function QuoteReservePage() {
   // Get all pricing rows for selected camp/week, but only those that are available
   const availablePricingRows = useMemo(() => {
     if (!config || !groupData.campId || !groupData.weekId) return [];
-    return config.pricingRows.filter(
-      (row) => row.campId === groupData.campId && row.weekId === groupData.weekId && row.isAvailable === true
+    return config?.pricingRows.filter(
+      (row) =>
+        row.campId === groupData.campId &&
+        row.weekId === groupData.weekId &&
+        row.isAvailable === true
     );
   }, [config, groupData.campId, groupData.weekId]);
 
   // Package options derived from available pricing rows
   const packageOptions = useMemo(() => {
     if (!config) return [];
-    const availablePackageIds = new Set(availablePricingRows.map((row) => row.packageId));
-    return config.packages.filter((pkg) => availablePackageIds.has(pkg.id));
+    const availablePackageIds = new Set(
+      availablePricingRows.map((row) => row.packageId)
+    );
+    return config?.packages.filter((pkg) => availablePackageIds.has(pkg.id));
   }, [config, availablePricingRows]);
 
   // Auto-select first available package if current selection becomes unavailable
   useEffect(() => {
-    if (packageOptions.length > 0 && !packageOptions.some((p) => p.id === groupData.packageId)) {
+    if (
+      packageOptions.length > 0 &&
+      !packageOptions.some((p) => p.id === groupData.packageId)
+    ) {
       setGroupData((prev) => ({ ...prev, packageId: packageOptions[0].id }));
     }
   }, [packageOptions, groupData.packageId]);
 
   const selectedPricing = useMemo(() => {
-    if (!config || !groupData.campId || !groupData.weekId || !groupData.packageId) return null;
+    if (
+      !config ||
+      !groupData.campId ||
+      !groupData.weekId ||
+      !groupData.packageId
+    )
+      return null;
     return (
-      config.pricingRows.find(
+      config?.pricingRows.find(
         (row) =>
           row.campId === groupData.campId &&
           row.weekId === groupData.weekId &&
@@ -252,7 +303,7 @@ export default function QuoteReservePage() {
   // Get lodging capacity for selected camp/week (from config or fallback)
   const lodgingCapacity = useMemo(() => {
     if (!config || !selectedCamp || !selectedWeek) return 20;
-    const capacityRow = config.lodgingCapacities?.find(
+    const capacityRow = config?.lodgingCapacities?.find(
       (lc) => lc.campId === selectedCamp.id && lc.weekId === selectedWeek.id
     );
     return capacityRow?.capacity ?? 20;
@@ -262,7 +313,7 @@ export default function QuoteReservePage() {
   const hunterCountOptions = useMemo(() => {
     if (!selectedPricing) return [];
     const min = selectedPricing.minGroupSize;
-    const max = Math.min(selectedPricing.maxGroupSize ?? lodgingCapacity, lodgingCapacity);
+    const max = Math.min(lodgingCapacity, lodgingCapacity);
     const options = [];
     for (let i = min; i <= max; i++) {
       options.push(i);
@@ -272,7 +323,10 @@ export default function QuoteReservePage() {
 
   // If current hunterCount is not in options, reset to first option
   useEffect(() => {
-    if (hunterCountOptions.length > 0 && !hunterCountOptions.includes(groupData.hunterCount)) {
+    if (
+      hunterCountOptions.length > 0 &&
+      !hunterCountOptions.includes(groupData.hunterCount)
+    ) {
       setGroupData((prev) => ({ ...prev, hunterCount: hunterCountOptions[0] }));
     }
   }, [hunterCountOptions, groupData.hunterCount]);
@@ -285,95 +339,145 @@ export default function QuoteReservePage() {
 
   const discountOptions = useMemo(() => {
     if (!config) return [];
-    return config.discountRules
+    return config?.discountRules
       .slice()
       .sort((a, b) => a.stackOrder - b.stackOrder)
       .map((r) => ({ code: r.code, label: r.label }));
   }, [config]);
 
+  // Cleaned up dead code
   const getDiscountOptionsForHunter = (hunterId: number) => {
     const isCoordinator = hunterId === groupCoordinatorId;
     return discountOptions.filter((opt) => {
       if (opt.code === "NONE") return true;
       if (opt.code === "ADULT_COORDINATOR") return isCoordinator;
       if (isCoordinator) return false;
-      if (opt.code === "ADULT_COORDINATOR") return false;
       return true;
     });
   };
 
   const settings = config?.settings;
 
-  // Dynamic extra day rate based on selected week's base rate
-  const computeExtraDayRate = (baseRate: number): number => {
-    const lodgingPerNight = 100;
-    const huntingPerDay = (baseRate - 4 * lodgingPerNight) / 3;
-    return huntingPerDay + lodgingPerNight;
-  };
+  // Helper to get the 3‑day base rate for the selected camp/week
+  const base3Rate = useMemo(() => {
+    if (!config || !groupData.campId || !groupData.weekId) return 0;
+    const pkg3 = config.packages.find((p) => p.days === 3);
+    if (!pkg3) return 0;
+    return (
+      config.pricingRows.find(
+        (row) =>
+          row.campId === groupData.campId &&
+          row.weekId === groupData.weekId &&
+          row.packageId === pkg3.id
+      )?.baseRate ?? 0
+    );
+  }, [config, groupData.campId, groupData.weekId]);
 
   const pricingRows = useMemo(() => {
-    if (!config || !selectedPricing || !settings) return [];
+    if (!config || !selectedPricing || !settings || base3Rate === 0) return [];
 
-    const volumePerHunter = getVolumeDiscount(config.volumeRules, groupData.hunterCount);
+    const volumePerHunter = getVolumeDiscount(
+      config.volumeRules,
+      groupData.hunterCount
+    );
     const isEarlyBird = groupData.earlyBird === "Yes";
-    const earlyBirdRate = isEarlyBird ? (settings.earlyBirdRate ?? 0.05) : 0;
-    const extraDayRateDynamic = computeExtraDayRate(selectedPricing.baseRate);
+
+    // Package defaults: 4‑day hunt gets 1 extra day + 1 extra night automatically
+    const selectedPackage = config.packages.find(
+      (p) => p.id === groupData.packageId
+    );
+    const packageExtraDays = selectedPackage?.days === 4 ? 1 : 0;
+    const packageExtraNights = selectedPackage?.nights === 5 ? 1 : 0;
+
+    const extraDayRate = (base3Rate - 400) / 3; // (base3 - 4 nights lodging) / 3
     const extraNightRate = settings.extraNightRate ?? 100;
+    const earlyBirdRate = settings.earlyBirdRate ?? 0.05;
     const taxRate = settings.salesTaxRate ?? 0.057;
 
-    return hunters.map((hunter, idx) => {
-      const baseRate = selectedPricing.baseRate;
-      const rule = discountMap.get(hunter.discountCode) ?? discountMap.get("NONE")!;
+    return hunters.map((hunter) => {
+      const rule =
+        discountMap.get(hunter.discountCode) ?? discountMap.get("NONE")!;
 
-      const extraHunting = hunter.extraDays * extraDayRateDynamic;
-      const extraLodging = hunter.extraNights * extraNightRate;
+      // Base rate is ALWAYS the 3‑day rate (Excel column F)
+      const baseRate = base3Rate;
+      const volumeDiscount = -volumePerHunter; // negative value
 
-      const rateAfterVolume = baseRate - volumePerHunter;
-      const totalBeforeDiscounts = rateAfterVolume + extraHunting + extraLodging;
+      const totalExtraDays = packageExtraDays + hunter.extraDays;
+      const extraHunting = totalExtraDays * extraDayRate;
 
-      const earlyBirdDiscount = isEarlyBird ? totalBeforeDiscounts * earlyBirdRate : 0;
+      const totalExtraNights = packageExtraNights + hunter.extraNights;
+      const extraLodging = totalExtraNights * extraNightRate;
 
-      let individualDiscount = 0;
-      if (rule.category === "INDIVIDUAL") {
-        individualDiscount = rule.type === "PERCENT" ? totalBeforeDiscounts * (rule.value / 100) : rule.value;
-      }
+      // Subtotal for percentage discounts = Base + Volume + ExtraHunting + ExtraLodging
+      const subtotalForDiscounts =
+        baseRate + volumeDiscount + extraHunting + extraLodging;
 
+      // Junior discount (50% of subtotal)
       let juniorDiscount = 0;
       if (rule.category === "JUNIOR") {
-        juniorDiscount = rule.type === "PERCENT" ? rateAfterVolume * (rule.value / 100) : rule.value;
+        juniorDiscount = -subtotalForDiscounts * 0.5;
       }
 
-      const subtotalBeforeTax = totalBeforeDiscounts - earlyBirdDiscount - individualDiscount - juniorDiscount;
-      const tax = subtotalBeforeTax * taxRate;
-      const total = subtotalBeforeTax + tax;
+      // Adult discounts (10% for coordinator, 5% for others)
+      let adultDiscount = 0;
+      if (rule.category === "INDIVIDUAL" && rule.code !== "NONE") {
+        adultDiscount = -subtotalForDiscounts * (rule.value / 100);
+      }
+
+      // Early Bird discount (5% of subtotal)
+      const earlyBirdDiscount = isEarlyBird
+        ? -subtotalForDiscounts * earlyBirdRate
+        : 0;
+
+      const taxable =
+        subtotalForDiscounts +
+        juniorDiscount +
+        adultDiscount +
+        earlyBirdDiscount;
+      const tax = taxable * taxRate;
+      const total = taxable + tax;
 
       return {
         ...hunter,
         discountLabel: rule.label,
-        baseRate: Number(baseRate.toFixed(2)),
-        volumeDiscount: Number(volumePerHunter.toFixed(2)),
-        extraHunting: Number(extraHunting.toFixed(2)),
-        extraLodging: Number(extraLodging.toFixed(2)),
-        juniorDiscount: Number(juniorDiscount.toFixed(2)),
-        individualDiscount: Number(individualDiscount.toFixed(2)),
-        earlyBirdDiscount: Number(earlyBirdDiscount.toFixed(2)),
-        tax: Number(tax.toFixed(2)),
-        subtotalBeforeTax: Number(subtotalBeforeTax.toFixed(2)),
-        total: Number(total.toFixed(2)),
+        baseRate: round2(baseRate),
+        volumeDiscount: round2(volumeDiscount),
+        extraHunting: round2(extraHunting),
+        extraLodging: round2(extraLodging),
+        juniorDiscount: round2(juniorDiscount),
+        individualDiscount: round2(adultDiscount),
+        earlyBirdDiscount: round2(earlyBirdDiscount),
+        subtotalBeforeTax: round2(taxable),
+        tax: round2(tax),
+        total: round2(total),
       };
     });
-  }, [config, selectedPricing, groupData.hunterCount, groupData.earlyBird, hunters, discountMap, settings]);
+  }, [
+    config,
+    selectedPricing,
+    groupData.hunterCount,
+    groupData.earlyBird,
+    groupData.packageId,
+    base3Rate,
+    hunters,
+    discountMap,
+    settings,
+  ]);
 
+  // Deposit calculation – remove processing fee
   const grandTotal = pricingRows.reduce((sum, row) => sum + row.total, 0);
-
   const today = new Date();
-  const depositRate = config ? calculateDepositRate(config.settings.depositSchedule, today) : 1;
+  const depositRate = config
+    ? calculateDepositRate(config.settings.depositSchedule, today)
+    : 1;
   const depositBase = grandTotal * depositRate;
-  const processingFee = depositBase * (config?.settings.processingFeeRate ?? 0.0299);
-  const depositTotal = depositBase + processingFee;
+  const depositTotal = depositBase; // no processing fee
+const processingFee = depositBase * (config?.settings.processingFeeRate ?? 0); // Remove or comment out
 
   const labels = settings?.labels;
-  const taxLabel = `Taxes ${((settings?.salesTaxRate ?? 0.057) * 100).toFixed(1)}%`;
+  const taxLabel = labels?.step3?.tableHeaders?.taxes
+    ? `${labels.step3.tableHeaders.taxes} ${((settings?.salesTaxRate ?? 0.057) * 100).toFixed(1)}%`
+    : `Taxes ${((settings?.salesTaxRate ?? 0.057) * 100).toFixed(1)}%`;
 
   const validateStepOne = (): ValidationErrors => {
     const errors: ValidationErrors = {};
@@ -381,7 +485,12 @@ export default function QuoteReservePage() {
       errors.step1 = "Configuration is still loading.";
       return errors;
     }
-    if (!groupData.seasonLabel || !groupData.campId || !groupData.weekId || !groupData.packageId) {
+    if (
+      !groupData.seasonLabel ||
+      !groupData.campId ||
+      !groupData.weekId ||
+      !groupData.packageId
+    ) {
       errors.step1 = "Complete all required group selections.";
       return errors;
     }
@@ -437,7 +546,12 @@ export default function QuoteReservePage() {
       setSubmitMessage("Please fix the form errors and try again.");
       return;
     }
-    if (!config || !groupData.campId || !groupData.weekId || !groupData.packageId) {
+    if (
+      !config ||
+      !groupData.campId ||
+      !groupData.weekId ||
+      !groupData.packageId
+    ) {
       setSubmitMessage("Configuration not loaded yet.");
       return;
     }
@@ -469,7 +583,9 @@ export default function QuoteReservePage() {
       });
       const data = await response.json();
       if (response.ok) {
-        setSubmitMessage(`Quote submitted successfully! Quote #: ${data.quoteNumber}`);
+        setSubmitMessage(
+          `Quote submitted successfully! Quote #: ${data.quoteNumber}`
+        );
         if (typeof data.pdfUrl === "string") setQuotePdfUrl(data.pdfUrl);
       } else {
         setSubmitMessage(data.error || "Something went wrong.");
@@ -482,28 +598,6 @@ export default function QuoteReservePage() {
     }
   };
 
-  if (configError) {
-    return (
-      <main className="flex flex-col">
-        <section className="bg-[#E7DCCF] px-4 py-20 text-center">
-          <div className="mx-auto max-w-7xl rounded-md bg-red-100 px-6 py-4 font-semibold text-red-800">
-            {configError}
-          </div>
-        </section>
-      </main>
-    );
-  }
-
-  if (!config) {
-    return (
-      <main className="flex flex-col">
-        <section className="bg-[#E7DCCF] px-4 py-20 text-center">
-          <div className="mx-auto max-w-7xl">Loading calculator configuration...</div>
-        </section>
-      </main>
-    );
-  }
-
   return (
     <main className="flex flex-col">
       {/* Hero section */}
@@ -514,8 +608,17 @@ export default function QuoteReservePage() {
             Quote-Reserve
           </h1>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
-            <Link href="/" className="flex items-center gap-2 transition-colors hover:text-[#F16724]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <Link
+              href="/"
+              className="flex items-center gap-2 transition-colors hover:text-[#F16724]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
                 <path d="M12 3.172 3 10.2V21h6v-6h6v6h6V10.2l-9-7.028Z" />
               </svg>
               <span>Home</span>
@@ -526,8 +629,19 @@ export default function QuoteReservePage() {
         </div>
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/70 animate-bounce">
           <span className="text-[11px] tracking-widest uppercase">Scroll</span>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
       </section>
@@ -536,9 +650,9 @@ export default function QuoteReservePage() {
       <section className="bg-[#E7DCCF] px-4 pb-20 pt-14 sm:pt-16 md:px-6 md:pb-24 md:pt-20">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-center text-[24px] font-bold uppercase tracking-[0.04em] text-[#281703] underline decoration-[3px] underline-offset-[6px] sm:text-[30px] md:text-[54px]">
-            {step === 1 && (labels?.stepHeadings.step1 ?? "Step 1: Quote–Reserve Group Options")}
-            {step === 2 && (labels?.stepHeadings.step2 ?? "Step 2: Quote–Reserve Enter Hunters")}
-            {step === 3 && (labels?.stepHeadings.step3 ?? "Step 3: Quote–Reserve Review Totals")}
+            {step === 1 && labels?.stepHeadings.step1}
+            {step === 2 && labels?.stepHeadings.step2}
+            {step === 3 && labels?.stepHeadings.step3}
           </h2>
 
           <div className="mt-8 overflow-hidden rounded-[18px] bg-[#f5f5f5] shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
@@ -547,19 +661,21 @@ export default function QuoteReservePage() {
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
                 <div className="bg-[#4c2c11] px-4 py-5 text-center font-normal uppercase text-white md:py-6">
                   <h1 className="text-[20px] tracking-tight sm:text-[26px] md:text-[34px]">
-                    {labels?.step1.cardTitle ?? "Price Your Own Hunt in 3 Simple Steps"}
+                    {labels?.step1.cardTitle ??
+                      "Price Your Own Hunt in 3 Simple Steps"}
                   </h1>
                 </div>
                 <div className="bg-white px-4 py-6 md:px-12">
                   <div className="mb-4">
-                    <SectionDivider label={labels?.step1.requiredLabel ?? "REQUIRED FIELDS"} />
+                    <SectionDivider label={labels?.step1.requiredLabel} />
                   </div>
                   <div className="divide-y divide-[#d9d9d9] border border-[#d9d9d9]">
                     {/* Season */}
                     <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step1.seasonLabel ?? "What Season Is Your Group Hunting In?"}
+                        {labels?.step1.seasonLabel ??
+                          "What Season Is Your Group Hunting In?"}
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="border-l border-[#d9d9d9] p-3 md:col-span-2">
@@ -567,13 +683,22 @@ export default function QuoteReservePage() {
                           value={groupData.seasonLabel}
                           onChange={(e) => {
                             const newSeason = e.target.value;
-                            const firstWeek = config.weeks.find((w) => w.seasonLabel === newSeason)?.id ?? "";
-                            setGroupData((prev) => ({ ...prev, seasonLabel: newSeason, weekId: firstWeek }));
+                            const firstWeek =
+                              config?.weeks.find(
+                                (w) => w.seasonLabel === newSeason
+                              )?.id ?? "";
+                            setGroupData((prev) => ({
+                              ...prev,
+                              seasonLabel: newSeason,
+                              weekId: firstWeek,
+                            }));
                           }}
                           className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
                         >
                           {seasonOptions.map((s) => (
-                            <option key={s} value={s}>{s}</option>
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -582,7 +707,8 @@ export default function QuoteReservePage() {
                     <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step1.campLabel ?? "What Camp Is Your Group Going To?"}
+                        {labels?.step1.campLabel ??
+                          "What Camp Is Your Group Going To?"}
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
@@ -591,13 +717,19 @@ export default function QuoteReservePage() {
                           onChange={(e) => {
                             const newCampId = e.target.value;
                             // Reset package and week to force re-evaluation of available options
-                            setGroupData((prev) => ({ ...prev, campId: newCampId, packageId: "" }));
+                            setGroupData((prev) => ({
+                              ...prev,
+                              campId: newCampId,
+                              packageId: "",
+                            }));
                           }}
                           className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
                         >
                           <option value="">Select a Camp</option>
-                          {config.camps.map((camp) => (
-                            <option key={camp.id} value={camp.id}>{formatCampOptionLabel(camp.name)}</option>
+                          {config?.camps.map((camp) => (
+                            <option key={camp.id} value={camp.id}>
+                              {formatCampOptionLabel(camp.name)}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -606,7 +738,8 @@ export default function QuoteReservePage() {
                     <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step1.weekLabel ?? "What Week Is Your Group Going?"}
+                        {labels?.step1.weekLabel ??
+                          "What Week Is Your Group Going?"}
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
@@ -614,13 +747,19 @@ export default function QuoteReservePage() {
                           value={groupData.weekId}
                           onChange={(e) => {
                             const newWeekId = e.target.value;
-                            setGroupData((prev) => ({ ...prev, weekId: newWeekId, packageId: "" }));
+                            setGroupData((prev) => ({
+                              ...prev,
+                              weekId: newWeekId,
+                              packageId: "",
+                            }));
                           }}
                           className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
                         >
                           <option value="">Select Which Week</option>
                           {weekOptions.map((week) => (
-                            <option key={week.id} value={week.id}>{week.label}</option>
+                            <option key={week.id} value={week.id}>
+                              {week.label}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -635,12 +774,19 @@ export default function QuoteReservePage() {
                       <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
                         <select
                           value={groupData.packageId}
-                          onChange={(e) => setGroupData((prev) => ({ ...prev, packageId: e.target.value }))}
+                          onChange={(e) =>
+                            setGroupData((prev) => ({
+                              ...prev,
+                              packageId: e.target.value,
+                            }))
+                          }
                           className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
                         >
                           <option value="">Select Package</option>
                           {packageOptions.map((pkg) => (
-                            <option key={pkg.id} value={pkg.id}>{pkg.label}</option>
+                            <option key={pkg.id} value={pkg.id}>
+                              {pkg.label}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -649,35 +795,49 @@ export default function QuoteReservePage() {
                     <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step1.hunterCountLabel ?? "How Many Hunters In Your Group?"}
+                        {labels?.step1.hunterCountLabel ??
+                          "How Many Hunters In Your Group?"}
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
                         <select
                           value={groupData.hunterCount}
-                          onChange={(e) => setGroupData((prev) => ({ ...prev, hunterCount: Number(e.target.value) }))}
+                          onChange={(e) =>
+                            setGroupData((prev) => ({
+                              ...prev,
+                              hunterCount: Number(e.target.value),
+                            }))
+                          }
                           className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
                         >
                           <option value="">Select Group Size</option>
                           {hunterCountOptions.map((n) => (
-                            <option key={n} value={n}>{n} {n === 1 ? "Hunter" : "Hunters"}</option>
+                            <option key={n} value={n}>
+                              {n} {n === 1 ? "Hunter" : "Hunters"}
+                            </option>
                           ))}
                         </select>
                       </div>
                     </div>
                   </div>
                   <div className="mt-10 mb-6">
-                    <SectionDivider label={labels?.step1.optionalLabel ?? "OPTIONAL FIELDS"} />
+                    <SectionDivider label={labels?.step1.optionalLabel} />
                   </div>
                   <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
                     <label className="flex items-center text-[15px] font-bold text-[#2b1a0f]">
                       <span className="mr-1 text-[#f26f2d]">*</span>
-                      {labels?.step1.earlyBirdLabel ?? "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
+                      {labels?.step1.earlyBirdLabel ??
+                        "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
                       <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                     </label>
                     <select
                       value={groupData.earlyBird}
-                      onChange={(e) => setGroupData((prev) => ({ ...prev, earlyBird: e.target.value as "Yes" | "No" }))}
+                      onChange={(e) =>
+                        setGroupData((prev) => ({
+                          ...prev,
+                          earlyBird: e.target.value as "Yes" | "No",
+                        }))
+                      }
                       className="h-10 w-64 rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
                     >
                       <option value="No">No</option>
@@ -707,17 +867,32 @@ export default function QuoteReservePage() {
                 <div className="overflow-x-auto">
                   <div className="min-w-[950px]">
                     <div className="grid grid-cols-[50px_50px_1.5fr_2fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-bold uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
-                      <div className="text-center text-[11px] leading-tight md:text-[13px]">Coordinator</div>
+                      <div className="text-center text-[11px] leading-tight md:text-[13px]">
+                        Coordinator
+                      </div>
                       <div className="text-center">#</div>
-                      <div>{labels?.step2.hunterNameHeader ?? "Hunter Name (Optional)"}</div>
-                      <div>{labels?.step2.individualDiscountHeader ?? "Individual Discount"}</div>
-                      <div>{labels?.step2.extraDaysHeader ?? "Extra Days Hunting"}</div>
-                      <div>{labels?.step2.extraNightsHeader ?? "Extra Nights Lodging"}</div>
+                      <div>
+                        {labels?.step2.hunterNameHeader ??
+                          "Hunter Name (Optional)"}
+                      </div>
+                      <div>
+                        {labels?.step2.individualDiscountHeader ??
+                          "Individual Discount"}
+                      </div>
+                      <div>
+                        {labels?.step2.extraDaysHeader ?? "Extra Days Hunting"}
+                      </div>
+                      <div>
+                        {labels?.step2.extraNightsHeader ??
+                          "Extra Nights Lodging"}
+                      </div>
                     </div>
                     <div className="bg-[#ffffff]">
                       {hunters.map((hunter, index) => {
                         const isCoordinator = hunter.id === groupCoordinatorId;
-                        const availableDiscounts = getDiscountOptionsForHunter(hunter.id);
+                        const availableDiscounts = getDiscountOptionsForHunter(
+                          hunter.id
+                        );
                         return (
                           <div
                             key={hunter.id}
@@ -734,8 +909,15 @@ export default function QuoteReservePage() {
                                   setGroupCoordinatorId(hunter.id);
                                   setHunters((prev) =>
                                     prev.map((h) => {
-                                      if (h.id === hunter.id) return { ...h, discountCode: "ADULT_COORDINATOR" };
-                                      if (h.id === groupCoordinatorId && h.discountCode === "ADULT_COORDINATOR")
+                                      if (h.id === hunter.id)
+                                        return {
+                                          ...h,
+                                          discountCode: "ADULT_COORDINATOR",
+                                        };
+                                      if (
+                                        h.id === groupCoordinatorId &&
+                                        h.discountCode === "ADULT_COORDINATOR"
+                                      )
                                         return { ...h, discountCode: "NONE" };
                                       return h;
                                     })
@@ -749,10 +931,18 @@ export default function QuoteReservePage() {
                               value={hunter.name}
                               onChange={(e) =>
                                 setHunters((prev) =>
-                                  prev.map((item, i) => (i === index ? { ...item, name: e.target.value } : item))
+                                  prev.map((item, i) =>
+                                    i === index
+                                      ? { ...item, name: e.target.value }
+                                      : item
+                                  )
                                 )
                               }
-                              placeholder={isCoordinator ? "Group Coordinator (Optional)" : `Hunter ${index + 1} (Optional)`}
+                              placeholder={
+                                isCoordinator
+                                  ? "Group Coordinator (Optional)"
+                                  : `Hunter ${index + 1} (Optional)`
+                              }
                               maxLength={120}
                               className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
                             />
@@ -760,23 +950,41 @@ export default function QuoteReservePage() {
                               value={hunter.discountCode}
                               onChange={(e) =>
                                 setHunters((prev) =>
-                                  prev.map((item, i) => (i === index ? { ...item, discountCode: e.target.value } : item))
+                                  prev.map((item, i) =>
+                                    i === index
+                                      ? {
+                                          ...item,
+                                          discountCode: e.target.value,
+                                        }
+                                      : item
+                                  )
                                 )
                               }
                               disabled={isCoordinator}
                               className={`h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40 ${
-                                isCoordinator ? "bg-gray-100 cursor-not-allowed" : ""
+                                isCoordinator
+                                  ? "bg-gray-100 cursor-not-allowed"
+                                  : ""
                               }`}
                             >
                               {availableDiscounts.map((opt) => (
-                                <option key={opt.code} value={opt.code}>{opt.label}</option>
+                                <option key={opt.code} value={opt.code}>
+                                  {opt.label}
+                                </option>
                               ))}
                             </select>
                             <select
                               value={hunter.extraDays}
                               onChange={(e) =>
                                 setHunters((prev) =>
-                                  prev.map((item, i) => (i === index ? { ...item, extraDays: Number(e.target.value) } : item))
+                                  prev.map((item, i) =>
+                                    i === index
+                                      ? {
+                                          ...item,
+                                          extraDays: Number(e.target.value),
+                                        }
+                                      : item
+                                  )
                                 )
                               }
                               className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
@@ -784,12 +992,20 @@ export default function QuoteReservePage() {
                               <option value={0}>None</option>
                               <option value={1}>1 Extra Day</option>
                               <option value={2}>2 Extra Days</option>
+                              <option value={3}>3 Extra Days</option>
                             </select>
                             <select
                               value={hunter.extraNights}
                               onChange={(e) =>
                                 setHunters((prev) =>
-                                  prev.map((item, i) => (i === index ? { ...item, extraNights: Number(e.target.value) } : item))
+                                  prev.map((item, i) =>
+                                    i === index
+                                      ? {
+                                          ...item,
+                                          extraNights: Number(e.target.value),
+                                        }
+                                      : item
+                                  )
                                 )
                               }
                               className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
@@ -797,6 +1013,7 @@ export default function QuoteReservePage() {
                               <option value={0}>None</option>
                               <option value={1}>1 Extra Night</option>
                               <option value={2}>2 Extra Nights</option>
+                              <option value={3}>3 Extra Nights</option>
                             </select>
                           </div>
                         );
@@ -805,11 +1022,15 @@ export default function QuoteReservePage() {
                   </div>
                 </div>
                 <div className="mt-4 px-4 text-[13px] text-[#6b6b6b] sm:px-6 md:px-8">
-                  <span className="font-semibold">Note:</span> Group Coordinator receives 10% discount and cannot select another individual discount. Junior (50% off) and Youth (free) discounts apply only to base package (not extras).
+                  <span className="font-semibold">Note:</span> Group Coordinator
+                  receives 10% discount and cannot select another individual
+                  discount. Junior (50% off) and Youth (free) discounts apply
+                  only to base package (not extras).
                 </div>
                 <div className="grid grid-cols-1 items-center gap-4 px-4 py-6 sm:px-6 md:grid-cols-[auto_340px] md:px-8 md:py-7">
                   <label className="text-[15px] font-semibold text-[#2b1a0f]">
-                    {labels?.step2.emailLabel ?? "Enter your email to receive a copy of the quote (optional):"}
+                    {labels?.step2.emailLabel ??
+                      "Enter your email to receive a copy of the quote (optional):"}
                   </label>
                   <input
                     type="email"
@@ -828,11 +1049,17 @@ export default function QuoteReservePage() {
                   </div>
                 )}
                 <div className="flex flex-col-reverse gap-4 px-4 pb-8 sm:px-6 md:flex-row md:items-center md:justify-between md:px-8">
-                  <button onClick={() => setStep(1)} className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4">
+                  <button
+                    onClick={() => setStep(1)}
+                    className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
+                  >
                     {labels?.step2.backButton ?? "« Back to Step 1"}
                   </button>
-                  <button onClick={goToStep3} className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 md:w-auto">
-                    {labels?.step2.nextButton ?? "To Step 3: Review Totals »"}
+                  <button
+                    onClick={goToStep3}
+                    className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 md:w-auto"
+                  >
+                    {labels?.step2.nextButton}
                   </button>
                 </div>
               </div>
@@ -843,38 +1070,29 @@ export default function QuoteReservePage() {
               <div className="bg-[#f5f5f5]">
                 <div className="overflow-hidden">
                   <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
-                    {labels?.step3.overviewTitle ?? "Quote Details and Payment Options"}
+                    {labels?.step3.overviewTitle}
                   </div>
 
                   <div className="border-b border-[#d9d9d9] px-4 py-6 text-center text-[14px] leading-7 text-[#2b1a0f] sm:px-8 sm:py-8">
                     <p className="font-semibold">
-                      {labels?.step3.overviewIntro ??
-                        "Thank you for quoting your groups fair chase pheasant hunt at a UGUIDE South Dakota Pheasant Hunting property. You are encouraged to forward this quote to your group for their review and consideration."}
+                      {labels?.step3.overviewIntro}
                     </p>
                     <p className="mt-6 font-semibold">
-                      {labels?.step3.optionsLabel ?? "There are two simple options to reserve your hunt:"}
+                      {labels?.step3.optionsLabel}
                     </p>
                     <p className="mt-4 text-[18px] font-black">
-                      {labels?.step3.optionOneTitle ?? "Option 1 - One group member pays deposit"}
+                      {labels?.step3.optionOneTitle}
                     </p>
                     <div className="mt-3 space-y-2">
-                      {(labels?.step3.optionOneBullets ?? [
-                        "Check the Availability page to make sure the hunt you would like to reserve is available.",
-                        "Use the Booking Tool which will calculate your deposit amount and then take you to Paypal to pay with credit card or Paypal account, whichever you prefer.",
-                        "Upon completion of checkout, you will receive an automated itinerary for your hunt package in your email.",
-                      ]).map((bullet) => (
+                      {(labels?.step3.optionOneBullets || []).map((bullet) => (
                         <p key={bullet}>✓ {bullet}</p>
                       ))}
                     </div>
                     <p className="mt-6 text-[18px] font-black">
-                      {labels?.step3.optionTwoTitle ?? "Option 2 - Individuals in group split up deposit"}
+                      {labels?.step3.optionTwoTitle}
                     </p>
                     <div className="mt-3 space-y-2">
-                      {(labels?.step3.optionTwoBullets ?? [
-                        "Check the Availability page to make sure the hunt you would like to reserve is available.",
-                        "From the Quote page, determine how much you would like each member of your group to pay as their portion of the deposit.",
-                        "Email the Individual Pay link to each member of your group with instructions on the amount you would like them to pay.",
-                      ]).map((bullet) => (
+                      {(labels?.step3.optionTwoBullets || []).map((bullet) => (
                         <p key={bullet}>✓ {bullet}</p>
                       ))}
                     </div>
@@ -884,14 +1102,40 @@ export default function QuoteReservePage() {
                     {labels?.step3.groupSelectionsTitle ?? "Group Selections"}
                   </div>
 
-                  <SummaryRow label={`${labels?.step3.groupFields.season ?? "Season Selected"}:`} value={groupData.seasonLabel || "-"} />
-                  <SummaryRow label={`${labels?.step3.groupFields.camp ?? "Camp Selected"}:`} value={selectedCamp?.name || "-"} />
-                  <SummaryRow label={`${labels?.step3.groupFields.campTier ?? "Camp Tier"}:`} value="Tier 1" />
-                  <SummaryRow label={`${labels?.step3.groupFields.package ?? "Package Selected"}:`} value={selectedPricing ? `${selectedPricing.baseRate} per person` : "-"} />
-                  <SummaryRow label={`${labels?.step3.groupFields.totalHunters ?? "Total Hunters Selected"}:`} value={`${groupData.hunterCount} Hunters`} />
-                  <SummaryRow label={`${labels?.step3.groupFields.earlyBird ?? "Early Bird Discount"}:`} value={groupData.earlyBird === "Yes" ? "Yes (5%)" : "No"} />
+                  <SummaryRow
+                    label={`${labels?.step3.groupFields.season ?? "Season Selected"}:`}
+                    value={groupData.seasonLabel || "-"}
+                  />
+                  <SummaryRow
+                    label={`${labels?.step3.groupFields.camp ?? "Camp Selected"}:`}
+                    value={selectedCamp?.name || "-"}
+                  />
+                  <SummaryRow
+                    label={`${labels?.step3.groupFields.campTier ?? "Camp Tier"}:`}
+                    value="Tier 1"
+                  />
+                  <SummaryRow
+                    label={`${labels?.step3.groupFields.package ?? "Package Selected"}:`}
+                    value={(() => {
+                      const selectedPackage = config?.packages.find(
+                        (p) => p.id === groupData.packageId
+                      );
+                      return selectedPackage && selectedPricing
+                        ? `${selectedPackage.label} — $${base3Rate ?? selectedPricing.baseRate}/person`
+                        : "-";
+                    })()}
+                  />
+                  <SummaryRow
+                    label={`${labels?.step3.groupFields.totalHunters ?? "Total Hunters Selected"}:`}
+                    value={`${groupData.hunterCount} Hunters`}
+                  />
+                  <SummaryRow
+                    label={`${labels?.step3.groupFields.earlyBird ?? "Early Bird Discount"}:`}
+                    value={groupData.earlyBird === "Yes" ? "Yes (5%)" : "No"}
+                  />
                   <div className="border-b border-[#d9d9d9] px-4 py-3 text-center text-[14px] font-medium text-[#2b1a0f] sm:px-8 sm:py-5">
-                    ✓ {labels?.step3.groupFields.week ?? "Week Selected"}: {selectedWeek?.label || "-"}
+                    ✓ {labels?.step3.groupFields.week ?? "Week Selected"}:{" "}
+                    {selectedWeek?.label || "-"}
                   </div>
 
                   <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
@@ -902,36 +1146,84 @@ export default function QuoteReservePage() {
                     <table className="min-w-[1000px] w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
                       <thead>
                         <tr className="bg-[#f26f2d] text-left text-white">
-                          <th className="border border-[#d9d9d9] px-2 py-2">#</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Hunter Name</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Discount</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Base Rate</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Vol Disc</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Extra Hunt</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Extra Lodge</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Jr/Youth</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Adult Disc</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Early Bird</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Tax</th>
-                          <th className="border border-[#d9d9d9] px-2 py-2">Total</th>
-                         </tr>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            #
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Hunter Name
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Discount
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Base Rate
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Vol Disc
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Extra Hunt
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Extra Lodge
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Jr/Youth
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Adult Disc
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Early Bird
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            {taxLabel}
+                          </th>
+                          <th className="border border-[#d9d9d9] px-2 py-2">
+                            Total
+                          </th>
+                        </tr>
                       </thead>
                       <tbody>
                         {pricingRows.map((row, index) => (
                           <tr key={row.id}>
-                            <td className="border border-[#d9d9d9] px-2 py-2">{index + 1}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">{row.name?.trim() || `Hunter ${index + 1}`}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">{row.discountLabel}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">${row.baseRate.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">-${row.volumeDiscount.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">${row.extraHunting.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">${row.extraLodging.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">-${row.juniorDiscount.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">-${row.individualDiscount.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">-${row.earlyBirdDiscount.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">${row.tax.toFixed(2)}</td>
-                            <td className="border border-[#d9d9d9] px-2 py-2 font-bold">${row.total.toFixed(2)}</td>
-                           </tr>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              {index + 1}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              {row.name?.trim() || `Hunter ${index + 1}`}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              {row.discountLabel}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              ${row.baseRate.toFixed(2)}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              -${row.volumeDiscount.toFixed(2)}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              ${row.extraHunting.toFixed(2)}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              ${row.extraLodging.toFixed(2)}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
+                              -${row.juniorDiscount.toFixed(2)}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
+                              -${row.individualDiscount.toFixed(2)}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
+                              -${row.earlyBirdDiscount.toFixed(2)}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              ${row.tax.toFixed(2)}
+                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2 font-bold">
+                              ${row.total.toFixed(2)}
+                            </td>
+                          </tr>
                         ))}
                       </tbody>
                     </table>
@@ -943,13 +1235,17 @@ export default function QuoteReservePage() {
                     </div>
 
                     <div className="mt-5 text-center text-[16px] font-semibold text-[#2b1a0f] md:text-right md:text-[18px]">
-                      {labels?.step3.totalPriceLabel ?? "Total price after applicable discounts and state sales tax:"}{" "}
-                      <span className="text-[24px] font-semibold">${grandTotal.toFixed(2)}</span>
+                      {labels?.step3.totalPriceLabel ??
+                        "Total price after applicable discounts and state sales tax:"}{" "}
+                      <span className="text-[24px] font-semibold">
+                        ${grandTotal.toFixed(2)}
+                      </span>
                     </div>
                   </div>
 
                   <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
-                    {labels?.step3.depositTitle ?? "Deposit/Booking Information"}
+                    {labels?.step3.depositTitle ??
+                      "Deposit/Booking Information"}
                   </div>
 
                   <div className="px-4 py-6 text-[14px] text-[#2b1a0f] sm:px-6 md:px-8">
@@ -961,7 +1257,8 @@ export default function QuoteReservePage() {
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_320px] md:items-center">
                       <label className="font-semibold">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step3.bookingNameLabel ?? "Enter name of person booking the hunt:"}
+                        {labels?.step3.bookingNameLabel ??
+                          "Enter name of person booking the hunt:"}
                       </label>
                       <input
                         value={bookingName}
@@ -971,11 +1268,14 @@ export default function QuoteReservePage() {
                         className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 outline-none"
                       />
                       {validationErrors.bookingName && (
-                        <div className="md:col-start-2 text-sm font-semibold text-red-700">{validationErrors.bookingName}</div>
+                        <div className="md:col-start-2 text-sm font-semibold text-red-700">
+                          {validationErrors.bookingName}
+                        </div>
                       )}
                       <label className="font-semibold">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step3.bookingEmailLabel ?? "Enter email address of person booking the hunt:"}
+                        {labels?.step3.bookingEmailLabel ??
+                          "Enter email address of person booking the hunt:"}
                       </label>
                       <input
                         type="email"
@@ -988,22 +1288,30 @@ export default function QuoteReservePage() {
                         className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 outline-none"
                       />
                       {validationErrors.bookingEmail && (
-                        <div className="md:col-start-2 text-sm font-semibold text-red-700">{validationErrors.bookingEmail}</div>
+                        <div className="md:col-start-2 text-sm font-semibold text-red-700">
+                          {validationErrors.bookingEmail}
+                        </div>
                       )}
                       <label className="font-semibold">
-                        {labels?.step3.depositAmountLabel ?? "Deposit Amount"} ({Math.round(depositRate * 100)}%):
+                        {labels?.step3.depositAmountLabel ?? "Deposit Amount"} (
+                        {Math.round(depositRate * 100)}%):
                       </label>
                       <div className="text-[16px] font-semibold">
-                        ${depositBase.toFixed(2)} + 2.99% (${processingFee.toFixed(2)}) = ${depositTotal.toFixed(2)}
+                        ${depositBase.toFixed(2)} + 2.99% ($
+                        {processingFee.toFixed(2)}) = ${depositTotal.toFixed(2)}
                       </div>
                     </div>
 
                     <p className="mt-4 text-[13px] italic text-[#4e4e4e]">
-                      {labels?.step3.depositNote ?? "Note: You will be redirected to Paypal.com to make your secure deposit."}
+                      {labels?.step3.depositNote ??
+                        "Note: You will be redirected to Paypal.com to make your secure deposit."}
                     </p>
 
                     <div className="mt-8 flex flex-col-reverse gap-4 md:flex-row md:items-center md:justify-between">
-                      <button onClick={() => setStep(2)} className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4">
+                      <button
+                        onClick={() => setStep(2)}
+                        className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
+                      >
                         {labels?.step3.backButton ?? "Back to Step 2"}
                       </button>
                       <button
@@ -1011,20 +1319,30 @@ export default function QuoteReservePage() {
                         disabled={isSubmitting}
                         className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
                       >
-                        {isSubmitting ? "Submitting..." : (labels?.step3.submitButton ?? "Submit Quote Request »")}
+                        {isSubmitting
+                          ? "Submitting..."
+                          : (labels?.step3.submitButton ??
+                            "Submit Quote Request »")}
                       </button>
                     </div>
 
                     {submitMessage && (
                       <div
                         className={`mt-4 rounded-md p-4 text-center ${
-                          submitMessage.includes("successfully") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                          submitMessage.includes("successfully")
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
                         }`}
                       >
                         {submitMessage}
                         {quotePdfUrl && (
                           <div className="mt-3">
-                            <a href={quotePdfUrl} className="font-bold underline" target="_blank" rel="noreferrer">
+                            <a
+                              href={quotePdfUrl}
+                              className="font-bold underline"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
                               Download PDF Copy
                             </a>
                           </div>
