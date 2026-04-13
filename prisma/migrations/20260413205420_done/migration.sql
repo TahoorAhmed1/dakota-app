@@ -2,13 +2,17 @@
 CREATE TYPE "DiscountType" AS ENUM ('FIXED', 'PERCENT');
 
 -- CreateEnum
-CREATE TYPE "DiscountCategory" AS ENUM ('INDIVIDUAL', 'JUNIOR');
+CREATE TYPE "DiscountCategory" AS ENUM ('INDIVIDUAL', 'JUNIOR', 'YOUTH');
+
+-- CreateEnum
+CREATE TYPE "DiscountAppliesTo" AS ENUM ('SUBTOTAL', 'HUNTING_ONLY');
 
 -- CreateTable
 CREATE TABLE "Camp" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
+    "nightlyLodgingRate" DECIMAL(10,2) NOT NULL DEFAULT 100.00,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "displayOrder" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,6 +38,17 @@ CREATE TABLE "HuntWeek" (
 );
 
 -- CreateTable
+CREATE TABLE "WeekBaseRate" (
+    "id" TEXT NOT NULL,
+    "weekId" TEXT NOT NULL,
+    "baseRate" DECIMAL(10,2) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "WeekBaseRate_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "PackageOption" (
     "id" TEXT NOT NULL,
     "code" TEXT NOT NULL,
@@ -54,8 +69,11 @@ CREATE TABLE "CampWeekPricing" (
     "campId" TEXT NOT NULL,
     "weekId" TEXT NOT NULL,
     "packageId" TEXT NOT NULL,
-    "baseRate" DECIMAL(10,2) NOT NULL,
     "minGroupSize" INTEGER NOT NULL,
+    "baseRate" DECIMAL(10,2) NOT NULL,
+    "lodgingCapacity" INTEGER NOT NULL,
+    "nightlyLodgingRate" DECIMAL(10,2) NOT NULL DEFAULT 100.00,
+    "dailyHuntRate" DECIMAL(10,2) NOT NULL,
     "isAvailable" BOOLEAN NOT NULL DEFAULT true,
     "availabilityTag" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -86,7 +104,10 @@ CREATE TABLE "DiscountRule" (
     "category" "DiscountCategory" NOT NULL,
     "type" "DiscountType" NOT NULL,
     "value" DECIMAL(10,2) NOT NULL,
+    "appliesTo" "DiscountAppliesTo" NOT NULL DEFAULT 'SUBTOTAL',
     "stackOrder" INTEGER NOT NULL,
+    "requiresHunterIndex" INTEGER,
+    "maxPerGroup" INTEGER,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -102,20 +123,6 @@ CREATE TABLE "CalculatorSetting" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "CalculatorSetting_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "NewsPost" (
-    "id" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "imageUrl" TEXT,
-    "isPublished" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "NewsPost_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -140,6 +147,8 @@ CREATE TABLE "Quote" (
     "processingFeeRate" DECIMAL(5,4) NOT NULL,
     "processingFee" DECIMAL(12,2) NOT NULL,
     "depositTotal" DECIMAL(12,2) NOT NULL,
+    "youthCount" INTEGER NOT NULL DEFAULT 0,
+    "juniorCount" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -156,18 +165,34 @@ CREATE TABLE "QuoteHunter" (
     "extraDays" INTEGER NOT NULL,
     "extraNights" INTEGER NOT NULL,
     "baseRate" DECIMAL(10,2) NOT NULL,
+    "baseLodgingPortion" DECIMAL(10,2) NOT NULL,
+    "baseHuntingPortion" DECIMAL(10,2) NOT NULL,
     "volumeDiscount" DECIMAL(10,2) NOT NULL,
     "extraHunting" DECIMAL(10,2) NOT NULL,
     "extraLodging" DECIMAL(10,2) NOT NULL,
-    "earlyBirdDiscount" DECIMAL(10,2) NOT NULL,
-    "individualDiscount" DECIMAL(10,2) NOT NULL,
     "juniorDiscount" DECIMAL(10,2) NOT NULL,
+    "adultDiscount" DECIMAL(10,2) NOT NULL,
+    "earlyBirdDiscount" DECIMAL(10,2) NOT NULL,
     "subtotalBeforeTax" DECIMAL(10,2) NOT NULL,
     "taxAmount" DECIMAL(10,2) NOT NULL,
     "totalAmount" DECIMAL(10,2) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "QuoteHunter_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NewsPost" (
+    "id" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "imageUrl" TEXT,
+    "isPublished" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "NewsPost_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -267,6 +292,9 @@ CREATE UNIQUE INDEX "HuntWeek_label_key" ON "HuntWeek"("label");
 CREATE UNIQUE INDEX "HuntWeek_slug_key" ON "HuntWeek"("slug");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "WeekBaseRate_weekId_key" ON "WeekBaseRate"("weekId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "PackageOption_code_key" ON "PackageOption"("code");
 
 -- CreateIndex
@@ -279,13 +307,13 @@ CREATE UNIQUE INDEX "CampWeekPricing_campId_weekId_packageId_key" ON "CampWeekPr
 CREATE UNIQUE INDEX "DiscountRule_code_key" ON "DiscountRule"("code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "NewsPost_slug_key" ON "NewsPost"("slug");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Quote_quoteNumber_key" ON "Quote"("quoteNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "QuoteHunter_quoteId_rowIndex_key" ON "QuoteHunter"("quoteId", "rowIndex");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "NewsPost_slug_key" ON "NewsPost"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "NewsletterSubscriber_email_key" ON "NewsletterSubscriber"("email");
@@ -295,6 +323,9 @@ CREATE UNIQUE INDEX "GalleryImage_publicId_key" ON "GalleryImage"("publicId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ImageCatalog_publicId_key" ON "ImageCatalog"("publicId");
+
+-- AddForeignKey
+ALTER TABLE "WeekBaseRate" ADD CONSTRAINT "WeekBaseRate_weekId_fkey" FOREIGN KEY ("weekId") REFERENCES "HuntWeek"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CampWeekPricing" ADD CONSTRAINT "CampWeekPricing_campId_fkey" FOREIGN KEY ("campId") REFERENCES "Camp"("id") ON DELETE CASCADE ON UPDATE CASCADE;

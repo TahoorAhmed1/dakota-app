@@ -1,6 +1,6 @@
 import { CalculatorSettings, calculateDepositRate } from "@/lib/calculator-settings";
 
-type DiscountCategory = "INDIVIDUAL" | "JUNIOR";
+type DiscountCategory = "INDIVIDUAL" | "JUNIOR" | "YOUTH";
 type DiscountType = "FIXED" | "PERCENT";
 type DecimalLike = number | string | { toString(): string };
 
@@ -15,6 +15,7 @@ export type CalculatorConfig = {
     packageId: string;
     baseRate: number;
     minGroupSize: number;
+    lodgingCapacity: number;
     isAvailable: boolean;
     availabilityTag: string | null;
   }>;
@@ -110,6 +111,7 @@ export function mapConfigFromDb(data: {
     packageId: string;
     baseRate: DecimalLike;
     minGroupSize: number;
+    lodgingCapacity: number;
     isAvailable: boolean;
     availabilityTag: string | null;
   }>;

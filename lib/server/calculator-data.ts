@@ -47,6 +47,7 @@ export async function getCalculatorConfig() {
         packageId: true,
         baseRate: true,
         minGroupSize: true,
+        lodgingCapacity: true,
         isAvailable: true,
         availabilityTag: true,
       },

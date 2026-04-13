@@ -19,45 +19,42 @@ enum DiscountCategory {
   YOUTH
 }
 
-enum DiscountAppliesTo {
-  SUBTOTAL
-  HUNTING_ONLY
-}
-
 model Camp {
-  id                 String            @id @default(cuid())
-  name               String            @unique
-  slug               String            @unique
-  nightlyLodgingRate Decimal           @default(100.00) @db.Decimal(10, 2)
-  isActive           Boolean           @default(true)
-  displayOrder       Int               @default(0)
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  pricingRows        CampWeekPricing[]
-  quotes             Quote[]
+  id                 String   @id @default(cuid())
+  name               String   @unique
+  slug               String   @unique
+  nightlyLodgingRate Decimal  @default(100.00) @db.Decimal(10, 2)
+  isActive           Boolean  @default(true)
+  displayOrder       Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  pricingRows CampWeekPricing[]
+  quotes      Quote[]
 }
 
 model HuntWeek {
-  id           String            @id @default(cuid())
-  label        String            @unique
-  slug         String            @unique
+  id           String    @id @default(cuid())
+  label        String    @unique
+  slug         String    @unique
   seasonLabel  String
   startDate    DateTime?
   endDate      DateTime?
-  isActive     Boolean           @default(true)
-  displayOrder Int               @default(0)
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  baseRates    WeekBaseRate[]
-  pricingRows  CampWeekPricing[]
-  quotes       Quote[]
+  isActive     Boolean   @default(true)
+  displayOrder Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  baseRates   WeekBaseRate[]
+  pricingRows CampWeekPricing[]
+  quotes      Quote[]
 }
 
 model WeekBaseRate {
   id        String   @id @default(cuid())
   weekId    String
   week      HuntWeek @relation(fields: [weekId], references: [id], onDelete: Cascade)
-  baseRate  Decimal  @db.Decimal(10, 2)
+  baseRate  Decimal  @db.Decimal(10, 2) // 3-day base rate
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -65,36 +62,38 @@ model WeekBaseRate {
 }
 
 model PackageOption {
-  id           String            @id @default(cuid())
-  code         String            @unique
-  label        String            @unique
+  id           String   @id @default(cuid())
+  code         String   @unique
+  label        String   @unique
   nights       Int
   days         Int
-  isActive     Boolean           @default(true)
-  displayOrder Int               @default(0)
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  pricingRows  CampWeekPricing[]
-  quotes       Quote[]
+  isActive     Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pricingRows CampWeekPricing[]
+  quotes      Quote[]
 }
 
 model CampWeekPricing {
-  id                 String        @id @default(cuid())
+  id                 String   @id @default(cuid())
   campId             String
   weekId             String
   packageId          String
+  baseRate           Decimal  @db.Decimal(10, 2) // Package-specific base (3-day or 4-day)
   minGroupSize       Int
-  baseRate           Int
   lodgingCapacity    Int
-  nightlyLodgingRate Decimal       @default(100.00) @db.Decimal(10, 2)
-  dailyHuntRate      Decimal       @db.Decimal(10, 2)
-  isAvailable        Boolean       @default(true)
-  availabilityTag    String?
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-  camp               Camp          @relation(fields: [campId], references: [id], onDelete: Cascade)
-  week               HuntWeek      @relation(fields: [weekId], references: [id], onDelete: Cascade)
-  package            PackageOption @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  nightlyLodgingRate Decimal  @default(100.00) @db.Decimal(10, 2)
+  dailyHuntRate      Decimal  @db.Decimal(10, 2) // Derived from 3-day base
+  isAvailable        Boolean  @default(true)
+  availabilityTag    String? // "OPEN", "RESERVED", "PENDING", "NA"
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  camp    Camp          @relation(fields: [campId], references: [id], onDelete: Cascade)
+  week    HuntWeek      @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  package PackageOption @relation(fields: [packageId], references: [id], onDelete: Cascade)
 
   @@unique([campId, weekId, packageId])
 }
@@ -111,81 +110,87 @@ model VolumeDiscountRule {
 }
 
 model DiscountRule {
-  id                  String            @id @default(cuid())
-  code                String            @unique
+  id                  String           @id @default(cuid())
+  code                String           @unique
   label               String
   category            DiscountCategory
   type                DiscountType
-  value               Decimal           @db.Decimal(10, 2)
-  appliesTo           DiscountAppliesTo @default(SUBTOTAL)
+  value               Decimal          @db.Decimal(10, 2) // e.g. 10 for 10%, 50 for 50%
   stackOrder          Int
   requiresHunterIndex Int?
   maxPerGroup         Int?
-  isActive            Boolean           @default(true)
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  isActive            Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 }
 
 model CalculatorSetting {
-  id        String   @id
-  config    Json
+  id        String   @id @default("default")
+  config    Json // All labels, tax rate, earlyBirdRate, extraNightRate, depositSchedule, etc.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Quote {
-  id                String        @id @default(cuid())
-  quoteNumber       String        @unique
-  seasonLabel       String
-  campId            String
-  weekId            String
-  packageId         String
-  hunterCount       Int
-  earlyBird         Boolean
-  quoteEmail        String?
-  bookingName       String
-  bookingEmail      String
-  subtotalBeforeTax Decimal       @db.Decimal(12, 2)
-  minimumAdjustment Decimal       @db.Decimal(12, 2)
-  taxAmount         Decimal       @db.Decimal(12, 2)
-  totalAmount       Decimal       @db.Decimal(12, 2)
-  depositRate       Decimal       @db.Decimal(5, 4)
-  depositBase       Decimal       @db.Decimal(12, 2)
-  processingFeeRate Decimal       @db.Decimal(5, 4)
-  processingFee     Decimal       @db.Decimal(12, 2)
-  depositTotal      Decimal       @db.Decimal(12, 2)
-  youthCount        Int           @default(0)
-  juniorCount       Int           @default(0)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  camp              Camp          @relation(fields: [campId], references: [id])
-  week              HuntWeek      @relation(fields: [weekId], references: [id])
-  package           PackageOption @relation(fields: [packageId], references: [id])
-  hunters           QuoteHunter[]
+  id           String  @id @default(cuid())
+  quoteNumber  String  @unique
+  seasonLabel  String
+  campId       String
+  weekId       String
+  packageId    String
+  hunterCount  Int
+  earlyBird    Boolean
+  quoteEmail   String?
+  bookingName  String
+  bookingEmail String
+
+  subtotalBeforeTax Decimal @db.Decimal(12, 2)
+  taxAmount         Decimal @db.Decimal(12, 2)
+  totalAmount       Decimal @db.Decimal(12, 2)
+
+  depositRate   Decimal @db.Decimal(5, 4)
+  depositAmount Decimal @db.Decimal(12, 2) // Final deposit after any minimum adjustment
+
+  minimumAdjustment Decimal @default(0) @db.Decimal(12, 2) // For "Have it all to myself"
+
+  youthCount  Int @default(0)
+  juniorCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  camp    Camp          @relation(fields: [campId], references: [id])
+  week    HuntWeek      @relation(fields: [weekId], references: [id])
+  package PackageOption @relation(fields: [packageId], references: [id])
+
+  hunters QuoteHunter[]
 }
 
 model QuoteHunter {
-  id                 String   @id @default(cuid())
-  quoteId            String
-  rowIndex           Int
-  hunterName         String?
-  discountCode       String
-  extraDays          Int
-  extraNights        Int
-  baseRate           Decimal  @db.Decimal(10, 2)
-  baseLodgingPortion Decimal  @db.Decimal(10, 2)
-  baseHuntingPortion Decimal  @db.Decimal(10, 2)
-  volumeDiscount     Decimal  @db.Decimal(10, 2)
-  extraHunting       Decimal  @db.Decimal(10, 2)
-  extraLodging       Decimal  @db.Decimal(10, 2)
-  juniorDiscount     Decimal  @db.Decimal(10, 2)
-  adultDiscount      Decimal  @db.Decimal(10, 2)
-  earlyBirdDiscount  Decimal  @db.Decimal(10, 2)
-  subtotalBeforeTax  Decimal  @db.Decimal(10, 2)
-  taxAmount          Decimal  @db.Decimal(10, 2)
-  totalAmount        Decimal  @db.Decimal(10, 2)
-  createdAt          DateTime @default(now())
-  quote              Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  id       String @id @default(cuid())
+  quoteId  String
+  rowIndex Int
+
+  hunterName   String?
+  discountCode String
+  extraDays    Int     @default(0)
+  extraNights  Int     @default(0)
+
+  baseRate          Decimal @db.Decimal(10, 2)
+  extraHunting      Decimal @db.Decimal(10, 2)
+  extraLodging      Decimal @db.Decimal(10, 2)
+  volumeDiscount    Decimal @db.Decimal(10, 2)
+  juniorDiscount    Decimal @db.Decimal(10, 2)
+  adultDiscount     Decimal @db.Decimal(10, 2)
+  earlyBirdDiscount Decimal @db.Decimal(10, 2)
+
+  subtotalBeforeTax Decimal @db.Decimal(10, 2)
+  taxAmount         Decimal @db.Decimal(10, 2)
+  totalAmount       Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+
+  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
   @@unique([quoteId, rowIndex])
 }
