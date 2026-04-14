@@ -10,6 +10,8 @@ const createPricingRowSchema = z.object({
   packageId: z.string().min(1),
   baseRate: z.number().min(0),
   minGroupSize: z.number().int().min(1),
+  lodgingCapacity: z.number().int().min(1),
+  dailyHuntRate: z.number().min(0),
   isAvailable: z.boolean().default(true),
   availabilityTag: z.string().optional().nullable(),
 });

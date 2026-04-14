@@ -117,6 +117,7 @@ const adminConfigSchema = z.object({
     z.object({
       name: z.string().min(1),
       slug: z.string().min(1),
+      lodgingCapacity: z.number().int().min(1),
       displayOrder: z.number().int().default(0),
       isActive: z.boolean().default(true),
     })
@@ -315,6 +316,7 @@ export async function PUT(req: NextRequest) {
 
         // Create lookup maps
         const campBySlug = new Map(camps.map((camp) => [camp.slug, camp.id]));
+        const campLodgingCapacity = new Map(payload.camps.map((camp) => [camp.slug, camp.lodgingCapacity]));
         const weekBySlug = new Map(weeks.map((week) => [week.slug, week.id]));
         const packageByCode = new Map(packages.map((pkg) => [pkg.code, pkg.id]));
 
@@ -323,12 +325,18 @@ export async function PUT(req: NextRequest) {
           const campId = campBySlug.get(row.campSlug);
           const weekId = weekBySlug.get(row.weekSlug);
           const packageId = packageByCode.get(row.packageCode);
+          const lodgingCapacity = campLodgingCapacity.get(row.campSlug);
 
-          if (!campId || !weekId || !packageId) {
+          if (!campId || !weekId || !packageId || lodgingCapacity === undefined) {
             throw new Error(
               `Pricing row references unknown camp/week/package: ${row.campSlug}/${row.weekSlug}/${row.packageCode}`
             );
           }
+
+          // Compute daily hunt rate from 3-day base rate (assuming 3-day packages)
+          // Formula: (baseRate - 4 * nightlyLodgingRate) / 3
+          const LODGING_RATE_PER_NIGHT = 100; // Default nightly lodging rate
+          const dailyHuntRate = Number(((row.baseRate - 4 * LODGING_RATE_PER_NIGHT) / 3).toFixed(2));
 
           return {
             campId,
@@ -336,6 +344,8 @@ export async function PUT(req: NextRequest) {
             packageId,
             baseRate: row.baseRate,
             minGroupSize: row.minGroupSize,
+            lodgingCapacity,
+            dailyHuntRate,
             isAvailable: row.isAvailable,
             availabilityTag: row.availabilityTag ?? null,
           };

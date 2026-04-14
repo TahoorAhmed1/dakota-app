@@ -60,7 +60,7 @@ export async function GET(_req: Request, { params }: Params) {
     drawLine(`Minimum adjustment: $${Number(quote.minimumAdjustment).toFixed(2)}`);
     drawLine(`Tax: $${Number(quote.taxAmount).toFixed(2)}`);
     drawLine(`Grand Total: $${Number(quote.totalAmount).toFixed(2)}`);
-    drawLine(`Deposit: $${Number(quote.depositTotal).toFixed(2)}`);
+    drawLine(`Deposit: $${Number(quote.depositAmount).toFixed(2)}`);
 
     y -= 8;
     drawLine("Hunter Rows", { bold: true, size: 12 });

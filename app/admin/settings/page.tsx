@@ -30,7 +30,7 @@ function parseNumberList(value: string): number[] {
 export default function CalculatorSettingsPage() {
   const router = useRouter();
   const [config, setConfig] = useState<AdminConfig | null>(null);
-  const [settings, setSettings] = useState<CalculatorSettings | null>(null);
+  const [settings, setSettings] = useState<CalculatorSettings | any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -69,9 +69,9 @@ export default function CalculatorSettingsPage() {
     }
 
     return {
-      hunterCountOptions: settings.hunterCountOptions.join(", "),
-      extraDayOptions: settings.extraDayOptions.join(", "),
-      extraNightOptions: settings.extraNightOptions.join(", "),
+      hunterCountOptions: settings?.hunterCountOptions.join(", "),
+      extraDayOptions: settings?.extraDayOptions?.join(", "),
+      extraNightOptions: settings?.extraNightOptions?.join(", "),
     };
   }, [settings]);
 

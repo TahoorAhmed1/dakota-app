@@ -30,6 +30,10 @@ export type CalculatorLabels = {
     hunterCountLabel: string;
     packageLabel: string;
     earlyBirdLabel: string;
+    campReference: string;
+    weekReference: string;
+    hunterCountReference: string;
+    packageReference: string;
     nextButton: string;
   };
   step2: {
@@ -91,9 +95,14 @@ export type CalculatorLabels = {
 export type CalculatorSettings = {
   salesTaxRate: number;
   earlyBirdRate: number;
-  extraNightRate: number;           // Only this is needed (extra day is calculated)
+  extraDayRate: number;
+  extraNightRate: number;
+  processingFeeRate: number;
+  hunterCountOptions: number[];
+  extraDayOptions: number[];
+  extraNightOptions: number[];
+  earlyBirdOptions: ChoiceOption<YesNoValue>[];
   depositSchedule: DepositScheduleEntry[];
-  rebookingDepositRate: number;
   labels: CalculatorLabels;
 };
 
@@ -101,8 +110,16 @@ export type CalculatorSettings = {
 export const defaultCalculatorSettings: CalculatorSettings = {
   salesTaxRate: 0.057,           // 5.7% SD sales tax
   earlyBirdRate: 0.05,           // 5% early bird
+  extraDayRate: 150,             // Extra day rate per day
   extraNightRate: 105,           // From Packages & Pricing.docx
-  rebookingDepositRate: 0.25,    // From documents
+  processingFeeRate: 0.0,        // No processing fee by default
+  hunterCountOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15],
+  extraDayOptions: [0, 1, 2, 3, 4, 5],
+  extraNightOptions: [0, 1, 2, 3, 4, 5],
+  earlyBirdOptions: [
+    { label: "Yes", value: "Yes" },
+    { label: "No", value: "No" },
+  ],
   depositSchedule: [
     {
       label: "Up to May 1",
@@ -145,6 +162,10 @@ export const defaultCalculatorSettings: CalculatorSettings = {
       hunterCountLabel: "How Many Hunters In Your Group?",
       packageLabel: "What Package?",
       earlyBirdLabel: "Does Your Group Qualify For 5% Early Bird Booking Discount?",
+      campReference: "Camp",
+      weekReference: "Week",
+      hunterCountReference: "Hunter Count",
+      packageReference: "Package",
       nextButton: "To Step 2: Enter Hunters »",
     },
     step2: {
@@ -212,7 +233,7 @@ export const defaultCalculatorSettings: CalculatorSettings = {
   },
 };
 
-// Normalization function (simplified - no longer needs extraDayRate, processingFee, etc.)
+// Normalization function
 export function normalizeCalculatorSettings(value: unknown): CalculatorSettings {
   if (!value || typeof value !== "object") return defaultCalculatorSettings;
 
@@ -221,10 +242,13 @@ export function normalizeCalculatorSettings(value: unknown): CalculatorSettings 
   return {
     salesTaxRate: typeof raw.salesTaxRate === "number" ? raw.salesTaxRate : defaultCalculatorSettings.salesTaxRate,
     earlyBirdRate: typeof raw.earlyBirdRate === "number" ? raw.earlyBirdRate : defaultCalculatorSettings.earlyBirdRate,
+    extraDayRate: typeof raw.extraDayRate === "number" ? raw.extraDayRate : defaultCalculatorSettings.extraDayRate,
     extraNightRate: typeof raw.extraNightRate === "number" ? raw.extraNightRate : defaultCalculatorSettings.extraNightRate,
-    rebookingDepositRate: typeof raw.rebookingDepositRate === "number" 
-      ? raw.rebookingDepositRate 
-      : defaultCalculatorSettings.rebookingDepositRate,
+    processingFeeRate: typeof raw.processingFeeRate === "number" ? raw.processingFeeRate : defaultCalculatorSettings.processingFeeRate,
+    hunterCountOptions: Array.isArray(raw.hunterCountOptions) ? raw.hunterCountOptions : defaultCalculatorSettings.hunterCountOptions,
+    extraDayOptions: Array.isArray(raw.extraDayOptions) ? raw.extraDayOptions : defaultCalculatorSettings.extraDayOptions,
+    extraNightOptions: Array.isArray(raw.extraNightOptions) ? raw.extraNightOptions : defaultCalculatorSettings.extraNightOptions,
+    earlyBirdOptions: Array.isArray(raw.earlyBirdOptions) ? raw.earlyBirdOptions : defaultCalculatorSettings.earlyBirdOptions,
     depositSchedule: Array.isArray(raw.depositSchedule) ? raw.depositSchedule : defaultCalculatorSettings.depositSchedule,
     labels: raw.labels && typeof raw.labels === "object" 
       ? { ...defaultCalculatorSettings.labels, ...raw.labels } 

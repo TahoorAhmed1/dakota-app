@@ -48,10 +48,7 @@ export async function POST(req: NextRequest) {
         taxAmount: calculation.totals.taxAmount,
         totalAmount: calculation.totals.totalAmount,
         depositRate: calculation.totals.depositRate,
-        depositBase: calculation.totals.depositBase,
-        processingFeeRate: calculation.totals.processingFeeRate,
-        processingFee: calculation.totals.processingFee,
-        depositTotal: calculation.totals.depositTotal,
+        depositAmount: calculation.totals.depositTotal,
         hunters: {
           create: calculation.rows.map((row) => ({
             rowIndex: row.rowIndex,
@@ -64,7 +61,7 @@ export async function POST(req: NextRequest) {
             extraHunting: row.extraHunting,
             extraLodging: row.extraLodging,
             earlyBirdDiscount: row.earlyBirdDiscount,
-            individualDiscount: row.individualDiscount,
+            adultDiscount: row.individualDiscount,
             juniorDiscount: row.juniorDiscount,
             subtotalBeforeTax: row.subtotalBeforeTax,
             taxAmount: row.taxAmount,
