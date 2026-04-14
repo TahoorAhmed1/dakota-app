@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// ------------------------------------------------------------
+//  Camps – matches "Camps" sheet
+// ------------------------------------------------------------
 const camps = [
   { name: "Faulkton Pheasant Camp", slug: "faulkton", displayOrder: 1, nightlyLodgingRate: 100.00 },
   { name: "Gunner's Haven Pheasant Camp", slug: "gunners-haven", displayOrder: 2, nightlyLodgingRate: 100.00 },
@@ -10,6 +13,9 @@ const camps = [
   { name: "West River Adventures Pheasant Camp", slug: "west-river-adventures", displayOrder: 5, nightlyLodgingRate: 100.00 },
 ];
 
+// ------------------------------------------------------------
+//  Weeks – matches schedule (3rd Saturday of October)
+// ------------------------------------------------------------
 const weeks = [
   { label: "Week 1 — Oct. 17-19, 2026", slug: "week-1-2026", seasonLabel: "2026 Season", displayOrder: 1 },
   { label: "Week 2 — Oct. 22-25, 2026", slug: "week-2-2026", seasonLabel: "2026 Season", displayOrder: 2 },
@@ -32,16 +38,25 @@ const weeks = [
   { label: "Week 9 — Dec. 11-14, 2027", slug: "week-9-2027", seasonLabel: "2027 Season", displayOrder: 18 },
 ];
 
+// ------------------------------------------------------------
+//  Packages – base durations
+// ------------------------------------------------------------
 const packages = [
   { code: "PKG_4N3D", label: "4 Nights / 3 Days", nights: 4, days: 3, displayOrder: 1 },
   { code: "PKG_5N4D", label: "5 Nights / 4 Days", nights: 5, days: 4, displayOrder: 2 },
 ];
 
+// ------------------------------------------------------------
+//  Week base rates (3‑day) from Rate-Price sheet
+// ------------------------------------------------------------
 const weekBaseRates3day = [1749, 1649, 1549, 1449, 1449, 1449, 1449, 1299, 999];
 
-const LODGING_RATE_PER_NIGHT = 100;
-const EXTRA_NIGHT_RATE = 105;
+const LODGING_RATE_PER_NIGHT = 100;      // Base package lodging rate
+const EXTRA_NIGHT_RATE = 105;            // Extra night rate – matches Packages & Pricing.docx
 
+// ------------------------------------------------------------
+//  Helper functions
+// ------------------------------------------------------------
 function computeDailyHuntRate(threeDayBase) {
   const lodgingPortion = 4 * LODGING_RATE_PER_NIGHT;
   return Number(((threeDayBase - lodgingPortion) / 3).toFixed(2));
@@ -52,28 +67,41 @@ function compute4DayBase(threeDayBase) {
   return Number((5 * LODGING_RATE_PER_NIGHT + 4 * dailyHunt).toFixed(2));
 }
 
-// Minimums & Capacities (aligned with live site)
+// ------------------------------------------------------------
+//  Minimum Group Sizes – CORRECTED per Minimum Group Size sheet
+// ------------------------------------------------------------
+// 3‑day minimums (lower bound of ranges, or exact where given)
 const min3day = {
-  faulkton:              [13,13,13,13,13,13,13,13,13],
-  "gunners-haven":       [8,6,6,6,6,6,6,6,6],
-  "meadow-creek":        [12,10,10,8,8,8,10,10,10],
-  "pheasant-camp-lodge": [12,11,10,9,8,8,8,8,8],
-  "west-river-adventures":[11,11,11,11,11,11,6,11,6],
+  faulkton:              [17, 17, 17, 17, 17, 17, 17, 17, 17],   // All weeks = 17
+  "gunners-haven":       [6,  6,  6,  6,  6,  6,  6,  6,  6],     // All weeks min 6 (range 6‑10)
+  "meadow-creek":        [12, 11, 11, 11, 11, 11, 11, 12, 12],    // Week1=12, W2‑7=11, W8‑9=12
+  "pheasant-camp-lodge": [12, 11, 10, 9,  8,  8,  8,  8,  8],     // As per sheet
+  "west-river-adventures":[11, 11, 11, 11, 11, 11, 6,  11, 6],    // As per sheet
 };
 
+// 4‑day minimums (only Meadow Creek and Faulkton offer 4‑day)
 const min4day = {
-  faulkton:              [13,13,13,13,13,13,13,13,13],
-  "gunners-haven":       [null,null,null,null,null,null,null,null,null],
-  "meadow-creek":        [12,10,10,8,8,8,10,10,12],
-  "pheasant-camp-lodge": [null,null,null,null,null,null,null,null,null],
-  "west-river-adventures":[null,null,null,null,null,null,null,null,null],
+  faulkton:              [13, 13, 13, 13, 13, 13, 13, 13, 13],   // All weeks = 13‑17, use lower bound 13
+  "gunners-haven":       [null, null, null, null, null, null, null, null, null],
+  "meadow-creek":        [12, 10, 10, 8,  8,  8,  10, 10, 12],    // As per sheet
+  "pheasant-camp-lodge": [null, null, null, null, null, null, null, null, null],
+  "west-river-adventures":[null, null, null, null, null, null, null, null, null],
 };
 
+// ------------------------------------------------------------
+//  Lodging capacity (beds) per camp
+// ------------------------------------------------------------
 const lodgingCapacity = {
-  faulkton: 17, "gunners-haven": 10, "meadow-creek": 12,
-  "pheasant-camp-lodge": 12, "west-river-adventures": 17,
+  faulkton: 17,
+  "gunners-haven": 10,
+  "meadow-creek": 12,
+  "pheasant-camp-lodge": 12,
+  "west-river-adventures": 17,
 };
 
+// ------------------------------------------------------------
+//  Availability status for 2026 season (from your grid)
+// ------------------------------------------------------------
 const avail3day2026 = {
   faulkton: ["RESERVED","RESERVED","RESERVED","RESERVED","RESERVED","RESERVED","RESERVED","RESERVED","RESERVED"],
   "gunners-haven": ["RESERVED","RESERVED","RESERVED","RESERVED","RESERVED","RESERVED","RESERVED","OPEN","RESERVED"],
@@ -90,7 +118,9 @@ const avail4day2026 = {
   "west-river-adventures": ["NA","NA","NA","NA","NA","NA","NA","NA","NA"],
 };
 
-// Volume Rules
+// ------------------------------------------------------------
+//  Volume discount rules – matches Discounts sheet
+// ------------------------------------------------------------
 const volumeRules = [
   { minHunters: 7, maxHunters: 7,   amountOffPerHead: 20, displayOrder: 1 },
   { minHunters: 8, maxHunters: 8,   amountOffPerHead: 40, displayOrder: 2 },
@@ -98,7 +128,9 @@ const volumeRules = [
   { minHunters: 10, maxHunters: null, amountOffPerHead: 80, displayOrder: 4 },
 ];
 
-// Discount Rules → Removed appliesTo (no longer in schema)
+// ------------------------------------------------------------
+//  Individual discount rules – matches Discounts sheet
+// ------------------------------------------------------------
 const discountRules = [
   { code: "NONE",                  label: "Adult",                            category: "INDIVIDUAL", type: "FIXED",   value: 0,   stackOrder: 10, requiresHunterIndex: null, maxPerGroup: null },
   { code: "ADULT_COORDINATOR",     label: "Adult - Group Coordinator",        category: "INDIVIDUAL", type: "PERCENT", value: 10,  stackOrder: 20, requiresHunterIndex: 1,    maxPerGroup: 1 },
@@ -112,6 +144,9 @@ const discountRules = [
   { code: "YOUTH",                 label: "Youth (Age 12-15) — Free",         category: "YOUTH",      type: "PERCENT", value: 100, stackOrder: 100, requiresHunterIndex: null, maxPerGroup: null },
 ];
 
+// ------------------------------------------------------------
+//  Calculator global settings
+// ------------------------------------------------------------
 const defaultCalculatorSettings = {
   salesTaxRate: 0.057,
   earlyBirdRate: 0.05,
@@ -124,15 +159,21 @@ const defaultCalculatorSettings = {
   ],
   rebookingDepositRate: 0.25,
   labels: {
-    // Put your full labels object here (stepHeadings, step1, step2, step3, etc.)
-    // You can copy it from your previous version
+    // Default labels – customize as needed
+    stepHeadings: { step1: "Camp & Dates", step2: "Hunter Details", step3: "Quote Summary" },
+    step1: { campLabel: "Select Camp", weekLabel: "Select Week", packageLabel: "Select Package", groupSizeLabel: "Number of Hunters", earlyBirdLabel: "Early Bird Discount?" },
+    step2: { hunterNameLabel: "Name", discountLabel: "Discount", extraDaysLabel: "Extra Hunting Days", extraNightsLabel: "Extra Lodging Nights" },
+    step3: { quoteTitle: "Your Custom Quote", taxLabel: "Sales Tax (5.7%)", totalLabel: "Total", depositLabel: "Deposit Required" },
   },
 };
 
+// ------------------------------------------------------------
+//  Main seed function
+// ------------------------------------------------------------
 async function main() {
-  console.log("🌱 Seeding UGUIDE database...");
+  console.log("🌱 Seeding UGUIDE database with corrected minimum group sizes...");
 
-  // Clear data in correct order
+  // Clear existing data (respect foreign key order)
   await prisma.quoteHunter.deleteMany();
   await prisma.quote.deleteMany();
   await prisma.campWeekPricing.deleteMany();
@@ -144,6 +185,7 @@ async function main() {
   await prisma.huntWeek.deleteMany();
   await prisma.camp.deleteMany();
 
+  // Create camps, weeks, packages
   const createdCamps = await Promise.all(camps.map(c => prisma.camp.create({ data: c })));
   const createdWeeks = await Promise.all(weeks.map(w => prisma.huntWeek.create({ data: w })));
   const [pkg4n3d, pkg5n4d] = await Promise.all(packages.map(p => prisma.packageOption.create({ data: p })));
@@ -151,7 +193,7 @@ async function main() {
   const campBySlug = Object.fromEntries(createdCamps.map(c => [c.slug, c]));
   const weekBySlug = Object.fromEntries(createdWeeks.map(w => [w.slug, w]));
 
-  // Seed Week Base Rates
+  // Seed week base rates (3‑day)
   for (const year of [2026, 2027]) {
     for (let wk = 1; wk <= 9; wk++) {
       const weekSlug = `week-${wk}-${year}`;
@@ -164,7 +206,13 @@ async function main() {
     }
   }
 
-  async function seedSeason(seasonYear, availMap3, availMap4, defaultToOpen = false) {
+  // Helper to seed a season
+  async function seedSeason(
+    seasonYear,
+    availMap3,
+    availMap4,
+    defaultToOpen = false
+  ) {
     for (const campSlug of Object.keys(min3day)) {
       const camp = campBySlug[campSlug];
       if (!camp) continue;
@@ -180,15 +228,20 @@ async function main() {
         const base4 = compute4DayBase(base3);
         const capacity = lodgingCapacity[campSlug];
 
-        // 3-Day Package
+        // 3‑Day Package
         const min3 = min3day[campSlug][idx];
-        const status3 = min3 === null ? "NA" : (defaultToOpen ? "OPEN" : (availMap3[campSlug]?.[idx] ?? "OPEN"));
+        let status3 = "NA";
+        if (min3 !== null && min3 !== undefined && min3 > 0) {
+          status3 = defaultToOpen ? "OPEN" : (availMap3[campSlug]?.[idx] ?? "OPEN");
+        } else {
+          status3 = "NA";
+        }
 
         await prisma.campWeekPricing.create({
           data: {
-            camp: { connect: { id: camp.id } },
-            week: { connect: { id: week.id } },
-            package: { connect: { id: pkg4n3d.id } },
+            campId: camp.id,
+            weekId: week.id,
+            packageId: pkg4n3d.id,
             baseRate: base3,
             minGroupSize: min3 ?? 0,
             lodgingCapacity: capacity,
@@ -199,15 +252,20 @@ async function main() {
           },
         });
 
-        // 4-Day Package
-        const min4 = min4day[campSlug][idx];
-        const status4 = min4 === null ? "NA" : (defaultToOpen ? "OPEN" : (availMap4[campSlug]?.[idx] ?? "OPEN"));
+        // 4‑Day Package
+        const min4 = min4day[campSlug]?.[idx] ?? null;
+        let status4 = "NA";
+        if (min4 !== null && min4 > 0) {
+          status4 = defaultToOpen ? "OPEN" : (availMap4[campSlug]?.[idx] ?? "OPEN");
+        } else {
+          status4 = "NA";
+        }
 
         await prisma.campWeekPricing.create({
           data: {
-            camp: { connect: { id: camp.id } },
-            week: { connect: { id: week.id } },
-            package: { connect: { id: pkg5n4d.id } },
+            campId: camp.id,
+            weekId: week.id,
+            packageId: pkg5n4d.id,
             baseRate: base4,
             minGroupSize: min4 ?? 0,
             lodgingCapacity: capacity,
@@ -225,15 +283,21 @@ async function main() {
   await seedSeason(2027, {}, {}, true);
 
   await prisma.volumeDiscountRule.createMany({ data: volumeRules });
-  await prisma.discountRule.createMany({ data: discountRules });   // Now works - no appliesTo
+
+  await prisma.discountRule.createMany({ data: discountRules });
 
   await prisma.calculatorSetting.create({
     data: { id: "default", config: defaultCalculatorSettings },
   });
 
-  console.log("✅ UGUIDE seed completed successfully!");
+  console.log("✅ UGUIDE seed completed successfully with corrected minimum group sizes!");
 }
 
 main()
-  .catch((e) => { console.error(e); process.exit(1); })
-  .finally(async () => await prisma.$disconnect());
+  .catch((e) => {
+    console.error("❌ Seeding failed:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

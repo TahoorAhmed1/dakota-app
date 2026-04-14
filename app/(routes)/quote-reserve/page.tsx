@@ -339,9 +339,10 @@ export default function QuoteReservePage() {
       if (rule.category === "JUNIOR") {
         juniorYouthDiscount = -subtotalForPct * 0.5;
       } else if (rule.category === "YOUTH") {
-        const huntPortion = baseRate + totalExtraDays * dailyHuntRate;
-        juniorYouthDiscount = -huntPortion;
-      }
+  const huntingOnlyBase = base3Rate - 4 * 100; 
+  const huntPortion = huntingOnlyBase + totalExtraDays * dailyHuntRate;
+  juniorYouthDiscount = -huntPortion;
+}
 
       // Adult / Coordinator discount
       let adultDiscount = 0;
@@ -470,7 +471,6 @@ export default function QuoteReservePage() {
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <main className="flex flex-col">
-      {/* Hero */}
       <section className="QuoteReserveImage relative flex min-h-[340px] items-center justify-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[620px]">
         <div className="absolute inset-0" />
         <div className="relative z-10 flex flex-col items-center text-center">
@@ -884,44 +884,44 @@ export default function QuoteReservePage() {
               <div className="bg-[#f5f5f5]">
                 <div className="overflow-hidden">
                   <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
-                    {labels?.step3.overviewTitle}
+                    {labels?.step3?.overviewTitle}
                   </div>
 
                   <div className="border-b border-[#d9d9d9] px-4 py-6 text-center text-[14px] leading-7 text-[#2b1a0f] sm:px-8 sm:py-8">
-                    <p className="font-semibold">{labels?.step3.overviewIntro}</p>
-                    <p className="mt-6 font-semibold">{labels?.step3.optionsLabel}</p>
-                    <p className="mt-4 text-[18px] font-black">{labels?.step3.optionOneTitle}</p>
+                    <p className="font-semibold">{labels?.step3?.overviewIntro}</p>
+                    <p className="mt-6 font-semibold">{labels?.step3?.optionsLabel}</p>
+                    <p className="mt-4 text-[18px] font-black">{labels?.step3?.optionOneTitle}</p>
                     <div className="mt-3 space-y-2">
-                      {(labels?.step3.optionOneBullets || []).map((bullet) => (
+                      {(labels?.step3?.optionOneBullets || []).map((bullet) => (
                         <p key={bullet}>✓ {bullet}</p>
                       ))}
                     </div>
-                    <p className="mt-6 text-[18px] font-black">{labels?.step3.optionTwoTitle}</p>
+                    <p className="mt-6 text-[18px] font-black">{labels?.step3?.optionTwoTitle}</p>
                     <div className="mt-3 space-y-2">
-                      {(labels?.step3.optionTwoBullets || []).map((bullet) => (
+                      {(labels?.step3?.optionTwoBullets || []).map((bullet) => (
                         <p key={bullet}>✓ {bullet}</p>
                       ))}
                     </div>
                   </div>
 
                   <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
-                    {labels?.step3.groupSelectionsTitle ?? "Group Selections"}
+                    {labels?.step3?.groupSelectionsTitle ?? "Group Selections"}
                   </div>
 
                   <SummaryRow
-                    label={`${labels?.step3.groupFields.season ?? "Season Selected"}:`}
+                    label={`${labels?.step3?.groupFields?.season ?? "Season Selected"}:`}
                     value={groupData.seasonLabel || "-"}
                   />
                   <SummaryRow
-                    label={`${labels?.step3.groupFields.camp ?? "Camp Selected"}:`}
+                    label={`${labels?.step3?.groupFields?.camp ?? "Camp Selected"}:`}
                     value={selectedCamp?.name || "-"}
                   />
                   <SummaryRow
-                    label={`${labels?.step3.groupFields.campTier ?? "Camp Tier"}:`}
+                    label={`${labels?.step3?.groupFields?.campTier ?? "Camp Tier"}:`}
                     value="Tier 1"
                   />
                   <SummaryRow
-                    label={`${labels?.step3.groupFields.package ?? "Package Selected"}:`}
+                    label={`${labels?.step3?.groupFields?.package ?? "Package Selected"}:`}
                     value={(() => {
                       const selectedPackage = config?.packages.find(
                         (p) => p.id === groupData.packageId
@@ -932,20 +932,20 @@ export default function QuoteReservePage() {
                     })()}
                   />
                   <SummaryRow
-                    label={`${labels?.step3.groupFields.totalHunters ?? "Total Hunters Selected"}:`}
+                    label={`${labels?.step3?.groupFields?.totalHunters ?? "Total Hunters Selected"}:`}
                     value={`${groupData.hunterCount} Hunters`}
                   />
                   <SummaryRow
-                    label={`${labels?.step3.groupFields.earlyBird ?? "Early Bird Discount"}:`}
+                    label={`${labels?.step3?.groupFields?.earlyBird ?? "Early Bird Discount"}:`}
                     value={groupData.earlyBird === "Yes" ? "Yes (5%)" : "No"}
                   />
                   <div className="border-b border-[#d9d9d9] px-4 py-3 text-center text-[14px] font-medium text-[#2b1a0f] sm:px-8 sm:py-5">
-                    ✓ {labels?.step3.groupFields.week ?? "Week Selected"}:{" "}
+                    ✓ {labels?.step3?.groupFields?.week ?? "Week Selected"}:{" "}
                     {selectedWeek?.label || "-"}
                   </div>
 
                   <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
-                    {labels?.step3.hunterSelectionsTitle ?? "Hunter Selections"}
+                    {labels?.step3?.hunterSelectionsTitle ?? "Hunter Selections"}
                   </div>
 
                   <div className="overflow-x-auto px-2 py-4 sm:px-4">
@@ -1020,12 +1020,12 @@ export default function QuoteReservePage() {
 
                     <div className="mt-4 flex justify-center md:justify-end">
                       <button className="rounded-md bg-[#f26f2d] px-8 py-3 text-[15px] font-bold uppercase text-white">
-                        {labels?.step3.totalsBadgeLabel ?? "Totals"}
+                        {labels?.step3?.totalsBadgeLabel ?? "Totals"}
                       </button>
                     </div>
 
                     <div className="mt-5 text-center text-[16px] font-semibold text-[#2b1a0f] md:text-right md:text-[18px]">
-                      {labels?.step3.totalPriceLabel ??
+                      {labels?.step3?.totalPriceLabel ??
                         "Total price after applicable discounts and state sales tax:"}{" "}
                       <span className="text-[24px] font-semibold">
                         ${grandTotal.toFixed(2)}
@@ -1034,19 +1034,19 @@ export default function QuoteReservePage() {
                   </div>
 
                   <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
-                    {labels?.step3.depositTitle ?? "Deposit/Booking Information"}
+                    {labels?.step3?.depositTitle ?? "Deposit/Booking Information"}
                   </div>
 
                   <div className="px-4 py-6 text-[14px] text-[#2b1a0f] sm:px-6 md:px-8">
                     <p className="mb-5 font-semibold">
-                      {labels?.step3.depositDescription ??
+                      {labels?.step3?.depositDescription ??
                         "Deposit % is based on booking date. Up to May 1: 25%. May 1–Aug 31: 50%. Sept 1–end of season: 100%."}
                     </p>
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_320px] md:items-center">
                       <label className="font-semibold">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step3.bookingNameLabel ?? "Enter name of person booking the hunt:"}
+                        {labels?.step3?.bookingNameLabel ?? "Enter name of person booking the hunt:"}
                       </label>
                       <input
                         value={bookingName}
@@ -1063,7 +1063,7 @@ export default function QuoteReservePage() {
 
                       <label className="font-semibold">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step3.bookingEmailLabel ?? "Enter email address of person booking the hunt:"}
+                        {labels?.step3?.bookingEmailLabel ?? "Enter email address of person booking the hunt:"}
                       </label>
                       <input
                         type="email"
@@ -1082,7 +1082,7 @@ export default function QuoteReservePage() {
                       )}
 
                       <label className="font-semibold">
-                        {labels?.step3.depositAmountLabel ?? "Deposit Amount"} (
+                        {labels?.step3?.depositAmountLabel ?? "Deposit Amount"} (
                         {Math.round(depositRate * 100)}%):
                       </label>
                       {/* FIX: No processing fee line. Deposit = depositBase only. */}
@@ -1092,7 +1092,7 @@ export default function QuoteReservePage() {
                     </div>
 
                     <p className="mt-4 text-[13px] italic text-[#4e4e4e]">
-                      {labels?.step3.depositNote ??
+                      {labels?.step3?.depositNote ??
                         "Note: You will be redirected to Paypal.com to make your secure deposit."}
                     </p>
 
@@ -1101,7 +1101,7 @@ export default function QuoteReservePage() {
                         onClick={() => setStep(2)}
                         className="text-[14px] font-bold uppercase text-[#4c2c11] underline underline-offset-4"
                       >
-                        {labels?.step3.backButton ?? "Back to Step 2"}
+                        {labels?.step3?.backButton ?? "Back to Step 2"}
                       </button>
                       <button
                         onClick={handleSubmit}
@@ -1110,7 +1110,7 @@ export default function QuoteReservePage() {
                       >
                         {isSubmitting
                           ? "Submitting..."
-                          : (labels?.step3.submitButton ?? "Submit Quote Request »")}
+                          : (labels?.step3?.submitButton ?? "Submit Quote Request »")}
                       </button>
                     </div>
 
