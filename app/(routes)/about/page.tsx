@@ -109,32 +109,7 @@ export default function AboutPage() {
               About U-Guide
             </h2>
 
-            <div className="mt-3 space-y-1 text-[16px] font-semibold leading-tight sm:text-[18px]">
-              <p>
-                <Link
-                  href="/availability"
-                  className="text-[#ef7a2e] underline underline-offset-4 transition-opacity hover:opacity-80"
-                >
-                  2026 South Dakota Pheasant Hunting Season Dates
-                </Link>
-              </p>
-              <p>
-                <Link
-                  href="/availability"
-                  className="text-[#ef7a2e] underline underline-offset-4 transition-opacity hover:opacity-80"
-                >
-                  October 17, 2026 – January 31, 2027
-                </Link>
-              </p>
-              <p className="pt-1">
-                <Link
-                  href="/quote-reserve"
-                  className="text-[#3667d6] underline underline-offset-4 transition-opacity hover:opacity-80"
-                >
-                  Now Booking Pheasant Hunts for Fall 2026
-                </Link>
-              </p>
-            </div>
+     
           </header>
 
           <div className="mt-10 sm:mt-12">

@@ -43,7 +43,7 @@ export default function Home() {
       <Testimonials />
 
       {/* Waitlist */}
-      <section className="bg-white px-4 py-8 md:px-6 md:py-16">
+      {/* <section className="bg-white px-4 py-8 md:px-6 md:py-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center sm:mb-12">
             <p className="mb-2 text-xs font-bold tracking-widest uppercase text-orange-400">
@@ -59,7 +59,7 @@ export default function Home() {
           </div>
           <WaitlistForm />
         </div>
-      </section>
+      </section> */}
 
       <OurPartners />
       <LatestNews />

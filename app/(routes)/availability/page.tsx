@@ -58,10 +58,8 @@ export default function AvailabilityPage() {
         </div>
       </section>
 
-      {/* Season schedule section */}
       <SeasonSchedule />
 
-      {/* Photo slideshow section */}
 
       <section className="bg-white px-4 pb-20 sm:px-6 sm:pb-24">
         <div className="mx-auto max-w-7xl">
@@ -69,7 +67,6 @@ export default function AvailabilityPage() {
         </div>
       </section>
 
-      <Testimonials />
     </main>
   );
 }

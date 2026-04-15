@@ -24,17 +24,30 @@ function CampingExp() {
 
             <h1 className="text-[28px] font-semibold leading-tight sm:text-[34px] md:text-[36px]">
               The Ultimate{" "}
-              <span className="bg-orange-500/30 px-2 rounded">Pheasant Hunt</span>
+              <span className="bg-orange-500/30 px-2 rounded">
+                Pheasant Hunt
+              </span>
             </h1>
 
             <p className="mt-4 max-w-lg text-sm text-gray-200 sm:text-[15px]">
-              Your Ultimate Pheasant Hunting Experience starts where comfort meets adventure. Unplug, explore the wild, and create memories that last a lifetime with your friends and upland bird dogs.
+              Your Ultimate Pheasant Hunting Experience starts where comfort
+              meets adventure. Unplug, explore the wild, and create memories
+              that last a lifetime with your friends and upland bird dogs.
             </p>
           </div>
 
           <div className="w-full lg:w-auto">
-            <Link href="/quote-reserve" className="inline-flex w-full items-center justify-center rounded-md border border-orange-400 px-5 py-3 text-sm text-orange-400 transition hover:bg-orange-400 hover:text-white sm:w-auto sm:px-6 whitespace-nowrap">
+            <Link
+              href="/quote-reserve"
+              className="inline-flex w-full items-center justify-center rounded-md border border-orange-400 px-5 py-3 text-sm text-orange-400 transition hover:bg-orange-400 hover:text-white sm:w-auto sm:px-6 whitespace-nowrap"
+            >
               Book Your Hunt Online →
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex w-full items-center justify-center rounded-md border border-orange-400 px-5 py-3 text-sm text-orange-400 transition hover:bg-orange-400 hover:text-white sm:w-auto sm:px-6 whitespace-nowrap"
+            >
+              Contact
             </Link>
           </div>
         </div>
