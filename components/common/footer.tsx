@@ -338,9 +338,10 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Contact</h3>
             <p className="text-sm leading-7">
-              021 Hollywood Boulevard, LA <br />
-              customer@example.com <br />
-              (021) 345-6789
+              Chris Hitzeman - UGUIDE<br/>
+              Faulkton, SD 57438<br/>
+              chris@uguidesdpheasants.com<br/>
+              (605) 598-6925
             </p>
           </div>
 

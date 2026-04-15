@@ -333,16 +333,17 @@ export default function QuoteReservePage() {
 
       const subtotalForPct = baseRate + volumeDiscount + extraHunting + extraLodging;
 
-      // Youth: Hunting free only (lodging charged)
-      // Junior: 50% off full subtotal
+      // Youth: FREE hunt only (lodging charged full $100/night x nights)
+      // Junior: 50% off full package subtotal  
       let juniorYouthDiscount = 0;
       if (rule.category === "JUNIOR") {
         juniorYouthDiscount = -subtotalForPct * 0.5;
       } else if (rule.category === "YOUTH") {
-  const huntingOnlyBase = base3Rate - 4 * 100; 
-  const huntPortion = huntingOnlyBase + totalExtraDays * dailyHuntRate;
-  juniorYouthDiscount = -huntPortion;
-}
+        // Hunt portion only: base hunt + extra hunt days (lodging full price)
+        const baseHunt = base3Rate - 4 * 100; // Remove standard 4 nights lodging
+        const extraHunt = totalExtraDays * dailyHuntRate;
+        juniorYouthDiscount = -(baseHunt + extraHunt);
+      }
 
       // Adult / Coordinator discount
       let adultDiscount = 0;
