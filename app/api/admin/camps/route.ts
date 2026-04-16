@@ -12,7 +12,7 @@ interface CampData {
   isActive: boolean;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const camps = await prisma.camp.findMany({
       select: {
@@ -22,8 +22,8 @@ export async function GET(req: NextRequest) {
         nightlyLodgingRate: true,
         isActive: true,
         displayOrder: true,
-        // Note: minGroupSize and lodgingCapacity aren't in your schema's Camp model
-        // But are used in your API routes - you should add them to the model if needed
+        minGroupSize: true,
+        lodgingCapacity: true,
       },
       orderBy: { displayOrder: "asc" },
     });
@@ -55,9 +55,10 @@ export async function POST(req: NextRequest) {
         name: body.name,
         slug: body.slug,
         nightlyLodgingRate: Number(body.nightlyLodgingRate),
-        isActive: body.isActive ?? true, // default to true if not provided
-        displayOrder: 0, // You may want to calculate this
-        // Note: Add minGroupSize and lodgingCapacity to your model if needed
+        isActive: body.isActive ?? true,
+        minGroupSize: body.minGroupSize ?? 1,
+        lodgingCapacity: body.lodgingCapacity ?? 0,
+        displayOrder: 0,
       },
     });
 
@@ -74,12 +75,9 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body: CampData = await req.json();
-    
+
     if (!body.id) {
-      return NextResponse.json(
-        { error: "Camp ID is required for update" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Camp ID is required for update" }, { status: 400 });
     }
 
     const camp = await prisma.camp.update({
@@ -89,7 +87,8 @@ export async function PUT(req: NextRequest) {
         slug: body.slug,
         nightlyLodgingRate: Number(body.nightlyLodgingRate),
         isActive: body.isActive,
-        // Add other fields as needed
+        minGroupSize: body.minGroupSize ?? undefined,
+        lodgingCapacity: body.lodgingCapacity ?? undefined,
       },
     });
 

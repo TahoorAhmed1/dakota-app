@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import AdminLoadingState from "@/components/admin/admin-loading-state";
-import { fetchAdminConfig, updateAdminConfig, getAdminKeyFromStorage, clearAdminKey } from "@/lib/admin-client";
+import { getAdminKeyFromStorage, clearAdminKey } from "@/lib/admin-client";
 
 type DiscountRule = {
   code: string;
@@ -17,18 +17,11 @@ type DiscountRule = {
   stackOrder: number;
 };
 
-type CalculatorConfig = {
-  camps: Record<string, unknown>[];
-  weeks: Record<string, unknown>[];
-  packages: Record<string, unknown>[];
-  pricingRows: Record<string, unknown>[];
-  volumeRules: Record<string, unknown>[];
-  discountRules: DiscountRule[];
-};
+
 
 export default function DiscountsPage() {
   const router = useRouter();
-  const [config, setConfig] = useState<CalculatorConfig | null>(null);
+  // No longer need full config, only discounts
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -44,14 +37,17 @@ export default function DiscountsPage() {
   });
 
   useEffect(() => {
-    const loadConfig = async () => {
+    const loadDiscounts = async () => {
       try {
         const adminKey = getAdminKeyFromStorage();
-        const data = await fetchAdminConfig(adminKey || undefined);
-        setConfig(data);
-        setDiscounts(data.discountRules);
+        const res = await fetch("/api/admin/discounts", {
+          headers: adminKey ? { "x-admin-key": adminKey } : {},
+        });
+        if (!res.ok) throw new Error("Failed to load discount rules");
+        const data = await res.json();
+        setDiscounts(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load configuration");
+        setError(err instanceof Error ? err.message : "Failed to load discount rules");
         clearAdminKey();
         router.push("/admin/login");
         return;
@@ -59,28 +55,46 @@ export default function DiscountsPage() {
         setLoading(false);
       }
     };
-
-    loadConfig();
+    loadDiscounts();
   }, [router]);
 
   const handleSave = async () => {
-    if (!config) return;
-    setSaving(true);
-    setError("");
+  setSaving(true);
+  setError("");
 
-    try {
-      const adminKey = getAdminKeyFromStorage();
-      const updatedConfig = { ...config, discountRules: discounts };
-      await updateAdminConfig(updatedConfig, adminKey || undefined);
-      toast.success("Discount rules updated successfully.");
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to save changes";
-      setError(message);
-      toast.error(message);
-    } finally {
-      setSaving(false);
+  try {
+    const adminKey = getAdminKeyFromStorage();
+    // Sanitize payload
+    const sanitizedDiscounts = discounts.map((d, i) => ({
+      code: String(d.code || ""),
+      label: String(d.label || ""),
+      category: d.category === "JUNIOR" ? "JUNIOR" : "INDIVIDUAL",
+      type: d.type === "PERCENT" ? "PERCENT" : "FIXED",
+      value: Number(d.value) || 0,
+      stackOrder: typeof d.stackOrder === "number" ? d.stackOrder : i,
+      isActive: !!d.isActive,
+    }));
+    const res = await fetch("/api/admin/discounts", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(adminKey ? { "x-admin-key": adminKey } : {}),
+      },
+      body: JSON.stringify(sanitizedDiscounts),
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || "Failed to save discount rules");
     }
-  };
+    toast.success("Discount rules updated successfully.");
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to save changes";
+    setError(message);
+    toast.error(message);
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleAddDiscount = () => {
     if (!newDiscount.code || !newDiscount.label || newDiscount.value === 0) {
@@ -159,6 +173,10 @@ export default function DiscountsPage() {
             <option value="FIXED">Fixed ($)</option>
             <option value="PERCENT">Percent (%)</option>
           </select>
+
+   
+
+
           <input
             type="number"
             placeholder="Amount"

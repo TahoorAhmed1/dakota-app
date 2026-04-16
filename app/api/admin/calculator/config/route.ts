@@ -4,7 +4,6 @@ import { z } from "zod";
 import { defaultCalculatorSettings } from "@/lib/calculator-settings";
 import { prisma } from "@/lib/prisma";
 import { assertAdminAccess } from "@/lib/server/admin-auth";
-import { getCalculatorConfig } from "@/lib/server/calculator-data";
 
 const labelsSchema = z.object({
   stepHeadings: z.object({
@@ -93,22 +92,26 @@ const settingsSchema = z.object({
   hunterCountOptions: z.array(z.number().int().min(1)).min(1),
   extraDayOptions: z.array(z.number().int().min(0)).min(1),
   extraNightOptions: z.array(z.number().int().min(0)).min(1),
-  earlyBirdOptions: z.array(
-    z.object({
-      label: z.string().min(1),
-      value: z.enum(["Yes", "No"]),
-    })
-  ).min(1),
-  depositSchedule: z.array(
-    z.object({
-      label: z.string().min(1),
-      startMonth: z.number().int().min(1).max(12),
-      startDay: z.number().int().min(1).max(31),
-      endMonth: z.number().int().min(1).max(12),
-      endDay: z.number().int().min(1).max(31),
-      rate: z.number().min(0).max(1),
-    })
-  ).min(1),
+  earlyBirdOptions: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        value: z.enum(["Yes", "No"]),
+      })
+    )
+    .min(1),
+  depositSchedule: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        startMonth: z.number().int().min(1).max(12),
+        startDay: z.number().int().min(1).max(31),
+        endMonth: z.number().int().min(1).max(12),
+        endDay: z.number().int().min(1).max(31),
+        rate: z.number().min(0).max(1),
+      })
+    )
+    .min(1),
   labels: labelsSchema,
 });
 
@@ -178,23 +181,38 @@ const adminConfigSchema = z.object({
 export async function GET(req: NextRequest) {
   const access = assertAdminAccess(req);
   if (!access.ok) {
-    return NextResponse.json({ error: access.error }, { status: access.status });
+    return NextResponse.json(
+      { error: access.error },
+      { status: access.status }
+    );
   }
 
   try {
     const camps = await prisma.camp.findMany({
       orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
-      select: { name: true, slug: true, displayOrder: true, isActive: true },
     });
 
     const weeks = await prisma.huntWeek.findMany({
       orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
-      select: { label: true, slug: true, seasonLabel: true, displayOrder: true, isActive: true },
+      select: {
+        label: true,
+        slug: true,
+        seasonLabel: true,
+        displayOrder: true,
+        isActive: true,
+      },
     });
 
     const packages = await prisma.packageOption.findMany({
       orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
-      select: { code: true, label: true, nights: true, days: true, displayOrder: true, isActive: true },
+      select: {
+        code: true,
+        label: true,
+        nights: true,
+        days: true,
+        displayOrder: true,
+        isActive: true,
+      },
     });
 
     const pricingRows = await prisma.campWeekPricing.findMany({
@@ -260,21 +278,31 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(config);
   } catch (error) {
     console.error("ADMIN CONFIG GET ERROR", error);
-    return NextResponse.json({ error: "Unable to load admin config." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to load admin config." },
+      { status: 500 }
+    );
   }
 }
 
 export async function PUT(req: NextRequest) {
   const access = assertAdminAccess(req);
   if (!access.ok) {
-    return NextResponse.json({ error: access.error }, { status: access.status });
+    return NextResponse.json(
+      { error: access.error },
+      { status: access.status }
+    );
   }
 
   try {
     const parsed = adminConfigSchema.safeParse(await req.json());
+    console.log('parsed', parsed)
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Invalid admin config payload.", details: parsed.error.flatten() },
+        {
+          error: "Invalid admin config payload.",
+          details: parsed.error.flatten(),
+        },
         { status: 400 }
       );
     }
@@ -296,29 +324,33 @@ export async function PUT(req: NextRequest) {
         // Batch create camps and get them back
         await tx.camp.createMany({ data: payload.camps });
         const camps = await tx.camp.findMany({
-          where: { slug: { in: payload.camps.map(c => c.slug) } },
+          where: { slug: { in: payload.camps.map((c) => c.slug) } },
           select: { id: true, slug: true },
         });
 
         // Batch create weeks and get them back
         await tx.huntWeek.createMany({ data: payload.weeks });
         const weeks = await tx.huntWeek.findMany({
-          where: { slug: { in: payload.weeks.map(w => w.slug) } },
+          where: { slug: { in: payload.weeks.map((w) => w.slug) } },
           select: { id: true, slug: true },
         });
 
         // Batch create packages and get them back
         await tx.packageOption.createMany({ data: payload.packages });
         const packages = await tx.packageOption.findMany({
-          where: { code: { in: payload.packages.map(p => p.code) } },
+          where: { code: { in: payload.packages.map((p) => p.code) } },
           select: { id: true, code: true },
         });
 
         // Create lookup maps
         const campBySlug = new Map(camps.map((camp) => [camp.slug, camp.id]));
-        const campLodgingCapacity = new Map(payload.camps.map((camp) => [camp.slug, camp.lodgingCapacity]));
+        const campLodgingCapacity = new Map(
+          payload.camps.map((camp) => [camp.slug, camp.lodgingCapacity])
+        );
         const weekBySlug = new Map(weeks.map((week) => [week.slug, week.id]));
-        const packageByCode = new Map(packages.map((pkg) => [pkg.code, pkg.id]));
+        const packageByCode = new Map(
+          packages.map((pkg) => [pkg.code, pkg.id])
+        );
 
         // Prepare pricing rows data
         const pricingRowsData = payload.pricingRows.map((row) => {
@@ -327,7 +359,12 @@ export async function PUT(req: NextRequest) {
           const packageId = packageByCode.get(row.packageCode);
           const lodgingCapacity = campLodgingCapacity.get(row.campSlug);
 
-          if (!campId || !weekId || !packageId || lodgingCapacity === undefined) {
+          if (
+            !campId ||
+            !weekId ||
+            !packageId ||
+            lodgingCapacity === undefined
+          ) {
             throw new Error(
               `Pricing row references unknown camp/week/package: ${row.campSlug}/${row.weekSlug}/${row.packageCode}`
             );
@@ -336,7 +373,9 @@ export async function PUT(req: NextRequest) {
           // Compute daily hunt rate from 3-day base rate (assuming 3-day packages)
           // Formula: (baseRate - 4 * nightlyLodgingRate) / 3
           const LODGING_RATE_PER_NIGHT = 100; // Default nightly lodging rate
-          const dailyHuntRate = Number(((row.baseRate - 4 * LODGING_RATE_PER_NIGHT) / 3).toFixed(2));
+          const dailyHuntRate = Number(
+            ((row.baseRate - 4 * LODGING_RATE_PER_NIGHT) / 3).toFixed(2)
+          );
 
           return {
             campId,
@@ -398,6 +437,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("ADMIN CONFIG PUT ERROR", error);
-    return NextResponse.json({ error: "Unable to save admin config." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to save admin config." },
+      { status: 500 }
+    );
   }
 }
