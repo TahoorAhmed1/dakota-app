@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Toaster } from "sonner";
 import { clearAdminKey } from "@/lib/admin-client";
-import { useImageCatalogStore } from "@/lib/image-catalog-store";
 
 const navItems = [
   { label: "Dashboard", href: "/admin" },
@@ -15,6 +14,7 @@ const navItems = [
   { label: "Waitlist", href: "/admin/waitlist" },
   { label: "Camps", href: "/admin/camps" },
   { label: "Hunt Weeks", href: "/admin/weeks" },
+  { label: "Availability", href: "/availability" },
   { label: "Packages", href: "/admin/packages" },
   { label: "Pricing", href: "/admin/pricing" },
   { label: "Discounts", href: "/admin/discounts" },
@@ -138,7 +138,7 @@ export default function AdminLayout({
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto bg-[radial-gradient(circle_at_top_right,rgba(243,112,33,0.18),transparent_26%),linear-gradient(180deg,#fff7ef_0%,#ffffff_100%)] p-4 sm:p-6">
+        <div className="flex-1 overflow-auto bg-white p-4 sm:p-6">
           {children}
         </div>
       </div>
