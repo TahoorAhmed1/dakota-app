@@ -14,7 +14,7 @@ const navItems = [
   { label: "Waitlist", href: "/admin/waitlist" },
   { label: "Camps", href: "/admin/camps" },
   { label: "Hunt Weeks", href: "/admin/weeks" },
-  { label: "Availability", href: "/availability" },
+  { label: "Availability", href: "/admin/availability" },
   { label: "Packages", href: "/admin/packages" },
   { label: "Pricing", href: "/admin/pricing" },
   { label: "Discounts", href: "/admin/discounts" },
