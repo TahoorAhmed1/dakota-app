@@ -263,53 +263,53 @@ function PropertyMap({ selectedId, onSelectCamp }: MapProps) {
           mapRef.current = instance;
         }}
       >
-        <TileLayer
-          url={mapTile[viewMode].url}
-          attribution={mapTile[viewMode].attribution}
-          maxZoom={18}
-        />
-        {camps.map((camp) => (
-          <Marker
-            key={camp.id}
-            position={camp.position}
-            icon={selectedId === camp.id ? activeMarkerIcon : markerIcon}
-            title={camp.name}
-            eventHandlers={{ click: () => onSelectCamp(camp.id) }}
-          >
-            <Tooltip direction="top" offset={[0, -26]} opacity={1}>
-              {camp.name}
-            </Tooltip>
-            <Popup minWidth={240}>
-              <div className="space-y-2 p-1 text-left text-sm leading-snug text-[#2e2b28]">
-                <div>
-                  <p className="font-bold text-[#281703]">{camp.name}</p>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-[#F16724]">
-                    {camp.region}
-                  </p>
-                </div>
-                <p className="text-xs leading-relaxed">{camp.description}</p>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <a
-                    href={camp.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded bg-[#281703] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#3a2510]"
-                  >
-                    View Details
-                  </a>
-                  <a
-                    href={camp.directionsUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded border border-[#d9c8b5] px-3 py-1.5 text-xs font-semibold text-[#281703] transition hover:bg-[#f7efe6]"
-                  >
-                    Directions
-                  </a>
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+            <TileLayer
+              url={mapTile[viewMode].url}
+              attribution={mapTile[viewMode].attribution}
+              maxZoom={18}
+            />
+            {camps.map((camp) => (
+              <Marker
+                key={camp.id}
+                position={camp.position}
+                icon={selectedId === camp.id ? activeMarkerIcon : markerIcon}
+                title={camp.name}
+                eventHandlers={{ click: () => onSelectCamp(camp.id) }}
+              >
+                <Tooltip direction="top" offset={[0, -26]} opacity={1}>
+                  {camp.name}
+                </Tooltip>
+                <Popup minWidth={240}>
+                  <div className="space-y-2 p-1 text-left text-sm leading-snug text-[#2e2b28]">
+                    <div>
+                      <p className="font-bold text-[#281703]">{camp.name}</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-[#F16724]">
+                        {camp.region}
+                      </p>
+                    </div>
+                    <p className="text-xs leading-relaxed">{camp.description}</p>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <a
+                        href={camp.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded bg-[#281703] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#3a2510]"
+                      >
+                        View Details
+                      </a>
+                      <a
+                        href={camp.directionsUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded border border-[#d9c8b5] px-3 py-1.5 text-xs font-semibold text-[#281703] transition hover:bg-[#f7efe6]"
+                      >
+                        Directions
+                      </a>
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
       </MapContainer>
     </div>
   );
@@ -356,6 +356,14 @@ function CampCard({
           <p className="mt-2 text-xs leading-relaxed text-[#281703]/70">
             {camp.description}
           </p>
+          <div className="mt-3">
+            <Link
+              href={`/camps/${camp.id}`}
+              className="text-sm font-semibold text-[#F16724] hover:underline"
+            >
+              Read more
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -487,7 +495,7 @@ export default function CampsPage() {
         </section>
 
         <OurPartners />
-        <LatestNews />
+        {/* <LatestNews /> */}
       </main>
 
       <style jsx global>{`
