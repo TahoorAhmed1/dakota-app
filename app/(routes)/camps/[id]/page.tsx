@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { StaticImageData } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import flukton1 from "@/assets/flukton/image1.jpeg";
@@ -17,7 +18,7 @@ type CampDetail = {
   description: string;
   capacity?: string;
   amenities: string[];
-  images: string[];
+  images: (string | StaticImageData)[];
   informativeLinks?: InformativeLink[];
   packages?: string[];
   acres?: string;
