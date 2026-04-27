@@ -164,8 +164,8 @@ const campDetails: Record<string, CampDetail> = {
     acres: "700 +/- Acres of exclusively private premium pheasant hunting for your group. All types of cover including 600 acres of CRP in 16 blocks, 100 acres of tree belts in 12 blocks, 55,000 trees planted since 2002, 30 acres of sloughs across 3 parcels. Essentially 90% of total acres are premium high quality huntable acres. 60 acres of corn, milo and other custom food plots in 27 individual plots.",
     highlights: [
       "This Outfitter is a Pheasants Forever Life Member",
-      '"The whole setup is one huge Man Cave!"',
-      '"Acre for acre, possibly the most optimized pheasant habitat in the state"',
+      "The whole setup is one huge Man Cave!",
+      "Acre for acre, possibly the most optimized pheasant habitat in the state",
       "Began in 2002 and complete in 2023. One of the most unique pheasant hunting properties in South Dakota",
       "Waterfowl hunting, as conditions allow, no additional charge",
       "You can start hunting by walking out of lodge",
