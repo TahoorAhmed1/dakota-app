@@ -8,6 +8,9 @@ import { assertAdminAccess } from "@/lib/server/admin-auth";
 
 const patchSchema = z.object({
   availabilityTag: z.enum(["OPEN", "RESERVED", "PENDING", "NA"]),
+  minGroupSize: z.number().int().min(1).optional(),
+  lodgingCapacity: z.number().int().min(0).optional(),
+  hoverText: z.string().max(500).optional().nullable(),
 });
 
 export async function PATCH(
@@ -29,7 +32,7 @@ export async function PATCH(
     );
   }
 
-  const { availabilityTag } = parsed.data;
+  const { availabilityTag, minGroupSize, lodgingCapacity, hoverText } = parsed.data;
 
   try {
     const existing = await prisma.campWeekPricing.findUnique({
@@ -45,6 +48,9 @@ export async function PATCH(
       data: {
         availabilityTag,
         isAvailable: availabilityTag === "OPEN",
+        ...(minGroupSize !== undefined && { minGroupSize }),
+        ...(lodgingCapacity !== undefined && { lodgingCapacity }),
+        ...(hoverText !== undefined && { hoverText }),
       },
       select: {
         id: true,
@@ -53,9 +59,12 @@ export async function PATCH(
         packageId: true,
         availabilityTag: true,
         isAvailable: true,
+        minGroupSize: true,
+        lodgingCapacity: true,
+        hoverText: true,
         camp: { select: { name: true } },
         week: { select: { label: true } },
-        package: { select: { label: true } },
+        package: { select: { label: true, code: true } },
       },
     });
 
@@ -67,8 +76,12 @@ export async function PATCH(
       weekLabel: updated.week.label,
       packageId: updated.packageId,
       packageLabel: updated.package.label,
+      packageCode: updated.package.code,
       availabilityTag: updated.availabilityTag ?? "NA",
       isAvailable: updated.isAvailable,
+      minGroupSize: updated.minGroupSize,
+      lodgingCapacity: updated.lodgingCapacity,
+      hoverText: updated.hoverText ?? "",
     });
   } catch (error) {
     console.error("ADMIN AVAILABILITY PATCH ERROR", error);

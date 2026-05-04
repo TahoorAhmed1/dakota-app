@@ -1,6 +1,18 @@
+import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import pg from "pg";
 
-const prisma = new PrismaClient();
+const { Pool } = pg;
+
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is required to run prisma seed.");
+}
+
+const pool = new Pool({ connectionString: databaseUrl });
+const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
 // ------------------------------------------------------------
 //  Camps – matches "Camps" sheet
@@ -185,10 +197,34 @@ async function main() {
   await prisma.huntWeek.deleteMany();
   await prisma.camp.deleteMany();
 
-  // Create camps, weeks, packages
-  const createdCamps = await Promise.all(camps.map(c => prisma.camp.create({ data: c })));
-  const createdWeeks = await Promise.all(weeks.map(w => prisma.huntWeek.create({ data: w })));
-  const [pkg4n3d, pkg5n4d] = await Promise.all(packages.map(p => prisma.packageOption.create({ data: p })));
+  // Create or update camps, weeks, packages (idempotent)
+  const createdCamps = await Promise.all(
+    camps.map((camp) =>
+      prisma.camp.upsert({
+        where: { slug: camp.slug },
+        update: camp,
+        create: camp,
+      })
+    )
+  );
+  const createdWeeks = await Promise.all(
+    weeks.map((week) =>
+      prisma.huntWeek.upsert({
+        where: { slug: week.slug },
+        update: week,
+        create: week,
+      })
+    )
+  );
+  const [pkg4n3d, pkg5n4d] = await Promise.all(
+    packages.map((pkg) =>
+      prisma.packageOption.upsert({
+        where: { code: pkg.code },
+        update: pkg,
+        create: pkg,
+      })
+    )
+  );
 
   const campBySlug = Object.fromEntries(createdCamps.map(c => [c.slug, c]));
   const weekBySlug = Object.fromEntries(createdWeeks.map(w => [w.slug, w]));
@@ -199,8 +235,10 @@ async function main() {
       const weekSlug = `week-${wk}-${year}`;
       const week = weekBySlug[weekSlug];
       if (week) {
-        await prisma.weekBaseRate.create({
-          data: { weekId: week.id, baseRate: weekBaseRates3day[wk - 1] },
+        await prisma.weekBaseRate.upsert({
+          where: { weekId: week.id },
+          update: { baseRate: weekBaseRates3day[wk - 1] },
+          create: { weekId: week.id, baseRate: weekBaseRates3day[wk - 1] },
         });
       }
     }
@@ -237,8 +275,24 @@ async function main() {
           status3 = "NA";
         }
 
-        await prisma.campWeekPricing.create({
-          data: {
+        await prisma.campWeekPricing.upsert({
+          where: {
+            campId_weekId_packageId: {
+              campId: camp.id,
+              weekId: week.id,
+              packageId: pkg4n3d.id,
+            },
+          },
+          update: {
+            baseRate: base3,
+            minGroupSize: min3 ?? 0,
+            lodgingCapacity: capacity,
+            nightlyLodgingRate: LODGING_RATE_PER_NIGHT,
+            dailyHuntRate: dailyHunt,
+            isAvailable: status3 === "OPEN",
+            availabilityTag: status3,
+          },
+          create: {
             campId: camp.id,
             weekId: week.id,
             packageId: pkg4n3d.id,
@@ -261,8 +315,24 @@ async function main() {
           status4 = "NA";
         }
 
-        await prisma.campWeekPricing.create({
-          data: {
+        await prisma.campWeekPricing.upsert({
+          where: {
+            campId_weekId_packageId: {
+              campId: camp.id,
+              weekId: week.id,
+              packageId: pkg5n4d.id,
+            },
+          },
+          update: {
+            baseRate: base4,
+            minGroupSize: min4 ?? 0,
+            lodgingCapacity: capacity,
+            nightlyLodgingRate: LODGING_RATE_PER_NIGHT,
+            dailyHuntRate: dailyHunt,
+            isAvailable: status4 === "OPEN",
+            availabilityTag: status4,
+          },
+          create: {
             campId: camp.id,
             weekId: week.id,
             packageId: pkg5n4d.id,
@@ -284,10 +354,20 @@ async function main() {
 
   await prisma.volumeDiscountRule.createMany({ data: volumeRules });
 
-  await prisma.discountRule.createMany({ data: discountRules });
+  await Promise.all(
+    discountRules.map((rule) =>
+      prisma.discountRule.upsert({
+        where: { code: rule.code },
+        update: rule,
+        create: rule,
+      })
+    )
+  );
 
-  await prisma.calculatorSetting.create({
-    data: { id: "default", config: defaultCalculatorSettings },
+  await prisma.calculatorSetting.upsert({
+    where: { id: "default" },
+    update: { config: defaultCalculatorSettings },
+    create: { id: "default", config: defaultCalculatorSettings },
   });
 
   console.log("✅ UGUIDE seed completed successfully with corrected minimum group sizes!");
@@ -300,4 +380,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await pool.end();
   });

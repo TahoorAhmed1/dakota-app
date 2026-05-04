@@ -6,12 +6,14 @@ import OurPartners from "@/components/ourPartners";
 import PackagesSection from "@/components/packages-section";
 import Testimonials from "@/components/testimonial";
 import WaitlistForm from "@/components/waitlist-form";
+import { getSeasonScheduleData } from "@/lib/server/season-schedule-data";
 
-export default function Home() {
+export default async function Home() {
+  const scheduleData = await getSeasonScheduleData();
   return (
     <div className="flex flex-col ">
       <HomeBanner />
-      <SeasonSchedule />
+      <SeasonSchedule data={scheduleData} />
 
       <div className="bg-white">
         <ImagesCatalog />

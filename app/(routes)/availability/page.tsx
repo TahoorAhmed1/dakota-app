@@ -1,10 +1,12 @@
 import Link from "next/link";
 import ImagesCatalog from "@/components/common/images-catalog";
 import SeasonSchedule from "@/components/common/seasonSchedule";
+import { getSeasonScheduleData } from "@/lib/server/season-schedule-data";
 
 import Testimonials from "@/components/testimonial";
 
-export default function AvailabilityPage() {
+export default async function AvailabilityPage() {
+  const scheduleData = await getSeasonScheduleData();
   return (
     <main className="flex flex-col">
       {/* Hero */}
@@ -58,7 +60,7 @@ export default function AvailabilityPage() {
         </div>
       </section>
 
-      <SeasonSchedule />
+      <SeasonSchedule data={scheduleData} />
 
 
       <section className="bg-white px-4 pb-20 sm:px-6 sm:pb-24">

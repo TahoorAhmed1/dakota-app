@@ -25,9 +25,12 @@ export async function GET(req: NextRequest) {
         packageId: true,
         availabilityTag: true,
         isAvailable: true,
+        minGroupSize: true,
+        lodgingCapacity: true,
+        hoverText: true,
         camp: { select: { name: true } },
         week: { select: { label: true } },
-        package: { select: { label: true } },
+        package: { select: { label: true, code: true } },
       },
     });
 
@@ -39,8 +42,12 @@ export async function GET(req: NextRequest) {
       weekLabel: r.week.label,
       packageId: r.packageId,
       packageLabel: r.package.label,
+      packageCode: r.package.code,
       availabilityTag: r.availabilityTag ?? "NA",
       isAvailable: r.isAvailable,
+      minGroupSize: r.minGroupSize,
+      lodgingCapacity: r.lodgingCapacity,
+      hoverText: r.hoverText ?? "",
     }));
 
     return NextResponse.json(payload);

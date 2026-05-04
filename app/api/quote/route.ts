@@ -71,6 +71,19 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Mark the booked camp/week/package slot as reserved
+    await prisma.campWeekPricing.updateMany({
+      where: {
+        campId: payload.campId,
+        weekId: payload.weekId,
+        packageId: payload.packageId,
+      },
+      data: {
+        isAvailable: false,
+        availabilityTag: "RESERVED",
+      },
+    });
+
     if (process.env.QUOTE_WEBHOOK_URL) {
       await fetch(process.env.QUOTE_WEBHOOK_URL, {
         method: "POST",

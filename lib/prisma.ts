@@ -1,4 +1,6 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { Pool } from "pg";
 
 declare global {
   var prismaGlobal: PrismaClient | undefined;
@@ -26,13 +28,10 @@ function getPrismaClientOptions(): Prisma.PrismaClientOptions {
       if (!url.searchParams.has("connection_limit")) {
         url.searchParams.set("connection_limit", "1");
       }
-
-      options.datasources = {
-        db: {
-          url: url.toString(),
-        },
-      };
     }
+
+    const pool = new Pool({ connectionString: url.toString() });
+    options.adapter = new PrismaPg(pool);
   } catch {
     return options;
   }

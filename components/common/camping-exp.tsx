@@ -4,12 +4,45 @@ import campingImage from "@/assets/camping.png";
 import Image from "next/image";
 import Link from "next/link";
 
-function CampingExp() {
+type CampingExpData = {
+  eyebrow?: string;
+  titlePrefix?: string;
+  titleHighlight?: string;
+  description?: string;
+  primaryCtaLabel?: string;
+  primaryCtaHref?: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
+  imageAlt?: string;
+  imageUrl?: string;
+};
+
+const DUMMY_DATA: Required<Omit<CampingExpData, "imageUrl">> = {
+  eyebrow: "HUNTING",
+  titlePrefix: "The Ultimate",
+  titleHighlight: "Pheasant Hunt",
+  description:
+    "Your Ultimate Pheasant Hunting Experience starts where comfort meets adventure. Unplug, explore the wild, and create memories that last a lifetime with your friends and upland bird dogs.",
+  primaryCtaLabel: "Book Your Hunt Online →",
+  primaryCtaHref: "/quote-reserve",
+  secondaryCtaLabel: "Contact",
+  secondaryCtaHref: "/contact",
+  imageAlt: "Camping",
+};
+
+function CampingExp({ data }: { data?: CampingExpData }) {
+  const content = {
+    ...DUMMY_DATA,
+    ...data,
+  };
+
+  const imageSrc = data?.imageUrl ?? campingImage;
+
   return (
     <div className="relative mx-auto h-80 w-full max-w-262.5 overflow-hidden rounded-2xl sm:h-90 lg:h-70">
       <Image
-        src={campingImage}
-        alt="Camping"
+        src={imageSrc}
+        alt={content.imageAlt}
         fill
         priority
         className="rounded-2xl object-cover"
@@ -19,35 +52,33 @@ function CampingExp() {
         <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-6 px-5 text-white sm:px-8 lg:flex-row lg:items-center lg:px-10">
           <div className="max-w-155">
             <p className="mb-2 text-xs tracking-[0.35em] text-orange-400 sm:text-sm">
-              HUNTING
+              {content.eyebrow}
             </p>
 
             <h1 className="text-[28px] font-semibold leading-tight sm:text-[34px] md:text-[36px]">
-              The Ultimate{" "}
+              {content.titlePrefix}{" "}
               <span className="bg-orange-500/30 px-2 rounded">
-                Pheasant Hunt
+                {content.titleHighlight}
               </span>
             </h1>
 
             <p className="mt-4 max-w-lg text-sm text-gray-200 sm:text-[15px]">
-              Your Ultimate Pheasant Hunting Experience starts where comfort
-              meets adventure. Unplug, explore the wild, and create memories
-              that last a lifetime with your friends and upland bird dogs.
+              {content.description}
             </p>
           </div>
 
-          <div className="w-full lg:w-auto">
+          <div className="w-full space-x-2 lg:w-auto">
             <Link
-              href="/quote-reserve"
+              href={content.primaryCtaHref}
               className="inline-flex w-full items-center justify-center rounded-md border border-orange-400 px-5 py-3 text-sm text-orange-400 transition hover:bg-orange-400 hover:text-white sm:w-auto sm:px-6 whitespace-nowrap"
             >
-              Book Your Hunt Online →
+              {content.primaryCtaLabel}
             </Link>
             <Link
-              href="/contact"
+              href={content.secondaryCtaHref}
               className="inline-flex w-full items-center justify-center rounded-md border border-orange-400 px-5 py-3 text-sm text-orange-400 transition hover:bg-orange-400 hover:text-white sm:w-auto sm:px-6 whitespace-nowrap"
             >
-              Contact
+              {content.secondaryCtaLabel}
             </Link>
           </div>
         </div>

@@ -4,8 +4,6 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 enum DiscountType {
@@ -90,6 +88,7 @@ model CampWeekPricing {
   dailyHuntRate      Decimal  @db.Decimal(10, 2) // Derived from 3-day base
   isAvailable        Boolean  @default(true)
   availabilityTag    String? // "OPEN", "RESERVED", "PENDING", "NA"
+  hoverText          String? // Tooltip shown on public schedule grid hover
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 

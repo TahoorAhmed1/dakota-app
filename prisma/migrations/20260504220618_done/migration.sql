@@ -4,9 +4,6 @@ CREATE TYPE "DiscountType" AS ENUM ('FIXED', 'PERCENT');
 -- CreateEnum
 CREATE TYPE "DiscountCategory" AS ENUM ('INDIVIDUAL', 'JUNIOR', 'YOUTH');
 
--- CreateEnum
-CREATE TYPE "DiscountAppliesTo" AS ENUM ('SUBTOTAL', 'HUNTING_ONLY');
-
 -- CreateTable
 CREATE TABLE "Camp" (
     "id" TEXT NOT NULL,
@@ -14,6 +11,8 @@ CREATE TABLE "Camp" (
     "slug" TEXT NOT NULL,
     "nightlyLodgingRate" DECIMAL(10,2) NOT NULL DEFAULT 100.00,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "minGroupSize" INTEGER DEFAULT 1,
+    "lodgingCapacity" INTEGER DEFAULT 0,
     "displayOrder" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -69,8 +68,8 @@ CREATE TABLE "CampWeekPricing" (
     "campId" TEXT NOT NULL,
     "weekId" TEXT NOT NULL,
     "packageId" TEXT NOT NULL,
-    "minGroupSize" INTEGER NOT NULL,
     "baseRate" DECIMAL(10,2) NOT NULL,
+    "minGroupSize" INTEGER NOT NULL,
     "lodgingCapacity" INTEGER NOT NULL,
     "nightlyLodgingRate" DECIMAL(10,2) NOT NULL DEFAULT 100.00,
     "dailyHuntRate" DECIMAL(10,2) NOT NULL,
@@ -104,7 +103,6 @@ CREATE TABLE "DiscountRule" (
     "category" "DiscountCategory" NOT NULL,
     "type" "DiscountType" NOT NULL,
     "value" DECIMAL(10,2) NOT NULL,
-    "appliesTo" "DiscountAppliesTo" NOT NULL DEFAULT 'SUBTOTAL',
     "stackOrder" INTEGER NOT NULL,
     "requiresHunterIndex" INTEGER,
     "maxPerGroup" INTEGER,
@@ -117,7 +115,7 @@ CREATE TABLE "DiscountRule" (
 
 -- CreateTable
 CREATE TABLE "CalculatorSetting" (
-    "id" TEXT NOT NULL,
+    "id" TEXT NOT NULL DEFAULT 'default',
     "config" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -139,14 +137,11 @@ CREATE TABLE "Quote" (
     "bookingName" TEXT NOT NULL,
     "bookingEmail" TEXT NOT NULL,
     "subtotalBeforeTax" DECIMAL(12,2) NOT NULL,
-    "minimumAdjustment" DECIMAL(12,2) NOT NULL,
     "taxAmount" DECIMAL(12,2) NOT NULL,
     "totalAmount" DECIMAL(12,2) NOT NULL,
     "depositRate" DECIMAL(5,4) NOT NULL,
-    "depositBase" DECIMAL(12,2) NOT NULL,
-    "processingFeeRate" DECIMAL(5,4) NOT NULL,
-    "processingFee" DECIMAL(12,2) NOT NULL,
-    "depositTotal" DECIMAL(12,2) NOT NULL,
+    "depositAmount" DECIMAL(12,2) NOT NULL,
+    "minimumAdjustment" DECIMAL(12,2) NOT NULL DEFAULT 0,
     "youthCount" INTEGER NOT NULL DEFAULT 0,
     "juniorCount" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -162,14 +157,12 @@ CREATE TABLE "QuoteHunter" (
     "rowIndex" INTEGER NOT NULL,
     "hunterName" TEXT,
     "discountCode" TEXT NOT NULL,
-    "extraDays" INTEGER NOT NULL,
-    "extraNights" INTEGER NOT NULL,
+    "extraDays" INTEGER NOT NULL DEFAULT 0,
+    "extraNights" INTEGER NOT NULL DEFAULT 0,
     "baseRate" DECIMAL(10,2) NOT NULL,
-    "baseLodgingPortion" DECIMAL(10,2) NOT NULL,
-    "baseHuntingPortion" DECIMAL(10,2) NOT NULL,
-    "volumeDiscount" DECIMAL(10,2) NOT NULL,
     "extraHunting" DECIMAL(10,2) NOT NULL,
     "extraLodging" DECIMAL(10,2) NOT NULL,
+    "volumeDiscount" DECIMAL(10,2) NOT NULL,
     "juniorDiscount" DECIMAL(10,2) NOT NULL,
     "adultDiscount" DECIMAL(10,2) NOT NULL,
     "earlyBirdDiscount" DECIMAL(10,2) NOT NULL,

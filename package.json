@@ -12,12 +12,15 @@
     "prisma:seed": "node prisma/seed.mjs"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "cloudinary": "^2.9.0",
+    "dotenv": "^17.4.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.7.0",
     "next": "16.1.6",
     "pdf-lib": "^1.17.1",
+    "pg": "^8.20.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-leaflet": "^5.0.0",
@@ -33,7 +36,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "prisma": "^6.16.0",
+    "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
