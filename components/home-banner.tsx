@@ -1,22 +1,11 @@
 "use client"
-import { useEffect, useState } from "react";
 import pic from "@/assets/col.png";
 import Image from "next/image";
 import Link from "next/link";
-type SiteSettings = Record<string, unknown>;
+
 function HomeBanner() {
-      const [settings, setSettings] = useState<SiteSettings>({});
-
-  useEffect(() => {
-    fetch("/api/site-settings")
-      .then((r) => r.json())
-      .then((data) => setSettings(data))
-      .catch(() => {});
-  }, []);
-
-  const hero = (settings.hero as { motto?: string; videoUrl?: string; ctaPrimary?: string; ctaSecondary?: string }) ?? {};
-  const motto = hero.motto || "The Ultimate Pheasant Hunt";
-  const ctaPrimary =  "Contact Now";
+  const motto = "The Ultimate Pheasant Hunt";
+  const ctaPrimary = "Contact Now";
   const ctaSecondary = "Book Your Hunt Online";
 
   return (

@@ -71,7 +71,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Mark the booked camp/week/package slot as reserved
+    // Mark the booked camp/week/package slot as PENDING until payment is confirmed.
+    // Admin manually advances to RESERVED once deposit is received.
     await prisma.campWeekPricing.updateMany({
       where: {
         campId: payload.campId,
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest) {
       },
       data: {
         isAvailable: false,
-        availabilityTag: "RESERVED",
+        availabilityTag: "PENDING",
       },
     });
 

@@ -2,12 +2,21 @@ import { Prisma } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from "@/lib/prisma";
+import { isRateLimited } from "@/lib/server/rate-limit";
 
 function isDatabaseUnavailable(error: unknown) {
   return error instanceof Prisma.PrismaClientInitializationError;
 }
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (isRateLimited(ip, 3, 60_000)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a minute before trying again." },
+      { status: 429 }
+    );
+  }
+
   try {
     const body = await request.json();
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';

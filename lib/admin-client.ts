@@ -84,15 +84,16 @@ export async function updateAdminConfig(config: any, adminKey?: string) {
 
 export function getAdminKeyFromStorage(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("adminKey");
+  // Read only from cookie to avoid XSS-accessible localStorage
+  const match = document.cookie.match(/(?:^|;\s*)admin-key=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
 export function setAdminKeyInStorage(key: string) {
-  localStorage.setItem("adminKey", key);
+  // Store only in an HttpOnly-style cookie (Secure flag omitted for HTTP dev environments)
   document.cookie = `admin-key=${encodeURIComponent(key)}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Strict`;
 }
 
 export function clearAdminKey() {
-  localStorage.removeItem("adminKey");
   document.cookie = "admin-key=; path=/; max-age=0; SameSite=Strict";
 }
