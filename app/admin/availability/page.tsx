@@ -1,17 +1,17 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import AdminLoadingState from "@/components/admin/admin-loading-state";
 import { getAdminKeyFromStorage, clearAdminKey } from "@/lib/admin-client";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type AvailabilityTag = "OPEN" | "RESERVED" | "PENDING" | "NA";
 
-type AvailabilityRow = {
+type SlotRow = {
   id: string;
   campId: string;
   campName: string;
@@ -19,100 +19,255 @@ type AvailabilityRow = {
   weekLabel: string;
   packageId: string;
   packageLabel: string;
+  packageCode: string;
   availabilityTag: AvailabilityTag;
   isAvailable: boolean;
+  minGroupSize: number;
+  lodgingCapacity: number;
+  hoverText: string;
 };
 
-type Camp = { id: string; name: string; slug: string };
-type Week = { id: string; label: string; seasonLabel: string };
-type Package = { id: string; label: string; code: string };
+// ─── API helpers ──────────────────────────────────────────────────────────────
 
-// ─── API helpers ─────────────────────────────────────────────────────────────
-
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function fetchAvailability(adminKey?: string): Promise<AvailabilityRow[]> {
-  const headers: HeadersInit = {};
-  if (adminKey) headers["x-admin-key"] = adminKey;
-
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const res = await fetch("/api/admin/availability", {
-      headers,
-      cache: "no-store",
-    });
-    const payload = await res.json().catch(() => ({}));
-    if (res.ok) return payload;
-    if (res.status === 503 && attempt < 2) {
-      await delay(500 * (attempt + 1));
-      continue;
-    }
-    throw new Error(
-      payload?.error || payload?.message || `Failed to fetch availability: ${res.statusText}`
-    );
-  }
-  throw new Error("Failed to fetch availability.");
-}
-
-async function updateAvailability(
-  id: string,
-  availabilityTag: AvailabilityTag,
-  adminKey?: string
-): Promise<AvailabilityRow> {
-  const headers: HeadersInit = { "Content-Type": "application/json" };
-  if (adminKey) headers["x-admin-key"] = adminKey;
-
-  const res = await fetch(`/api/admin/availability/${id}`, {
-    method: "PATCH",
-    headers,
-    body: JSON.stringify({ availabilityTag }),
+async function fetchRows(adminKey?: string): Promise<SlotRow[]> {
+  const res = await fetch("/api/admin/availability", {
+    headers: adminKey ? { "x-admin-key": adminKey } : {},
+    cache: "no-store",
   });
-
   const payload = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(
-      payload?.error || payload?.message || `Failed to update: ${res.statusText}`
-    );
-  }
+  if (!res.ok) throw new Error(payload?.error || "Failed to load");
   return payload;
 }
 
-// ─── Tag config ──────────────────────────────────────────────────────────────
+async function patchSlot(
+  id: string,
+  patch: {
+    availabilityTag: AvailabilityTag;
+    minGroupSize?: number;
+    lodgingCapacity?: number;
+    hoverText?: string | null;
+  },
+  adminKey?: string
+): Promise<SlotRow> {
+  const res = await fetch(`/api/admin/availability/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...(adminKey ? { "x-admin-key": adminKey } : {}),
+    },
+    body: JSON.stringify(patch),
+  });
+  const payload = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(payload?.error || "Failed to update");
+  return payload;
+}
 
-const TAG_STYLES: Record<AvailabilityTag, { bg: string; text: string; border: string }> = {
-  OPEN:     { bg: "bg-green-100",  text: "text-green-800",  border: "border-green-300" },
-  RESERVED: { bg: "bg-red-100",    text: "text-red-800",    border: "border-red-300" },
-  PENDING:  { bg: "bg-yellow-100", text: "text-yellow-800", border: "border-yellow-300" },
-  NA:       { bg: "bg-gray-100",   text: "text-gray-500",   border: "border-gray-200" },
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const TAG_META: Record<AvailabilityTag, { label: string; bg: string; text: string; dot: string }> = {
+  OPEN:     { label: "Open",     bg: "bg-green-100",  text: "text-green-800",  dot: "bg-green-500" },
+  PENDING:  { label: "Pending",  bg: "bg-yellow-100", text: "text-yellow-800", dot: "bg-yellow-500" },
+  RESERVED: { label: "Reserved", bg: "bg-red-100",    text: "text-red-800",    dot: "bg-red-500" },
+  NA:       { label: "N/A",      bg: "bg-gray-100",   text: "text-gray-500",   dot: "bg-gray-300" },
+};
+const ALL_TAGS: AvailabilityTag[] = ["OPEN", "PENDING", "RESERVED", "NA"];
+
+// ─── Slot cell (inline-edit panel) ───────────────────────────────────────────
+
+type CellEdit = {
+  tag: AvailabilityTag;
+  minGroupSize: string;
+  lodgingCapacity: string;
+  hoverText: string;
 };
 
-const ALL_TAGS: AvailabilityTag[] = ["OPEN", "RESERVED", "PENDING", "NA"];
+function SlotCell({
+  slot,
+  onSaved,
+  adminKey,
+}: {
+  slot: SlotRow;
+  onSaved: (updated: SlotRow) => void;
+  adminKey: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [edit, setEdit] = useState<CellEdit>({
+    tag: slot.availabilityTag,
+    minGroupSize: String(slot.minGroupSize),
+    lodgingCapacity: String(slot.lodgingCapacity),
+    hoverText: slot.hoverText ?? "",
+  });
+  const panelRef = useRef<HTMLDivElement>(null);
 
-// ─── Component ───────────────────────────────────────────────────────────────
+  useEffect(() => {
+    setEdit({
+      tag: slot.availabilityTag,
+      minGroupSize: String(slot.minGroupSize),
+      lodgingCapacity: String(slot.lodgingCapacity),
+      hoverText: slot.hoverText ?? "",
+    });
+  }, [slot]);
+
+  useEffect(() => {
+    if (!open) return;
+    function handle(e: MouseEvent) {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, [open]);
+
+  const isDirty =
+    edit.tag !== slot.availabilityTag ||
+    edit.minGroupSize !== String(slot.minGroupSize) ||
+    edit.lodgingCapacity !== String(slot.lodgingCapacity) ||
+    edit.hoverText !== (slot.hoverText ?? "");
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const updated = await patchSlot(
+        slot.id,
+        {
+          availabilityTag: edit.tag,
+          minGroupSize: parseInt(edit.minGroupSize, 10) || slot.minGroupSize,
+          lodgingCapacity: parseInt(edit.lodgingCapacity, 10),
+          hoverText: edit.hoverText || null,
+        },
+        adminKey ?? undefined
+      );
+      onSaved(updated);
+      setOpen(false);
+      toast.success(`${slot.campName} / ${slot.weekLabel} updated`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const meta = TAG_META[slot.availabilityTag];
+
+  return (
+    <div className="relative" ref={panelRef}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className={`flex w-full items-center gap-1.5 rounded-lg border px-2 py-1.5 text-left text-[11px] font-semibold transition-colors hover:opacity-80 ${meta.bg} ${meta.text} border-current/20`}
+      >
+        <span className={`h-2 w-2 shrink-0 rounded-full ${meta.dot}`} />
+        <span className="truncate">{slot.packageCode}</span>
+        <span className="ml-auto shrink-0 opacity-60">✎</span>
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-1 w-72 rounded-2xl border border-black/10 bg-white p-4 shadow-2xl">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-black/40">
+            {slot.campName} · {slot.weekLabel} · {slot.packageLabel}
+          </p>
+
+          <div className="mb-3">
+            <label className="mb-1 block text-xs font-medium text-black/60">Status</label>
+            <div className="grid grid-cols-2 gap-1.5">
+              {ALL_TAGS.map((t) => {
+                const m = TAG_META[t];
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setEdit((d) => ({ ...d, tag: t }))}
+                    className={`flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs font-semibold transition-all ${
+                      edit.tag === t
+                        ? `${m.bg} ${m.text} border-current ring-2 ring-offset-1 ring-orange-400`
+                        : "border-black/10 bg-gray-50 text-black/50 hover:bg-gray-100"
+                    }`}
+                  >
+                    <span className={`h-2 w-2 rounded-full ${m.dot}`} />
+                    {m.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mb-3 grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-black/60">Min. Group</label>
+              <input
+                type="number"
+                min={1}
+                value={edit.minGroupSize}
+                onChange={(e) => setEdit((d) => ({ ...d, minGroupSize: e.target.value }))}
+                className="w-full rounded-xl border border-black/20 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-black/60">Lodging Cap.</label>
+              <input
+                type="number"
+                min={0}
+                value={edit.lodgingCapacity}
+                onChange={(e) => setEdit((d) => ({ ...d, lodgingCapacity: e.target.value }))}
+                className="w-full rounded-xl border border-black/20 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-1 block text-xs font-medium text-black/60">Hover Tooltip Text</label>
+            <textarea
+              rows={3}
+              placeholder="e.g. 4 spots available · 3-day package · min 4 hunters"
+              value={edit.hoverText}
+              onChange={(e) => setEdit((d) => ({ ...d, hoverText: e.target.value }))}
+              className="w-full resize-none rounded-xl border border-black/20 px-2 py-1.5 text-sm placeholder:text-black/30 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={handleSave}
+              disabled={saving || !isDirty}
+              className="flex-1 rounded-xl bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-40"
+            >
+              {saving ? "Saving…" : "Save"}
+            </button>
+            <button
+              onClick={() => setOpen(false)}
+              className="rounded-xl border border-black/20 px-3 py-1.5 text-sm font-medium text-black/60 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AvailabilityPage() {
   const router = useRouter();
-
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState<string | null>(null); // row id being saved
   const [error, setError] = useState("");
-  const [rows, setRows] = useState<AvailabilityRow[]>([]);
+  const [rows, setRows] = useState<SlotRow[]>([]);
+  const [adminKey, setAdminKey] = useState<string | null>(null);
 
-  // Filters
-  const [filterSeason, setFilterSeason] = useState<string>("all");
-  const [filterCamp, setFilterCamp] = useState<string>("all");
-  const [filterPackage, setFilterPackage] = useState<string>("all");
-  const [filterTag, setFilterTag] = useState<string>("all");
+  const [filterCamp, setFilterCamp] = useState("all");
+  const [filterWeek, setFilterWeek] = useState("all");
+  const [filterTag, setFilterTag] = useState("all");
 
   useEffect(() => {
+    const key = getAdminKeyFromStorage();
+    setAdminKey(key);
     (async () => {
       try {
-        const adminKey = getAdminKeyFromStorage();
-        const data = await fetchAvailability(adminKey || undefined);
+        const data = await fetchRows(key ?? undefined);
         setRows(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load availability");
+        setError(err instanceof Error ? err.message : "Failed to load");
         clearAdminKey();
         router.push("/admin/login");
       } finally {
@@ -121,199 +276,185 @@ export default function AvailabilityPage() {
     })();
   }, [router]);
 
-  // Derived filter options
-  const seasons = Array.from(new Set(rows.map((r) => r.weekLabel.match(/\d{4}/)?.[0] ?? ""))).filter(Boolean).sort();
-  const camps: Camp[] = Array.from(
-    new Map(rows.map((r) => [r.campId, { id: r.campId, name: r.campName, slug: r.campId }])).values()
-  );
-  const packages: Package[] = Array.from(
-    new Map(rows.map((r) => [r.packageId, { id: r.packageId, label: r.packageLabel, code: r.packageId }])).values()
-  );
+  const handleSaved = (updated: SlotRow) => {
+    setRows((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+  };
 
-  const filtered = rows.filter((r) => {
-    if (filterSeason !== "all" && !r.weekLabel.includes(filterSeason)) return false;
+  const camps = Array.from(new Map(rows.map((r) => [r.campId, r.campName])).entries());
+  const weeks = Array.from(new Map(rows.map((r) => [r.weekId, r.weekLabel])).entries());
+
+  const filteredRows = rows.filter((r) => {
     if (filterCamp !== "all" && r.campId !== filterCamp) return false;
-    if (filterPackage !== "all" && r.packageId !== filterPackage) return false;
+    if (filterWeek !== "all" && r.weekId !== filterWeek) return false;
     if (filterTag !== "all" && r.availabilityTag !== filterTag) return false;
     return true;
   });
 
-  const handleTagChange = async (row: AvailabilityRow, tag: AvailabilityTag) => {
-    if (tag === row.availabilityTag) return;
-    setSaving(row.id);
-    setError("");
-    try {
-      const adminKey = getAdminKeyFromStorage();
-      const updated = await updateAvailability(row.id, tag, adminKey || undefined);
-      setRows((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
-      toast.success(`Updated to ${tag}`);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to update";
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setSaving(null);
+  const visibleCamps = filterCamp === "all" ? camps : camps.filter(([id]) => id === filterCamp);
+  const visibleWeeks = filterWeek === "all" ? weeks : weeks.filter(([id]) => id === filterWeek);
+
+  type Grid = Record<string, Record<string, SlotRow[]>>;
+  const grid: Grid = {};
+  for (const [campId] of visibleCamps) {
+    grid[campId] = {};
+    for (const [weekId] of visibleWeeks) {
+      grid[campId][weekId] = [];
     }
-  };
+  }
+  for (const row of filteredRows) {
+    if (grid[row.campId]?.[row.weekId] !== undefined) {
+      grid[row.campId][row.weekId].push(row);
+    }
+  }
 
-  // Summary counts
-  const counts = rows.reduce(
-    (acc, r) => {
-      acc[r.availabilityTag] = (acc[r.availabilityTag] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const counts = rows.reduce((acc, r) => {
+    acc[r.availabilityTag] = (acc[r.availabilityTag] ?? 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
-  if (loading) return <AdminLoadingState label="Loading availability..." />;
+  if (loading) return <AdminLoadingState label="Loading schedule…" />;
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-black">Manage Availability</h2>
-
-      {/* Summary badges */}
-      <div className="flex flex-wrap gap-3">
-        {ALL_TAGS.map((tag) => {
-          const s = TAG_STYLES[tag];
-          return (
-            <span
-              key={tag}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium ${s.bg} ${s.text} ${s.border}`}
-            >
-              {tag}
-              <span className="rounded-full bg-white/60 px-1.5 py-0.5 text-xs font-bold">
-                {counts[tag] ?? 0}
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-black">Season Schedule</h2>
+          <p className="mt-1 text-sm text-black/50">
+            Click any slot to edit status, group minimum, lodging capacity, and hover tooltip.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {ALL_TAGS.map((tag) => {
+            const m = TAG_META[tag];
+            return (
+              <span
+                key={tag}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${m.bg} ${m.text}`}
+              >
+                <span className={`h-2 w-2 rounded-full ${m.dot}`} />
+                {m.label}
+                <span className="rounded-full bg-white/60 px-1.5 py-0.5 text-[10px] font-bold">
+                  {counts[tag] ?? 0}
+                </span>
               </span>
-            </span>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-orange-400 bg-orange-100 p-4">
-          <p className="text-black">{error}</p>
+        <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+          {error}
         </div>
       )}
 
-      {/* Filters */}
-      <div className="rounded-2xl border border-black/10 bg-white p-4 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {/* Season */}
+      <div className="rounded-2xl border border-black/10 bg-white p-4 shadow-sm">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-black/60">Season</label>
-            <select
-              value={filterSeason}
-              onChange={(e) => setFilterSeason(e.target.value)}
-              className="w-full rounded-xl border border-black/20 px-3 py-2 text-sm text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
-            >
-              <option value="all">All Seasons</option>
-              {seasons.map((s) => (
-                <option key={s} value={s}>{s} Season</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Camp */}
-          <div>
-            <label className="mb-1 block text-xs font-medium text-black/60">Camp</label>
+            <label className="mb-1 block text-xs font-medium text-black/50">Camp</label>
             <select
               value={filterCamp}
               onChange={(e) => setFilterCamp(e.target.value)}
-              className="w-full rounded-xl border border-black/20 px-3 py-2 text-sm text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              className="w-full rounded-xl border border-black/20 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             >
               <option value="all">All Camps</option>
-              {camps.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+              {camps.map(([id, name]) => (
+                <option key={id} value={id}>{name}</option>
               ))}
             </select>
           </div>
-
-          {/* Package */}
           <div>
-            <label className="mb-1 block text-xs font-medium text-black/60">Package</label>
+            <label className="mb-1 block text-xs font-medium text-black/50">Week</label>
             <select
-              value={filterPackage}
-              onChange={(e) => setFilterPackage(e.target.value)}
-              className="w-full rounded-xl border border-black/20 px-3 py-2 text-sm text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              value={filterWeek}
+              onChange={(e) => setFilterWeek(e.target.value)}
+              className="w-full rounded-xl border border-black/20 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             >
-              <option value="all">All Packages</option>
-              {packages.map((p) => (
-                <option key={p.id} value={p.id}>{p.label}</option>
+              <option value="all">All Weeks</option>
+              {weeks.map(([id, label]) => (
+                <option key={id} value={id}>{label}</option>
               ))}
             </select>
           </div>
-
-          {/* Tag */}
           <div>
-            <label className="mb-1 block text-xs font-medium text-black/60">Status</label>
+            <label className="mb-1 block text-xs font-medium text-black/50">Status</label>
             <select
               value={filterTag}
               onChange={(e) => setFilterTag(e.target.value)}
-              className="w-full rounded-xl border border-black/20 px-3 py-2 text-sm text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              className="w-full rounded-xl border border-black/20 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
             >
               <option value="all">All Statuses</option>
               {ALL_TAGS.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>{TAG_META[t].label}</option>
               ))}
             </select>
           </div>
         </div>
-
-        <p className="mt-2 text-xs text-black/40">
-          Showing {filtered.length} of {rows.length} rows
-        </p>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
-        <table className="w-full">
-          <thead className="border-b border-black bg-black">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Camp</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Week</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Package</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
+      <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-sm">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="border-b-2 border-black bg-black">
+              <th className="sticky left-0 z-10 bg-black px-4 py-3 text-left font-semibold text-white whitespace-nowrap">
+                Camp
+              </th>
+              {visibleWeeks.map(([weekId, weekLabel]) => (
+                <th
+                  key={weekId}
+                  className="px-3 py-3 text-center font-semibold text-white whitespace-nowrap min-w-35"
+                >
+                  {weekLabel}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 && (
+            {visibleCamps.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-10 text-center text-sm text-black/40">
-                  No rows match your filters.
+                <td
+                  colSpan={visibleWeeks.length + 1}
+                  className="px-4 py-10 text-center text-black/40"
+                >
+                  No data matches your filters.
                 </td>
               </tr>
             )}
-            {filtered.map((row) => {
-              const isSaving = saving === row.id;
-              const s = TAG_STYLES[row.availabilityTag];
-              return (
-                <tr key={row.id} className="border-b border-black/10 hover:bg-orange-50">
-                  <td className="px-6 py-4 text-sm font-medium text-black">{row.campName}</td>
-                  <td className="px-6 py-4 text-sm text-black/70">{row.weekLabel}</td>
-                  <td className="px-6 py-4 text-sm text-black/70">{row.packageLabel}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={row.availabilityTag}
-                        onChange={(e) => handleTagChange(row, e.target.value as AvailabilityTag)}
-                        disabled={isSaving}
-                        className={`rounded-xl border px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:opacity-50 ${s.bg} ${s.text} ${s.border}`}
-                      >
-                        {ALL_TAGS.map((t) => (
-                          <option key={t} value={t}>{t}</option>
-                        ))}
-                      </select>
-                      {isSaving && (
-                        <span className="text-xs text-black/40 animate-pulse">Saving…</span>
+            {visibleCamps.map(([campId, campName], campIdx) => (
+              <tr key={campId} className={campIdx % 2 === 0 ? "bg-white" : "bg-orange-50/40"}>
+                <td className="sticky left-0 z-10 border-r border-black/10 bg-inherit px-4 py-3 font-semibold text-black whitespace-nowrap">
+                  {campName}
+                </td>
+                {visibleWeeks.map(([weekId]) => {
+                  const slots = grid[campId]?.[weekId] ?? [];
+                  return (
+                    <td key={weekId} className="border-r border-black/10 px-2 py-2 align-top">
+                      {slots.length === 0 ? (
+                        <span className="text-xs text-black/20">—</span>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          {slots.map((slot) => (
+                            <SlotCell
+                              key={slot.id}
+                              slot={slot}
+                              onSaved={handleSaved}
+                              adminKey={adminKey}
+                            />
+                          ))}
+                        </div>
                       )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+
+      <p className="text-xs text-black/30">
+        Each cell shows one chip per package. Click a chip to open the inline editor.
+      </p>
     </div>
   );
 }

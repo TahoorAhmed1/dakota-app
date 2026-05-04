@@ -10,10 +10,12 @@ type SeasonRow = {
   date: string;
   price?: number;
   campStatuses?: CampStatusType[];
+  campHoverTexts?: (string | undefined)[];
   mobileCamps?: {
     name: string;
     status: CampStatusType;
     label?: string;
+    hoverText?: string;
   }[];
 };
 
@@ -166,6 +168,27 @@ const StatusDot = ({ type }: { type: "sold" | "pending" | "available" }) => {
     </>
   );
 };
+/* ---------------- TOOLTIP DOT ---------------- */
+
+function TooltipDot({
+  type,
+  hoverText,
+}: {
+  type: "sold" | "pending" | "available";
+  hoverText?: string;
+}) {
+  if (!hoverText) return <StatusDot type={type} />;
+  return (
+    <div className="group relative flex items-center justify-center">
+      <StatusDot type={type} />
+      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-48 -translate-x-1/2 scale-95 rounded-xl bg-[#2b1a0e] px-3 py-2 text-center text-xs leading-snug text-white opacity-0 shadow-xl transition-all group-hover:scale-100 group-hover:opacity-100">
+        {hoverText}
+        <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-[#2b1a0e]" />
+      </div>
+    </div>
+  );
+}
+
 /* ---------------- MOBILE HELPERS ---------------- */
 
 function getCampStatus(campIdx: number, rowIdx: number): "sold" | "available" {
@@ -194,6 +217,9 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
     const explicitStatus = row.campStatuses?.[campIdx];
     return explicitStatus ?? getCampStatus(campIdx, rowIdx);
   };
+
+  const getHoverTextForCamp = (row: SeasonRow, campIdx: number) =>
+    row.campHoverTexts?.[campIdx];
 
   const getMobileCampEntries = (row: SeasonRow, rowIdx: number) => {
     if (row.mobileCamps?.length) {
@@ -242,7 +268,7 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
                           : "Sold Out");
 
                     return (
-                      <div key={camp.name} className="flex items-center justify-between">
+                      <div key={camp.name} className="flex items-center justify-between" title={camp.hoverText || undefined}>
                         <span className="text-[13px] font-medium text-[#3c2f23]">{camp.name}</span>
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
@@ -313,23 +339,23 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
               </div>
 
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
-                <StatusDot type={getStatusForCamp(row, 0, i)} />
+                <TooltipDot type={getStatusForCamp(row, 0, i)} hoverText={getHoverTextForCamp(row, 0)} />
               </div>
 
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
-                <StatusDot type={getStatusForCamp(row, 1, i)} />
+                <TooltipDot type={getStatusForCamp(row, 1, i)} hoverText={getHoverTextForCamp(row, 1)} />
               </div>
 
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
-                <StatusDot type={getStatusForCamp(row, 2, i)} />
+                <TooltipDot type={getStatusForCamp(row, 2, i)} hoverText={getHoverTextForCamp(row, 2)} />
               </div>
 
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
-                <StatusDot type={getStatusForCamp(row, 3, i)} />
+                <TooltipDot type={getStatusForCamp(row, 3, i)} hoverText={getHoverTextForCamp(row, 3)} />
               </div>
 
               <div className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full">
-                <StatusDot type={getStatusForCamp(row, 4, i)} />
+                <TooltipDot type={getStatusForCamp(row, 4, i)} hoverText={getHoverTextForCamp(row, 4)} />
               </div>
 
               <div className="p-3 text-center text-[#b14b1a] font-semibold flex justify-center items-center h-full">

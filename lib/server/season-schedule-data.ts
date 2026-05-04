@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+﻿import { prisma } from "@/lib/prisma";
 import type { SeasonScheduleData } from "@/components/common/seasonSchedule";
 
 type CampStatus = "available" | "pending" | "sold";
@@ -20,12 +20,14 @@ export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
         baseRate: true,
         isAvailable: true,
         availabilityTag: true,
+        hoverText: true,
       },
     }),
   ]);
 
-  // weekId:campId => best status (available > pending > sold)
+  // weekId:campId => best status (available > pending > sold) + hoverText
   const statusMap = new Map<string, CampStatus>();
+  const hoverTextMap = new Map<string, string>();
 
   for (const row of pricingRows) {
     const key = `${row.weekId}:${row.campId}`;
@@ -47,6 +49,7 @@ export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
       (existing === "pending" && status === "available")
     ) {
       statusMap.set(key, status);
+      if (row.hoverText) hoverTextMap.set(key, row.hoverText);
     }
   }
 
@@ -67,9 +70,14 @@ export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
       (camp) => (statusMap.get(`${week.id}:${camp.id}`) ?? "sold") as CampStatus
     );
 
+    const campHoverTexts = camps.map((camp) =>
+      hoverTextMap.get(`${week.id}:${camp.id}`)
+    );
+
     const mobileCamps = camps.map((camp, idx) => ({
       name: camp.name,
       status: campStatuses[idx],
+      hoverText: campHoverTexts[idx],
     }));
 
     // Format date range
@@ -94,6 +102,7 @@ export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
       date,
       price: priceMap.get(week.id),
       campStatuses,
+      campHoverTexts,
       mobileCamps,
     };
   });
