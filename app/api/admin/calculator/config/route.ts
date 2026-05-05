@@ -265,7 +265,7 @@ export async function GET(req: NextRequest) {
       camps,
       weeks,
       packages,
-      pricingRows: pricingRows.map((row) => ({
+      pricingRows: pricingRows.map((row: (typeof pricingRows)[number]) => ({
         campSlug: row.camp.slug,
         weekSlug: row.week.slug,
         packageCode: row.package.code,
