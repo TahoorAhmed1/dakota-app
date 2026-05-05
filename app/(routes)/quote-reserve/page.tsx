@@ -35,7 +35,14 @@ type ValidationErrors = Partial<{
 
 type CalculatorConfig = {
   camps: Array<{ id: string; name: string; slug: string }>;
-  weeks: Array<{ id: string; label: string; slug: string; seasonLabel: string }>;
+  weeks: Array<{
+    id: string;
+    label: string;
+    slug: string;
+    seasonLabel: string;
+    startDate: string | null;
+    endDate: string | null;
+  }>;
   packages: Array<{ id: string; code: string; label: string; days: number; nights: number }>;
   pricingRows: Array<{
     id: string;
@@ -79,6 +86,32 @@ const formatCampOptionLabel = (name: string) =>
   name.replace(/ Pheasant Camp$/i, "").replace(/^Faulkton Pheasant Camp$/i, "Faulkton");
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+const formatWeekDateRange = (startDate: string | null, endDate: string | null) => {
+  if (!startDate || !endDate) return "";
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return "";
+  }
+
+  const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
+  const startMonth = monthFmt.format(start);
+  const endMonth = monthFmt.format(end);
+  const startDay = start.getDate();
+  const endDay = end.getDate();
+
+  return startMonth === endMonth
+    ? `${startMonth} ${startDay}-${endDay}`
+    : `${startMonth} ${startDay}-${endMonth} ${endDay}`;
+};
+
+const formatWeekOptionLabel = (week: CalculatorConfig["weeks"][number]) => {
+  const dateRange = formatWeekDateRange(week.startDate, week.endDate);
+  return dateRange ? `${week.label} (${dateRange})` : week.label;
+};
 
 function SectionDivider({ label }: { label: string }) {
   return (
@@ -617,7 +650,9 @@ export default function QuoteReservePage() {
                         >
                           <option value="">Select Which Week</option>
                           {weekOptions.map((week) => (
-                            <option key={week.id} value={week.id}>{week.label}</option>
+                            <option key={week.id} value={week.id}>
+                              {formatWeekOptionLabel(week)}
+                            </option>
                           ))}
                         </select>
                       </div>

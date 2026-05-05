@@ -6,7 +6,14 @@ type DecimalLike = number | string | { toString(): string };
 
 export type CalculatorConfig = {
   camps: Array<{ id: string; name: string; slug: string }>;
-  weeks: Array<{ id: string; label: string; slug: string; seasonLabel: string }>;
+  weeks: Array<{
+    id: string;
+    label: string;
+    slug: string;
+    seasonLabel: string;
+    startDate: string | null;
+    endDate: string | null;
+  }>;
   packages: Array<{ id: string; code: string; label: string; days: number; nights: number }>;
   pricingRows: Array<{
     id: string;
@@ -102,7 +109,14 @@ function toNumber(value: DecimalLike): number {
 
 export function mapConfigFromDb(data: {
   camps: Array<{ id: string; name: string; slug: string }>;
-  weeks: Array<{ id: string; label: string; slug: string; seasonLabel: string }>;
+  weeks: Array<{
+    id: string;
+    label: string;
+    slug: string;
+    seasonLabel: string;
+    startDate: Date | string | null;
+    endDate: Date | string | null;
+  }>;
   packages: Array<{ id: string; code: string; label: string; days: number; nights: number }>;
   pricingRows: Array<{
     id: string;
@@ -134,7 +148,11 @@ export function mapConfigFromDb(data: {
 }): CalculatorConfig {
   return {
     camps: data.camps,
-    weeks: data.weeks,
+    weeks: data.weeks.map((week) => ({
+      ...week,
+      startDate: week.startDate ? new Date(week.startDate).toISOString() : null,
+      endDate: week.endDate ? new Date(week.endDate).toISOString() : null,
+    })),
     packages: data.packages,
     pricingRows: data.pricingRows.map((row) => ({
       ...row,

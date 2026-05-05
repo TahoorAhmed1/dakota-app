@@ -29,7 +29,14 @@ export async function getCalculatorConfig() {
     const weeks = await prisma.huntWeek.findMany({
       where: { isActive: true },
       orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
-      select: { id: true, label: true, slug: true, seasonLabel: true },
+      select: {
+        id: true,
+        label: true,
+        slug: true,
+        seasonLabel: true,
+        startDate: true,
+        endDate: true,
+      },
     });
 
     const packages = await prisma.packageOption.findMany({

@@ -130,6 +130,8 @@ const adminConfigSchema = z.object({
       label: z.string().min(1),
       slug: z.string().min(1),
       seasonLabel: z.string().min(1),
+      startDate: z.string().nullable().optional(),
+      endDate: z.string().nullable().optional(),
       displayOrder: z.number().int().default(0),
       isActive: z.boolean().default(true),
     })
@@ -198,6 +200,8 @@ export async function GET(req: NextRequest) {
         label: true,
         slug: true,
         seasonLabel: true,
+        startDate: true,
+        endDate: true,
         displayOrder: true,
         isActive: true,
       },
@@ -329,7 +333,13 @@ export async function PUT(req: NextRequest) {
         });
 
         // Batch create weeks and get them back
-        await tx.huntWeek.createMany({ data: payload.weeks });
+        await tx.huntWeek.createMany({
+          data: payload.weeks.map((week) => ({
+            ...week,
+            startDate: week.startDate ? new Date(week.startDate) : null,
+            endDate: week.endDate ? new Date(week.endDate) : null,
+          })),
+        });
         const weeks = await tx.huntWeek.findMany({
           where: { slug: { in: payload.weeks.map((w) => w.slug) } },
           select: { id: true, slug: true },
