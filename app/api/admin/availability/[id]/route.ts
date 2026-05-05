@@ -18,7 +18,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const access = assertAdminAccess(req);
-  if (!access.ok) {
+  if (access.ok === false) {
     return NextResponse.json({ error: access.error }, { status: access.status });
   }
 
