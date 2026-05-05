@@ -1,5 +1,4 @@
 // app/resources/waterfowl-hunting/page.tsx
-"use client";
 
 import Header from "@/components/common/header";
 import OurPartners from "@/components/ourPartners";

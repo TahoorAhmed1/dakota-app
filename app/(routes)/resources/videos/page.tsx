@@ -1,5 +1,3 @@
-"use client";
-
 import Header from "@/components/common/header";
 import OurPartners from "@/components/ourPartners";
 import LatestNews from "@/components/NewsEvent";
@@ -74,12 +72,9 @@ export default function VideosPage() {
                     {/* Thumbnail Container */}
                     <div className="relative aspect-video bg-gray-800 overflow-hidden">
                       <img
-                        src={`https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`}
+                        src={`https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`}
                         alt={video.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`;
-                        }}
                       />
                       
                       {/* Gradient Overlay */}

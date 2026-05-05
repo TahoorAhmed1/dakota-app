@@ -1,6 +1,4 @@
 // app/resources/recipes/page.tsx
-"use client";
-
 import Header from "@/components/common/header";
 import Footer from "@/components/common/footer";
 import OurPartners from "@/components/ourPartners";

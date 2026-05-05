@@ -1,6 +1,4 @@
 // app/resources/license-info/page.tsx
-"use client";
-
 import Header from "@/components/common/header";
 import OurPartners from "@/components/ourPartners";
 import LatestNews from "@/components/NewsEvent";

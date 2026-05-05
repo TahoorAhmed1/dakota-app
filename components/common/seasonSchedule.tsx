@@ -229,6 +229,8 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
     return campNames.map((name, campIdx) => ({
       name,
       status: getStatusForCamp(row, campIdx, rowIdx),
+      label: undefined,
+      hoverText: getHoverTextForCamp(row, campIdx),
     }));
   };
 
@@ -257,10 +259,10 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
               <div className="px-4 py-3">
                 <p className="mb-3 text-[13px] font-medium text-[#4a3b2f]">{row.date}</p>
                 <div className="space-y-2">
-                  {getMobileCampEntries(row, i).map((camp) => {
-                    const status = camp.status;
+                  {getMobileCampEntries(row, i)?.map((camp) => {
+                    const status = camp?.status;
                     const statusLabel =
-                      camp.label ??
+                      camp?.label ??
                       (status === "available"
                         ? "Available"
                         : status === "pending"
@@ -268,8 +270,8 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
                           : "Sold Out");
 
                     return (
-                      <div key={camp.name} className="flex items-center justify-between" title={camp.hoverText || undefined}>
-                        <span className="text-[13px] font-medium text-[#3c2f23]">{camp.name}</span>
+                      <div key={camp?.name} className="flex items-center justify-between" title={camp?.hoverText || undefined}>
+                        <span className="text-[13px] font-medium text-[#3c2f23]">{camp?.name}</span>
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
                             status === "available"

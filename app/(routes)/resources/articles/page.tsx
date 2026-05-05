@@ -1,5 +1,4 @@
 // app/resources/articles/page.tsx
-"use client";
 
 import Header from "@/components/common/header";
 import Footer from "@/components/common/footer";
