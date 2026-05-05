@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  serverExternalPackages: ["@prisma/client", "prisma", "@prisma/adapter-pg", "pg"],
+  outputFileTracingIncludes: {
+    "/*": ["./node_modules/.prisma/client/**/*", "./node_modules/@prisma/**/*"],
+  },
   images: {
     remotePatterns: [
       {

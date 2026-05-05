@@ -6,6 +6,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { assertAdminAccess } from "@/lib/server/admin-auth";
 
+export const runtime = "nodejs";
+
 const patchSchema = z.object({
   availabilityTag: z.enum(["OPEN", "RESERVED", "PENDING", "NA"]),
   minGroupSize: z.number().int().min(1).optional(),
