@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import { defaultCalculatorSettings } from "@/lib/calculator-settings";
@@ -313,10 +314,22 @@ export async function PUT(req: NextRequest) {
 
     const payload = parsed.data;
 
+    const clearTableIfPresent = async (
+      tx: Prisma.TransactionClient,
+      tableName: "QuoteHunter" | "Quote"
+    ) => {
+      try {
+        await tx.$executeRawUnsafe(`DELETE FROM "${tableName}"`);
+      } catch {
+        // Some environments may not include these tables yet.
+      }
+    };
+
     await prisma.$transaction(
       async (tx) => {
         // Delete all existing data
-        await tx.quote.deleteMany();
+        await clearTableIfPresent(tx, "QuoteHunter");
+        await clearTableIfPresent(tx, "Quote");
         await tx.campWeekPricing.deleteMany();
         await tx.volumeDiscountRule.deleteMany();
         await tx.discountRule.deleteMany();
