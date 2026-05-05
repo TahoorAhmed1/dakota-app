@@ -316,7 +316,6 @@ export async function PUT(req: NextRequest) {
     await prisma.$transaction(
       async (tx) => {
         // Delete all existing data
-        await tx.quoteHunter.deleteMany();
         await tx.quote.deleteMany();
         await tx.campWeekPricing.deleteMany();
         await tx.volumeDiscountRule.deleteMany();
