@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { NewsPost } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
-async function getPosts() {
+async function getPosts(): Promise<NewsPost[]> {
   try {
     return await prisma.newsPost.findMany({
       where: { isPublished: true },
