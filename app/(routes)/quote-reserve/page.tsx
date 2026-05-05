@@ -505,7 +505,7 @@ export default function QuoteReservePage() {
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <main className="flex flex-col">
-      <section className="QuoteReserveImage relative flex min-h-[340px] items-center justify-center px-4 pb-20 pt-24 sm:min-h-[420px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[620px]">
+      <section className="QuoteReserveImage relative flex min-h-85 items-center justify-center px-4 pb-20 pt-24 sm:min-h-105 sm:px-6 sm:pb-24 sm:pt-28 md:min-h-130 lg:min-h-155">
         <div className="absolute inset-0" />
         <div className="relative z-10 flex flex-col items-center text-center">
           <h1 className="text-[38px] font-bold uppercase leading-none tracking-[-0.03em] text-[#281703] sm:text-[54px] md:text-[68px] lg:text-[76px]">
@@ -755,7 +755,7 @@ export default function QuoteReservePage() {
             {step === 2 && (
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
                 <div className="overflow-x-auto">
-                  <div className="min-w-[950px]">
+                  <div className="min-w-237.5">
                     <div className="grid grid-cols-[50px_50px_1.5fr_2fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-bold uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
                       <div className="text-center text-[11px] leading-tight md:text-[13px]">Coordinator</div>
                       <div className="text-center">#</div>
@@ -907,7 +907,7 @@ export default function QuoteReservePage() {
                   </button>
                   <button
                     onClick={goToStep3}
-                    className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 md:w-auto"
+                    className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-wider text-white shadow-md transition hover:brightness-95 md:w-auto"
                   >
                     {labels?.step2.nextButton ?? "To Step 3: Review Totals »"}
                   </button>
@@ -985,7 +985,7 @@ export default function QuoteReservePage() {
                   </div>
 
                   <div className="overflow-x-auto px-2 py-4 sm:px-4">
-                    <table className="min-w-[1000px] w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
+                    <table className="min-w-250 w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
                       <thead>
                         <tr className="bg-[#f26f2d] text-left text-white">
                           <th className="border border-[#d9d9d9] px-2 py-2">#</th>
@@ -1142,7 +1142,7 @@ export default function QuoteReservePage() {
                       <button
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-[0.05em] text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+                        className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-wider text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
                       >
                         {isSubmitting
                           ? "Submitting..."

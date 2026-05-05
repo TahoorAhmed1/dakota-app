@@ -29,7 +29,7 @@ export default function VideosPage() {
       <Header />
       <main className="flex flex-col">
         {/* Banner Section */}
-        <section className="relative flex min-h-[280px] items-center justify-center overflow-hidden bg-[#e8ded1] px-4 pb-12 pt-24 sm:min-h-[320px] sm:px-6 sm:pb-14 sm:pt-28 md:min-h-[360px]">
+        <section className="relative flex min-h-70 items-center justify-center overflow-hidden bg-[#e8ded1] px-4 pb-12 pt-24 sm:min-h-80 sm:px-6 sm:pb-14 sm:pt-28 md:min-h-90">
           <div className="relative z-10 flex flex-col items-center text-center">
             <h1 className="text-3xl sm:text-4xl font-bold text-[#241304] mb-4">
               UGUIDE Hunting & Camp Videos
@@ -78,7 +78,7 @@ export default function VideosPage() {
                       />
                       
                       {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       
                       {/* Play Button Overlay */}
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -105,7 +105,7 @@ export default function VideosPage() {
                     </div>
                     
                     {/* Content */}
-                    <div className="p-5 flex-grow">
+                    <div className="p-5 grow">
                       <h3 className="text-lg font-semibold text-[#241304] mb-2 line-clamp-2 group-hover:text-[#E4803A] transition-colors">
                         {video.title}
                       </h3>

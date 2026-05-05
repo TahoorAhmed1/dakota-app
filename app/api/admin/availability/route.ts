@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const payload = rows.map((r) => ({
+    const payload = rows.map((r: (typeof rows)[number]) => ({
       id: r.id,
       campId: r.campId,
       campName: r.camp.name,
