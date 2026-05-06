@@ -11,7 +11,7 @@ function getPrismaClientOptions(): Prisma.PrismaClientOptions {
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   };
 
-  const databaseUrl = process.env.DATABASE_URL;
+  const databaseUrl = process.env.DATABASE_URL ?? process.env.PRISMA_ACCELERATE_URL;
 
   if (!databaseUrl) {
     return options;
@@ -19,6 +19,11 @@ function getPrismaClientOptions(): Prisma.PrismaClientOptions {
 
   try {
     const url = new URL(databaseUrl);
+
+    if (url.protocol === "prisma:") {
+      options.accelerateUrl = databaseUrl;
+      return options;
+    }
 
     if (url.hostname.includes("-pooler.")) {
       if (!url.searchParams.has("pgbouncer")) {
@@ -39,10 +44,43 @@ function getPrismaClientOptions(): Prisma.PrismaClientOptions {
   return options;
 }
 
-export const prisma =
-  globalThis.prismaGlobal ??
-  new PrismaClient(getPrismaClientOptions());
+function createPrismaClient(): PrismaClient {
+  const options = getPrismaClientOptions();
+  const hasAdapter = Boolean(options.adapter);
+  const hasAccelerateUrl = Boolean(options.accelerateUrl);
 
-if (process.env.NODE_ENV !== "production") {
-  globalThis.prismaGlobal = prisma;
+  if (!hasAdapter && !hasAccelerateUrl) {
+    throw new Error(
+      "Prisma is not configured. Set DATABASE_URL (Postgres) or PRISMA_ACCELERATE_URL / prisma:// URL so PrismaClient can be created with adapter or accelerateUrl.",
+    );
+  }
+
+  return new PrismaClient(options);
 }
+
+function getPrismaClient(): PrismaClient {
+  if (globalThis.prismaGlobal) {
+    return globalThis.prismaGlobal;
+  }
+
+  const client = createPrismaClient();
+
+  if (process.env.NODE_ENV !== "production") {
+    globalThis.prismaGlobal = client;
+  }
+
+  return client;
+}
+
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getPrismaClient() as unknown as Record<PropertyKey, unknown>;
+    const value = Reflect.get(client, prop, receiver);
+
+    if (typeof value === "function") {
+      return (value as (...args: unknown[]) => unknown).bind(client);
+    }
+
+    return value;
+  },
+});
