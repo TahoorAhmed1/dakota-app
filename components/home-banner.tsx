@@ -24,7 +24,7 @@ function HomeBanner() {
             {motto}
           </p>
 
-          <div className=" w-full flex-col items-center gap-4 py-4 sm:py-6 md:w-auto md:flex hidden md:gap-6 lg:gap-10">
+          <div className=" w-full  items-center gap-4 py-4 sm:py-6 md:w-auto md:flex hidden md:gap-6 lg:gap-10">
             <Link href="/contact" className="w-full rounded-md border-2 border-white px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-white hover:text-[#2b1a0f] md:w-auto">
               {ctaPrimary}
             </Link>
