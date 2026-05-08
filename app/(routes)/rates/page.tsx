@@ -152,7 +152,7 @@ export default function RatesPage() {
             </h2>
           </div>
 
-          <div className="mt-7 grid gap-[10px] sm:gap-3 md:mt-8 md:grid-cols-[1.06fr_0.96fr_0.36fr] md:grid-rows-[auto_auto] lg:gap-[12px]">
+          <div className="mt-7 grid grid-cols-1 gap-[10px] sm:grid-cols-2 sm:gap-3 md:mt-8 md:grid-cols-[1.06fr_0.96fr_0.36fr] md:grid-rows-[auto_auto] lg:gap-[12px]">
             {galleryItems.map((item) => (
               <div
                 key={item.alt}

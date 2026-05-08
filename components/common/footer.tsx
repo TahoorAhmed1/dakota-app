@@ -311,12 +311,12 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="Footerback relative bg-cover bg-center py-4 text-black">
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
+    <footer className="Footerback relative bg-cover bg-center py-8 text-black sm:py-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col items-center text-center">
-          <Image src={logo} alt="U Guide" className="mb-3 mt-20" />
+          <Image src={logo} alt="U Guide" className="mb-3 mt-8 h-auto w-[180px] sm:mt-12 sm:w-[220px]" />
 
-          <div className="flex gap-4 mt-2">
+          <div className="mt-2 flex flex-wrap justify-center gap-3 sm:gap-4">
             {socialLinks.map(({ Icon, href }, i) => (
               <Link
                 key={i}
@@ -331,9 +331,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-black/40 my-10"></div>
+        <div className="my-8 border-t border-black/40 sm:my-10"></div>
 
-        <div className="grid md:grid-cols-3 gap-10">
+        <div className="grid gap-8 md:grid-cols-3 md:gap-10">
           {/* Contact */}
           <div>
             <h3 className="font-semibold mb-4">Contact</h3>
@@ -369,7 +369,7 @@ export default function Footer() {
 
             <form
               onSubmit={handleSubmit}
-              className="flex w-full max-w-87.5 flex-col gap-3 rounded-lg bg-white p-3 shadow-[0_1px_0_rgba(0,0,0,0.05)] sm:h-14.5 sm:flex-row sm:items-center sm:gap-0 sm:px-2.5 sm:py-2"
+              className="flex w-full max-w-[420px] flex-col gap-3 rounded-lg bg-white p-3 shadow-[0_1px_0_rgba(0,0,0,0.05)] sm:h-[58px] sm:flex-row sm:items-center sm:gap-0 sm:px-2.5 sm:py-2"
             >
               <input
                 type="email"
@@ -388,13 +388,14 @@ export default function Footer() {
                 {isSubmitting ? "SUBMITTING" : "SUBSCRIBE"}
               </button>
             </form>
+            {message ? <p className="mt-3 text-sm font-medium text-[#2d1a08]">{message}</p> : null}
           </div>
         </div>
       </div>
-      <p className="text-center text-sm mt-8">
+      <p className="mt-8 text-center text-sm">
         Made By https://webcraftiq.com
       </p>
-      <p className="text-center text-sm mt-2">
+      <p className="mt-2 text-center text-sm">
         © 2026 UGUIDE South Dakota Pheasant Hunting®
       </p>
     </footer>

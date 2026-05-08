@@ -132,7 +132,7 @@ export default function PackagesSection() {
             </div>
 
             <div className="mt-10 overflow-x-auto sm:mt-12">
-              <table className="w-full min-w-105 rounded-xl border border-[#d7c8b6] bg-white text-sm">
+              <table className="w-full min-w-160 rounded-xl border border-[#d7c8b6] bg-white text-sm">
                 <thead>
                   <tr className="border-b border-[#d7c8b6] bg-[#f5efe7]">
                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wide text-[#281703]">

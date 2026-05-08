@@ -284,7 +284,7 @@ export default function ContactPage() {
 
           <form onSubmit={handleSubmit} noValidate className="px-4 pb-8 pt-3 sm:px-6 sm:pb-10 lg:px-8 lg:pb-12">
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px] xl:grid-cols-[minmax(0,1fr)_240px] xl:gap-8">
                 <div>
                   <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">1. Hunt</h3>
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">
@@ -321,7 +321,7 @@ export default function ContactPage() {
             </div>
 
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px] xl:grid-cols-[minmax(0,1fr)_240px] xl:gap-8">
                 <div className="max-w-140">
                   <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">2. Experience</h3>
                   <p className="mt-3 text-[13px] leading-6 text-[#352b24]">
@@ -342,7 +342,7 @@ export default function ContactPage() {
             </div>
 
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px] xl:grid-cols-[minmax(0,1fr)_240px] xl:gap-8">
                 <div>
                   <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">3. Group Info</h3>
                   <p className="mt-2 text-[13px] italic leading-6 text-[#352b24]">
@@ -385,7 +385,7 @@ export default function ContactPage() {
             </div>
 
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px] xl:grid-cols-[minmax(0,1fr)_240px] xl:gap-8">
                 <div className="max-w-140">
                   <h3 className="text-[24px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[28px]">4. Dog Power</h3>
                   <div className="mt-4 grid gap-3 md:grid-cols-[1fr_150px] md:items-center md:gap-4">
@@ -410,7 +410,7 @@ export default function ContactPage() {
             </div>
 
             <div className="border-b border-[#d3d3d3] py-6 sm:py-8">
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_290px] xl:gap-8">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_160px] xl:grid-cols-[minmax(0,1fr)_240px] xl:gap-8">
                 <div>
                   <h3 className="text-[21px] font-bold uppercase tracking-[-0.03em] text-[#231506] sm:text-[25px] lg:text-[28px]">
                     5. Hunting Timeframe Preferences
@@ -509,7 +509,7 @@ export default function ContactPage() {
                 />
               </div>
 
-              <div className="mt-4 grid gap-6 md:grid-cols-[minmax(0,1fr)_220px] md:items-end lg:grid-cols-[280px_220px] lg:justify-between">
+              <div className="mt-4 grid gap-6 md:grid-cols-[minmax(0,1fr)_180px] md:items-end lg:grid-cols-[260px_200px] lg:justify-between">
                 <div>
                   <p className="mb-2 text-[12px] font-medium text-[#2d241b]">
                     <span className="text-[#d25f2d]">*</span>reCAPTCHA

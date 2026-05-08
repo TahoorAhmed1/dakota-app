@@ -49,7 +49,7 @@ function CampingExp({ data }: { data?: CampingExpData }) {
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,10,6,0.72)_0%,rgba(15,10,6,0.28)_55%,rgba(15,10,6,0.08)_100%)]" />
       <div className="absolute inset-0 flex items-center">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-6 px-5 text-white sm:px-8 lg:flex-row lg:items-center lg:px-10">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-3 px-5 text-white sm:gap-4 sm:px-8 lg:flex-row lg:items-center lg:gap-6 lg:px-10">
           <div className="max-w-155">
             <p className="mb-2 text-xs tracking-[0.35em] text-orange-400 sm:text-sm">
               {content.eyebrow}
@@ -67,7 +67,7 @@ function CampingExp({ data }: { data?: CampingExpData }) {
             </p>
           </div>
 
-          <div className="w-full space-x-2 lg:w-auto">
+          <div className="flex w-full flex-col gap-2 sm:flex-row sm:gap-2 lg:w-auto">
             <Link
               href={content.primaryCtaHref}
               className="inline-flex w-full items-center justify-center rounded-md border border-orange-400 px-5 py-3 text-sm text-orange-400 transition hover:bg-orange-400 hover:text-white sm:w-auto sm:px-6 whitespace-nowrap"

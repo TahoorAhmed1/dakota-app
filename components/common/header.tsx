@@ -57,7 +57,7 @@ function Header() {
   return (
     <>
       <header className="absolute z-30 flex w-full justify-center px-3 py-4 sm:px-5 sm:py-6 lg:py-10">
-        <div className="flex w-full max-w-345 items-center justify-between rounded-2xl bg-white/96 px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)] backdrop-blur sm:px-6 lg:w-[90%] lg:px-7">
+        <div className="flex w-full max-w-screen-2xl items-center justify-between rounded-2xl bg-white/96 px-3 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)] backdrop-blur sm:px-6 lg:w-[90%] lg:px-7">
           <Link
             href="/"
             className="flex items-center"
@@ -164,7 +164,7 @@ function Header() {
 
       <aside
         id="mobile-navigation"
-        className={`fixed right-0 top-0 z-50 flex h-full w-[min(84vw,340px)] flex-col bg-white px-5 pb-6 pt-5 text-black shadow-[-12px_0_40px_rgba(0,0,0,0.28)] transition-transform duration-300 xl:hidden ${
+        className={`fixed right-0 top-0 z-50 flex h-full w-[min(88vw,340px)] flex-col bg-white px-4 pb-6 pt-5 text-black shadow-[-12px_0_40px_rgba(0,0,0,0.28)] transition-transform duration-300 sm:px-5 xl:hidden ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
         aria-hidden={!isSidebarOpen}

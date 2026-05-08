@@ -120,12 +120,12 @@ export default function DiscountsPage() {
 
       <section className="relative z-10 bg-[#e8ded1] px-4 pb-14 pt-14 sm:px-6 sm:pb-16 sm:pt-16 lg:px-8 lg:pb-20 lg:pt-20">
         <div className="mx-auto max-w-[1220px]">
-          <div className="mx-auto max-w-[860px] text-center">
+          <div className="mx-auto w-full text-center">
             <h2 className="text-[27px] font-black leading-[1.05] tracking-[-0.03em] text-[#281703] sm:text-[36px] lg:text-[58px]">
               UGUIDE South Dakota Pheasant Hunting Specials
             </h2>
 
-            <p className="mx-auto mt-3 max-w-[760px] text-[13px] font-medium leading-[1.55] text-[#312b24] sm:text-[14px] lg:text-[15px]">
+            <p className="mx-auto mt-3 max-w-full text-[13px] font-medium leading-[1.55] text-[#312b24] sm:max-w-[760px] sm:text-[14px] lg:text-[15px]">
               Click on specific links to get more info about the special or related camp.
               Remember to go to the{" "}
               <Link
@@ -275,7 +275,7 @@ export default function DiscountsPage() {
               </div>
             </div>
 
-            <div className="mx-auto grid w-full max-w-[520px] grid-cols-1 gap-3 self-start sm:grid-cols-2 sm:gap-4 lg:max-w-none lg:gap-5 xl:gap-6">
+            <div className="mx-auto grid w-full grid-cols-1 gap-3 self-start sm:grid-cols-2 sm:gap-4 lg:max-w-none lg:gap-5 xl:gap-6">
               <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 xl:gap-6">
                 <ImageTile
                   src={photo1}

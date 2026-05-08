@@ -24,6 +24,18 @@ body {
   color: var(--foreground);
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
 .HomeImage,
 .AboutImage,
 .AvailabilityImage,
@@ -156,6 +168,10 @@ body {
   .Footerback {
     background-size: cover;
     background-position: center top;
+  }
+
+  body {
+    -webkit-text-size-adjust: 100%;
   }
 }
 

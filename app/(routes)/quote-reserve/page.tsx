@@ -127,9 +127,9 @@ function SectionDivider({ label }: { label: string }) {
 
 function SummaryRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[1fr_auto] border-b border-[#d9d9d9] px-4 py-3 text-[14px] font-semibold text-[#2b1a0f] sm:px-8 sm:py-4">
+    <div className="grid grid-cols-1 gap-1 border-b border-[#d9d9d9] px-4 py-3 text-[14px] font-semibold text-[#2b1a0f] sm:grid-cols-[1fr_auto] sm:px-8 sm:py-4">
       <span>{label}</span>
-      <span className="text-right">{value}</span>
+      <span className="text-left sm:text-right">{value}</span>
     </div>
   );
 }
@@ -572,7 +572,7 @@ export default function QuoteReservePage() {
                   <div className="divide-y divide-[#d9d9d9] border border-[#d9d9d9]">
 
                     {/* Season */}
-                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.seasonLabel ?? "What Season Is Your Group Hunting In?"}
@@ -601,7 +601,7 @@ export default function QuoteReservePage() {
                     </div>
 
                     {/* Camp */}
-                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.campLabel ?? "What Camp Is Your Group Going To?"}
@@ -630,7 +630,7 @@ export default function QuoteReservePage() {
                     </div>
 
                     {/* Week */}
-                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.weekLabel ?? "What Week Is Your Group Going?"}
@@ -659,7 +659,7 @@ export default function QuoteReservePage() {
                     </div>
 
                     {/* Package */}
-                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.packageLabel ?? "What Package?"}
@@ -682,7 +682,7 @@ export default function QuoteReservePage() {
                     </div>
 
                     {/* Hunter Count */}
-                    <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_0.8fr] items-center">
+                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
                       <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.hunterCountLabel ?? "How Many Hunters In Your Group?"}
@@ -728,7 +728,7 @@ export default function QuoteReservePage() {
                           earlyBird: e.target.value as "Yes" | "No",
                         }))
                       }
-                      className="h-10 w-64 rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
+                      className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none sm:w-64"
                     >
                       <option value="No">No</option>
                       <option value="Yes">Yes (5% off)</option>
@@ -755,7 +755,7 @@ export default function QuoteReservePage() {
             {step === 2 && (
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
                 <div className="overflow-x-auto">
-                  <div className="min-w-237.5">
+                  <div className="min-w-220">
                     <div className="grid grid-cols-[50px_50px_1.5fr_2fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-bold uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
                       <div className="text-center text-[11px] leading-tight md:text-[13px]">Coordinator</div>
                       <div className="text-center">#</div>
@@ -985,7 +985,7 @@ export default function QuoteReservePage() {
                   </div>
 
                   <div className="overflow-x-auto px-2 py-4 sm:px-4">
-                    <table className="min-w-250 w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
+                    <table className="min-w-275 w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
                       <thead>
                         <tr className="bg-[#f26f2d] text-left text-white">
                           <th className="border border-[#d9d9d9] px-2 py-2">#</th>

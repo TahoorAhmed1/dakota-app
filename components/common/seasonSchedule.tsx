@@ -303,7 +303,7 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
 
         {/* ── Desktop: full grid table (hidden below md) ── */}
         <div className="hidden overflow-x-auto rounded-xl border-2 border-[#3a2b20] bg-[#ecebea] shadow-xl md:block">
-          <div className="min-w-230">
+          <div className="min-w-230 lg:min-w-245">
           <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] bg-[#6b3b16] text-white font-semibold text-sm border-b-2 border-[#3a2b20]">
             <div className="col-span-2 text-center py-3 border-r border-[#3a2b20]">
               {content.tableTopLeftHeader}
