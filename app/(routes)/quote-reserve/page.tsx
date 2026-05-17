@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CalculatorSettings, calculateDepositRate } from "@/lib/calculator-settings";
 import { InfoIcon } from "lucide-react";
+import CustomSelect from "@/components/common/CustomSelect";
 
 type StepOneData = {
   seasonLabel: string;
@@ -273,12 +274,14 @@ export default function QuoteReservePage() {
 
   const selectedPricing = useMemo(() => {
     if (!config || !groupData.campId || !groupData.weekId || !groupData.packageId) return null;
-    return config.pricingRows.find(
-      (row) =>
-        row.campId === groupData.campId &&
-        row.weekId === groupData.weekId &&
-        row.packageId === groupData.packageId
-    ) ?? null;
+    return (
+      config.pricingRows.find(
+        (row) =>
+          row.campId === groupData.campId &&
+          row.weekId === groupData.weekId &&
+          row.packageId === groupData.packageId
+      ) ?? null
+    );
   }, [config, groupData]);
 
   const hunterCountOptions = useMemo(() => {
@@ -336,7 +339,7 @@ export default function QuoteReservePage() {
     );
   }, [config, groupData.campId, groupData.weekId]);
 
-  // Core Pricing Calculation - 100% compliant with documents
+  // Core Pricing Calculation
   const pricingRows = useMemo(() => {
     if (!config || !selectedPricing || !settings || base3Rate === 0) return [];
 
@@ -367,13 +370,12 @@ export default function QuoteReservePage() {
       const subtotalForPct = baseRate + volumeDiscount + extraHunting + extraLodging;
 
       // Youth: FREE hunt only (lodging charged full $100/night x nights)
-      // Junior: 50% off full package subtotal  
+      // Junior: 50% off full package subtotal
       let juniorYouthDiscount = 0;
       if (rule.category === "JUNIOR") {
         juniorYouthDiscount = -subtotalForPct * 0.5;
       } else if (rule.category === "YOUTH") {
-        // Hunt portion only: base hunt + extra hunt days (lodging full price)
-        const baseHunt = base3Rate - 4 * 100; // Remove standard 4 nights lodging
+        const baseHunt = base3Rate - 4 * 100;
         const extraHunt = totalExtraDays * dailyHuntRate;
         juniorYouthDiscount = -(baseHunt + extraHunt);
       }
@@ -579,7 +581,7 @@ export default function QuoteReservePage() {
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="border-l border-[#d9d9d9] p-3 md:col-span-2">
-                        <select
+                        <CustomSelect
                           value={groupData.seasonLabel}
                           onChange={(e) => {
                             const newSeason = e.target.value;
@@ -591,14 +593,10 @@ export default function QuoteReservePage() {
                               weekId: firstWeek,
                             }));
                           }}
-                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-                        >
-                          {seasonOptions.map((s) => (
-                            <option key={s} value={s}>{s}</option>
-                          ))}
-                        </select>
+                          options={seasonOptions.map((s) => ({ value: s, label: s }))}
+                        />
                       </div>
-                    </div>
+                    </div>{/* ← FIX: was missing, caused Camp/Week/Package/Count to nest inside Season */}
 
                     {/* Camp */}
                     <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
@@ -608,7 +606,7 @@ export default function QuoteReservePage() {
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
-                        <select
+                        <CustomSelect
                           value={groupData.campId}
                           onChange={(e) =>
                             setGroupData((prev) => ({
@@ -617,15 +615,12 @@ export default function QuoteReservePage() {
                               packageId: "",
                             }))
                           }
-                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-                        >
-                          <option value="">Select a Camp</option>
-                          {config?.camps.map((camp) => (
-                            <option key={camp.id} value={camp.id}>
-                              {formatCampOptionLabel(camp.name)}
-                            </option>
-                          ))}
-                        </select>
+                          options={(config?.camps ?? []).map((camp) => ({
+                            value: camp.id,
+                            label: formatCampOptionLabel(camp.name),
+                          }))}
+                          placeholder="Select a Camp"
+                        />
                       </div>
                     </div>
 
@@ -637,7 +632,7 @@ export default function QuoteReservePage() {
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
-                        <select
+                        <CustomSelect
                           value={groupData.weekId}
                           onChange={(e) =>
                             setGroupData((prev) => ({
@@ -646,15 +641,12 @@ export default function QuoteReservePage() {
                               packageId: "",
                             }))
                           }
-                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-                        >
-                          <option value="">Select Which Week</option>
-                          {weekOptions.map((week) => (
-                            <option key={week.id} value={week.id}>
-                              {formatWeekOptionLabel(week)}
-                            </option>
-                          ))}
-                        </select>
+                          options={weekOptions.map((week) => ({
+                            value: week.id,
+                            label: formatWeekOptionLabel(week),
+                          }))}
+                          placeholder="Select Which Week"
+                        />
                       </div>
                     </div>
 
@@ -666,18 +658,17 @@ export default function QuoteReservePage() {
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
-                        <select
+                        <CustomSelect
                           value={groupData.packageId}
                           onChange={(e) =>
                             setGroupData((prev) => ({ ...prev, packageId: e.target.value }))
                           }
-                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-                        >
-                          <option value="">Select Package</option>
-                          {packageOptions.map((pkg) => (
-                            <option key={pkg.id} value={pkg.id}>{pkg.label}</option>
-                          ))}
-                        </select>
+                          options={packageOptions.map((pkg) => ({
+                            value: pkg.id,
+                            label: pkg.label,
+                          }))}
+                          placeholder="Select Package"
+                        />
                       </div>
                     </div>
 
@@ -689,7 +680,7 @@ export default function QuoteReservePage() {
                         <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                       </label>
                       <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
-                        <select
+                        <CustomSelect
                           value={groupData.hunterCount}
                           onChange={(e) =>
                             setGroupData((prev) => ({
@@ -697,18 +688,16 @@ export default function QuoteReservePage() {
                               hunterCount: Number(e.target.value),
                             }))
                           }
-                          className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none"
-                        >
-                          <option value="">Select Group Size</option>
-                          {hunterCountOptions.map((n) => (
-                            <option key={n} value={n}>
-                              {n} {n === 1 ? "Hunter" : "Hunters"}
-                            </option>
-                          ))}
-                        </select>
+                          options={hunterCountOptions.map((n) => ({
+                            value: n,
+                            label: `${n} ${n === 1 ? "Hunter" : "Hunters"}`,
+                          }))}
+                          placeholder="Select Group Size"
+                        />
                       </div>
                     </div>
-                  </div>
+
+                  </div>{/* end divide-y container */}
 
                   <div className="mt-10 mb-6">
                     <SectionDivider label={labels?.step1.optionalLabel ?? "Optional Fields"} />
@@ -720,7 +709,7 @@ export default function QuoteReservePage() {
                         "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
                       <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
                     </label>
-                    <select
+                    <CustomSelect
                       value={groupData.earlyBird}
                       onChange={(e) =>
                         setGroupData((prev) => ({
@@ -728,11 +717,12 @@ export default function QuoteReservePage() {
                           earlyBird: e.target.value as "Yes" | "No",
                         }))
                       }
-                      className="h-10 w-full rounded border border-[#9f9f9f] bg-white px-3 text-[14px] text-[#5a5a5a] outline-none sm:w-64"
-                    >
-                      <option value="No">No</option>
-                      <option value="Yes">Yes (5% off)</option>
-                    </select>
+                      options={[
+                        { value: "No", label: "No" },
+                        { value: "Yes", label: "Yes (5% off)" },
+                      ]}
+                      className="sm:w-64"
+                    />
                   </div>
                   <div className="mt-12 flex justify-center md:justify-end">
                     <button
@@ -786,7 +776,10 @@ export default function QuoteReservePage() {
                                     prev.map((h) => {
                                       if (h.id === hunter.id)
                                         return { ...h, discountCode: "ADULT_COORDINATOR" };
-                                      if (h.id === groupCoordinatorId && h.discountCode === "ADULT_COORDINATOR")
+                                      if (
+                                        h.id === groupCoordinatorId &&
+                                        h.discountCode === "ADULT_COORDINATOR"
+                                      )
                                         return { ...h, discountCode: "NONE" };
                                       return h;
                                     })
@@ -830,7 +823,9 @@ export default function QuoteReservePage() {
                               }`}
                             >
                               {availableDiscounts.map((opt) => (
-                                <option key={opt.code} value={opt.code}>{opt.label}</option>
+                                <option key={opt.code} value={opt.code}>
+                                  {opt.label}
+                                </option>
                               ))}
                             </select>
                             <select
@@ -838,7 +833,9 @@ export default function QuoteReservePage() {
                               onChange={(e) =>
                                 setHunters((prev) =>
                                   prev.map((item, i) =>
-                                    i === index ? { ...item, extraDays: Number(e.target.value) } : item
+                                    i === index
+                                      ? { ...item, extraDays: Number(e.target.value) }
+                                      : item
                                   )
                                 )
                               }
@@ -854,7 +851,9 @@ export default function QuoteReservePage() {
                               onChange={(e) =>
                                 setHunters((prev) =>
                                   prev.map((item, i) =>
-                                    i === index ? { ...item, extraNights: Number(e.target.value) } : item
+                                    i === index
+                                      ? { ...item, extraNights: Number(e.target.value) }
+                                      : item
                                   )
                                 )
                               }
@@ -872,10 +871,9 @@ export default function QuoteReservePage() {
                   </div>
                 </div>
                 <div className="mt-4 px-4 text-[13px] text-[#6b6b6b] sm:px-6 md:px-8">
-                  <span className="font-semibold">Note:</span> Group Coordinator
-                  receives 10% discount and cannot select another individual
-                  discount. Junior (50% off) and Youth (free) discounts apply
-                  to the full package subtotal.
+                  <span className="font-semibold">Note:</span> Group Coordinator receives 10%
+                  discount and cannot select another individual discount. Junior (50% off) and Youth
+                  (free) discounts apply to the full package subtotal.
                 </div>
                 <div className="grid grid-cols-1 items-center gap-4 px-4 py-6 sm:px-6 md:grid-cols-[auto_340px] md:px-8 md:py-7">
                   <label className="text-[15px] font-semibold text-[#2b1a0f]">
@@ -1009,11 +1007,12 @@ export default function QuoteReservePage() {
                             <td className="border border-[#d9d9d9] px-2 py-2">
                               {row.name?.trim() || `Hunter ${index + 1}`}
                             </td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">{row.discountLabel}</td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">
+                              {row.discountLabel}
+                            </td>
                             <td className="border border-[#d9d9d9] px-2 py-2">
                               ${row.baseRate.toFixed(2)}
                             </td>
-                            {/* FIX: volumeDiscount stored negative; display as −$X not −$−X */}
                             <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
                               {row.volumeDiscount < 0
                                 ? `-$${Math.abs(row.volumeDiscount).toFixed(2)}`
@@ -1025,19 +1024,16 @@ export default function QuoteReservePage() {
                             <td className="border border-[#d9d9d9] px-2 py-2">
                               ${row.extraLodging.toFixed(2)}
                             </td>
-                            {/* Jr/Youth discount (negative = reduction) */}
                             <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
                               {row.juniorDiscount < 0
                                 ? `-$${Math.abs(row.juniorDiscount).toFixed(2)}`
                                 : `$${row.juniorDiscount.toFixed(2)}`}
                             </td>
-                            {/* Adult discount (negative = reduction) */}
                             <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
                               {row.individualDiscount < 0
                                 ? `-$${Math.abs(row.individualDiscount).toFixed(2)}`
                                 : `$${row.individualDiscount.toFixed(2)}`}
                             </td>
-                            {/* Early bird discount (negative = reduction) */}
                             <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
                               {row.earlyBirdDiscount < 0
                                 ? `-$${Math.abs(row.earlyBirdDiscount).toFixed(2)}`
@@ -1063,9 +1059,7 @@ export default function QuoteReservePage() {
                     <div className="mt-5 text-center text-[16px] font-semibold text-[#2b1a0f] md:text-right md:text-[18px]">
                       {labels?.step3?.totalPriceLabel ??
                         "Total price after applicable discounts and state sales tax:"}{" "}
-                      <span className="text-[24px] font-semibold">
-                        ${grandTotal.toFixed(2)}
-                      </span>
+                      <span className="text-[24px] font-semibold">${grandTotal.toFixed(2)}</span>
                     </div>
                   </div>
 
@@ -1082,7 +1076,8 @@ export default function QuoteReservePage() {
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_320px] md:items-center">
                       <label className="font-semibold">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step3?.bookingNameLabel ?? "Enter name of person booking the hunt:"}
+                        {labels?.step3?.bookingNameLabel ??
+                          "Enter name of person booking the hunt:"}
                       </label>
                       <input
                         value={bookingName}
@@ -1099,7 +1094,8 @@ export default function QuoteReservePage() {
 
                       <label className="font-semibold">
                         <span className="mr-1 text-[#f26f2d]">*</span>
-                        {labels?.step3?.bookingEmailLabel ?? "Enter email address of person booking the hunt:"}
+                        {labels?.step3?.bookingEmailLabel ??
+                          "Enter email address of person booking the hunt:"}
                       </label>
                       <input
                         type="email"
@@ -1121,10 +1117,7 @@ export default function QuoteReservePage() {
                         {labels?.step3?.depositAmountLabel ?? "Deposit Amount"} (
                         {Math.round(depositRate * 100)}%):
                       </label>
-                      {/* FIX: No processing fee line. Deposit = depositBase only. */}
-                      <div className="text-[16px] font-semibold">
-                        ${depositTotal.toFixed(2)}
-                      </div>
+                      <div className="text-[16px] font-semibold">${depositTotal.toFixed(2)}</div>
                     </div>
 
                     <p className="mt-4 text-[13px] italic text-[#4e4e4e]">
@@ -1146,7 +1139,7 @@ export default function QuoteReservePage() {
                       >
                         {isSubmitting
                           ? "Submitting..."
-                          : (labels?.step3?.submitButton ?? "Submit Quote Request »")}
+                          : labels?.step3?.submitButton ?? "Submit Quote Request »"}
                       </button>
                     </div>
 
@@ -1177,6 +1170,7 @@ export default function QuoteReservePage() {
                 </div>
               </div>
             )}
+
           </div>
         </div>
       </section>

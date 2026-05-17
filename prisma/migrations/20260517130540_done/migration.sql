@@ -75,6 +75,7 @@ CREATE TABLE "CampWeekPricing" (
     "dailyHuntRate" DECIMAL(10,2) NOT NULL,
     "isAvailable" BOOLEAN NOT NULL DEFAULT true,
     "availabilityTag" TEXT,
+    "hoverText" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

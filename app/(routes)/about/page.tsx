@@ -43,7 +43,7 @@ function PartnerLogo({
       <Image
         src={src}
         alt={alt}
-        className={className ?? "h-auto w-full max-w-[190px] object-contain"}
+        className={className ?? "h-auto w-full  object-contain"}
       />
     </div>
   );
@@ -238,12 +238,10 @@ export default function AboutPage() {
                   Our Partners
                 </h4>
 
-                <div className="mt-5 space-y-6">
+                <div className="mt-5 grid md:grid-cols-1 grid-cols-2 gap-10 space-y-6">
                   <PartnerLogo src={partner1} alt="River Bluff" />
-                  <div className="flex items-center justify-center gap-3">
-                    <Image src={partner2} alt="Pheasants Forever" className="h-auto w-[82px] object-contain sm:w-[90px]" />
-                    <Image src={partner3} alt="Quail Forever" className="h-auto w-[82px] object-contain sm:w-[90px]" />
-                  </div>
+                    <Image src={partner2} alt="Pheasants Forever" className="h-auto  object-contain w-full" />
+                    <Image src={partner3} alt="Quail Forever" className="h-auto  object-contain w-full" />
                   <PartnerLogo src={partner5} alt="On X Hunt" />
                 </div>
               </div>
