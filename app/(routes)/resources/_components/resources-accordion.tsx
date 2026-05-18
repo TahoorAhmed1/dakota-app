@@ -278,9 +278,9 @@ export default function ResourcesAccordionSection() {
             </ul>
           </div>
 
-          <div className="md:justify-self-end">
+          {/* <div className="md:justify-self-end">
             <ResourcesCollage />
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
