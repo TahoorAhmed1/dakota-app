@@ -11,6 +11,5 @@ RUN npm install -g pm2
 
 ENV NODE_ENV=production
 
-EXPOSE 3000
-
+EXPOSE 80 443
 CMD ["pm2-runtime", "ecosystem.config.js"]
