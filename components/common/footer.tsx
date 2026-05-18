@@ -140,12 +140,14 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Services</h3>
             <ul className="space-y-2 text-sm">
-              <li>Availability</li>
-              <li>Quote-Reserve</li>
-              <li>UGUIDE Pheasant Outlook</li>
-              <li>Day Use</li>
-              <li>Rates</li>
-              <li>Discounts</li>
+              <li><Link href="/availability" className="hover:underline transition-colors">Availability</Link></li>
+              <li><Link href="/quote-reserve" className="hover:underline transition-colors">Quote-Reserve</Link></li>
+              <li><Link href="/resources/pheasant-outlook" className="hover:underline transition-colors">UGUIDE Pheasant Outlook</Link></li>
+              <li><Link href="/camps" className="hover:underline transition-colors">Camps</Link></li>
+              <li><Link href="/rates" className="hover:underline transition-colors">Rates</Link></li>
+              <li><Link href="/discounts" className="hover:underline transition-colors">Discounts</Link></li>
+              <li><Link href="/news" className="hover:underline transition-colors">News</Link></li>
+              <li><Link href="/resources" className="hover:underline transition-colors">Resources</Link></li>
             </ul>
           </div>
 

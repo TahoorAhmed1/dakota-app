@@ -888,7 +888,7 @@ export default function QuoteReservePage() {
                     autoCapitalize="none"
                     autoComplete="email"
                     spellCheck={false}
-                    className="h-10 rounded-md border border-[#9f9f9f] bg-white px-3 text-[14px] outline-none"
+                    className="h-10 rounded-md border border-[#9f9f9f] bg-white text-black px-3 text-[14px] outline-none"
                   />
                 </div>
                 {validationErrors.quoteEmail && (

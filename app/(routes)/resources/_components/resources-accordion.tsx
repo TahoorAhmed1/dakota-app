@@ -78,7 +78,7 @@ const resourceSections: ResourceSection[] = [
   },
   {
     label: "Pheasant Outlook",
-    href: "/resources/pheasant-outlook",
+    href: "/news",
   },
   {
     label: "License Info",
