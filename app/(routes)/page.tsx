@@ -1,4 +1,4 @@
-import ImagesCatalog from "@/components/common/images-catalog";
+  import ImagesCatalog from "@/components/common/images-catalog";
 import SeasonSchedule from "@/components/common/seasonSchedule";
 import HomeBanner from "@/components/home-banner";
 import LatestNews from "@/components/NewsEvent";
@@ -44,24 +44,6 @@ export default async function Home() {
       <PackagesSection />
       <Testimonials />
 
-      {/* Waitlist */}
-      {/* <section className="bg-white px-4 py-8 md:px-6 md:py-16">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-10 text-center sm:mb-12">
-            <p className="mb-2 text-xs font-bold tracking-widest uppercase text-orange-400">
-              Camp Full?
-            </p>
-            <h2 className="text-3xl font-bold uppercase text-black sm:text-4xl">
-              Join the Waitlist
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-white/60 sm:text-base">
-              When a spot opens up we&apos;ll reach out to you first. Drop your
-              info below and we&apos;ll be in touch.
-            </p>
-          </div>
-          <WaitlistForm />
-        </div>
-      </section> */}
 
       <OurPartners />
       <LatestNews />
