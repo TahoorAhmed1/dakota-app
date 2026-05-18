@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "start": "next start  --port 80",
+    "start": "next start",
     "lint": "echo Linting is disabled for this project.",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
