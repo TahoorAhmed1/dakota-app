@@ -90,20 +90,14 @@ const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
 const formatWeekDateRange = (startDate: string | null, endDate: string | null) => {
   if (!startDate || !endDate) return "";
-
   const start = new Date(startDate);
   const end = new Date(endDate);
-
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-    return "";
-  }
-
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return "";
   const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
   const startMonth = monthFmt.format(start);
   const endMonth = monthFmt.format(end);
   const startDay = start.getDate();
   const endDay = end.getDate();
-
   return startMonth === endMonth
     ? `${startMonth} ${startDay}-${endDay}`
     : `${startMonth} ${startDay}-${endMonth} ${endDay}`;
@@ -369,8 +363,6 @@ export default function QuoteReservePage() {
 
       const subtotalForPct = baseRate + volumeDiscount + extraHunting + extraLodging;
 
-      // Youth: FREE hunt only (lodging charged full $100/night x nights)
-      // Junior: 50% off full package subtotal
       let juniorYouthDiscount = 0;
       if (rule.category === "JUNIOR") {
         juniorYouthDiscount = -subtotalForPct * 0.5;
@@ -380,7 +372,6 @@ export default function QuoteReservePage() {
         juniorYouthDiscount = -(baseHunt + extraHunt);
       }
 
-      // Adult / Coordinator discount
       let adultDiscount = 0;
       if (rule.category === "INDIVIDUAL" && rule.code !== "NONE") {
         adultDiscount = -subtotalForPct * (rule.value / 100);
@@ -510,7 +501,7 @@ export default function QuoteReservePage() {
       <section className="QuoteReserveImage relative flex min-h-85 items-center justify-center px-4 pb-20 pt-24 sm:min-h-105 sm:px-6 sm:pb-24 sm:pt-28 md:min-h-130 lg:min-h-155">
         <div className="absolute inset-0" />
         <div className="relative z-10 flex flex-col items-center text-center">
-          <h1 className="text-[38px] font-bold uppercase leading-none tracking-[-0.03em] text-[#281703] sm:text-[54px] md:text-[68px] lg:text-[76px]">
+          <h1 className="text-[32px] font-bold uppercase leading-none tracking-[-0.03em] text-[#281703] sm:text-[54px] md:text-[68px] lg:text-[76px]">
             Quote-Reserve
           </h1>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#281703] sm:mt-6 sm:gap-3 sm:text-[12px]">
@@ -551,7 +542,7 @@ export default function QuoteReservePage() {
       {/* Calculator */}
       <section className="bg-[#E7DCCF] px-4 pb-20 pt-14 sm:pt-16 md:px-6 md:pb-24 md:pt-20">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-center text-[24px] font-bold uppercase tracking-[0.04em] text-[#281703] underline decoration-[3px] underline-offset-[6px] sm:text-[30px] md:text-[54px]">
+          <h2 className="text-center text-[22px] font-bold uppercase tracking-[0.04em] text-[#281703] underline decoration-[3px] underline-offset-[6px] sm:text-[30px] md:text-[54px]">
             {step === 1 && labels?.stepHeadings.step1}
             {step === 2 && labels?.stepHeadings.step2}
             {step === 3 && labels?.stepHeadings.step3}
@@ -563,7 +554,7 @@ export default function QuoteReservePage() {
             {step === 1 && (
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
                 <div className="bg-[#4c2c11] px-4 py-5 text-center font-normal uppercase text-white md:py-6">
-                  <h1 className="text-[20px] tracking-tight sm:text-[26px] md:text-[34px]">
+                  <h1 className="text-[18px] tracking-tight sm:text-[26px] md:text-[34px]">
                     {labels?.step1.cardTitle ?? "Price Your Own Hunt in 3 Simple Steps"}
                   </h1>
                 </div>
@@ -574,13 +565,13 @@ export default function QuoteReservePage() {
                   <div className="divide-y divide-[#d9d9d9] border border-[#d9d9d9]">
 
                     {/* Season */}
-                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
-                      <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
+                    <div className="flex flex-col gap-2 p-3 sm:grid sm:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] sm:items-center sm:p-0">
+                      <label className="flex items-center px-0 py-0 text-[14px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4 sm:text-[15px]">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.seasonLabel ?? "What Season Is Your Group Hunting In?"}
-                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                        <InfoIcon className="ml-1 h-4 w-4 shrink-0 text-[#f26f2d]" />
                       </label>
-                      <div className="border-l border-[#d9d9d9] p-3 md:col-span-2">
+                      <div className="sm:border-l sm:border-[#d9d9d9] sm:p-3 sm:col-span-2">
                         <CustomSelect
                           value={groupData.seasonLabel}
                           onChange={(e) => {
@@ -596,16 +587,16 @@ export default function QuoteReservePage() {
                           options={seasonOptions.map((s) => ({ value: s, label: s }))}
                         />
                       </div>
-                    </div>{/* ← FIX: was missing, caused Camp/Week/Package/Count to nest inside Season */}
+                    </div>
 
                     {/* Camp */}
-                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
-                      <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
+                    <div className="flex flex-col gap-2 p-3 sm:grid sm:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] sm:items-center sm:p-0">
+                      <label className="flex items-center px-0 py-0 text-[14px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4 sm:text-[15px]">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.campLabel ?? "What Camp Is Your Group Going To?"}
-                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                        <InfoIcon className="ml-1 h-4 w-4 shrink-0 text-[#f26f2d]" />
                       </label>
-                      <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+                      <div className="flex items-center sm:border-l sm:border-[#d9d9d9] sm:p-3 sm:col-span-2">
                         <CustomSelect
                           value={groupData.campId}
                           onChange={(e) =>
@@ -625,13 +616,13 @@ export default function QuoteReservePage() {
                     </div>
 
                     {/* Week */}
-                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
-                      <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
+                    <div className="flex flex-col gap-2 p-3 sm:grid sm:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] sm:items-center sm:p-0">
+                      <label className="flex items-center px-0 py-0 text-[14px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4 sm:text-[15px]">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.weekLabel ?? "What Week Is Your Group Going?"}
-                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                        <InfoIcon className="ml-1 h-4 w-4 shrink-0 text-[#f26f2d]" />
                       </label>
-                      <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+                      <div className="flex items-center sm:border-l sm:border-[#d9d9d9] sm:p-3 sm:col-span-2">
                         <CustomSelect
                           value={groupData.weekId}
                           onChange={(e) =>
@@ -651,13 +642,13 @@ export default function QuoteReservePage() {
                     </div>
 
                     {/* Package */}
-                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
-                      <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
+                    <div className="flex flex-col gap-2 p-3 sm:grid sm:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] sm:items-center sm:p-0">
+                      <label className="flex items-center px-0 py-0 text-[14px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4 sm:text-[15px]">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.packageLabel ?? "What Package?"}
-                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                        <InfoIcon className="ml-1 h-4 w-4 shrink-0 text-[#f26f2d]" />
                       </label>
-                      <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+                      <div className="flex items-center sm:border-l sm:border-[#d9d9d9] sm:p-3 sm:col-span-2">
                         <CustomSelect
                           value={groupData.packageId}
                           onChange={(e) =>
@@ -673,13 +664,13 @@ export default function QuoteReservePage() {
                     </div>
 
                     {/* Hunter Count */}
-                    <div className="grid grid-cols-1 md:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] items-center">
-                      <label className="flex items-center px-4 py-3 text-[15px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4">
+                    <div className="flex flex-col gap-2 p-3 sm:grid sm:grid-cols-[minmax(220px,1.2fr)_1fr_0.8fr] sm:items-center sm:p-0">
+                      <label className="flex items-center px-0 py-0 text-[14px] font-bold text-[#2b1a0f] sm:px-6 sm:py-4 sm:text-[15px]">
                         <span className="mr-1 text-[#f26f2d]">*</span>
                         {labels?.step1.hunterCountLabel ?? "How Many Hunters In Your Group?"}
-                        <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                        <InfoIcon className="ml-1 h-4 w-4 shrink-0 text-[#f26f2d]" />
                       </label>
-                      <div className="flex items-center border-l border-[#d9d9d9] p-3 md:col-span-2">
+                      <div className="flex items-center sm:border-l sm:border-[#d9d9d9] sm:p-3 sm:col-span-2">
                         <CustomSelect
                           value={groupData.hunterCount}
                           onChange={(e) =>
@@ -697,17 +688,18 @@ export default function QuoteReservePage() {
                       </div>
                     </div>
 
-                  </div>{/* end divide-y container */}
+                  </div>
 
                   <div className="mt-10 mb-6">
                     <SectionDivider label={labels?.step1.optionalLabel ?? "Optional Fields"} />
                   </div>
-                  <div className="flex flex-col items-start gap-4 md:flex-row md:items-center">
-                    <label className="flex items-center text-[15px] font-bold text-[#2b1a0f]">
+                  {/* Early Bird — stacks cleanly on mobile */}
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                    <label className="flex items-center text-[14px] font-bold text-[#2b1a0f] sm:text-[15px]">
                       <span className="mr-1 text-[#f26f2d]">*</span>
                       {labels?.step1.earlyBirdLabel ??
                         "Does Your Group Qualify For 5% Early Bird Booking Discount?"}
-                      <InfoIcon className="ml-1 h-4 w-4 text-[#f26f2d]" />
+                      <InfoIcon className="ml-1 h-4 w-4 shrink-0 text-[#f26f2d]" />
                     </label>
                     <CustomSelect
                       value={groupData.earlyBird}
@@ -721,13 +713,13 @@ export default function QuoteReservePage() {
                         { value: "No", label: "No" },
                         { value: "Yes", label: "Yes (5% off)" },
                       ]}
-                      className="sm:w-64"
+                      className="w-full sm:w-64"
                     />
                   </div>
-                  <div className="mt-12 flex justify-center md:justify-end">
+                  <div className="mt-10 flex justify-center md:justify-end">
                     <button
                       onClick={goToStep2}
-                      className="w-full rounded-md bg-[#f26f2d] px-10 py-4 text-[18px] font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-[#e16528] md:w-auto"
+                      className="w-full rounded-md bg-[#f26f2d] px-10 py-4 text-[16px] font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-[#e16528] sm:text-[18px] md:w-auto"
                     >
                       {labels?.step1.nextButton ?? "To Step 2: Enter Hunters »"}
                     </button>
@@ -744,28 +736,145 @@ export default function QuoteReservePage() {
             {/* ── STEP 2 ─────────────────────────────────────────────────────── */}
             {step === 2 && (
               <div className="overflow-hidden rounded-b-[18px] border border-[#d9d9d9] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.13)]">
-                <div className="overflow-x-auto">
-                  <div className="min-w-220">
-                    <div className="grid grid-cols-[50px_50px_1.5fr_2fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-bold uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
-                      <div className="text-center text-[11px] leading-tight md:text-[13px]">Coordinator</div>
-                      <div className="text-center">#</div>
-                      <div>{labels?.step2.hunterNameHeader ?? "Hunter Name (Optional)"}</div>
-                      <div>{labels?.step2.individualDiscountHeader ?? "Individual Discount"}</div>
-                      <div>{labels?.step2.extraDaysHeader ?? "Extra Days Hunting"}</div>
-                      <div>{labels?.step2.extraNightsHeader ?? "Extra Nights Lodging"}</div>
-                    </div>
-                    <div className="bg-[#ffffff]">
-                      {hunters.map((hunter, index) => {
-                        const isCoordinator = hunter.id === groupCoordinatorId;
-                        const availableDiscounts = getDiscountOptionsForHunter(hunter.id);
-                        return (
-                          <div
-                            key={hunter.id}
-                            className={`grid grid-cols-[50px_50px_1.5fr_2fr_1.3fr_1.3fr] items-center gap-2 border-b border-[#d9d9d9] px-5 py-4 text-[14px] md:px-6 ${
-                              index % 2 === 0 ? "bg-[#fff7ee]" : "bg-white"
+
+                {/* Desktop table header — hidden on mobile */}
+                <div className="hidden md:grid md:grid-cols-[50px_50px_1.5fr_2fr_1.3fr_1.3fr] gap-2 bg-[#4c2c11] px-5 py-4 text-[13px] font-bold uppercase tracking-[0.06em] text-white md:px-6 md:text-[15px]">
+                  <div className="text-center text-[11px] leading-tight md:text-[13px]">Coordinator</div>
+                  <div className="text-center"></div>
+                  <div>{labels?.step2.hunterNameHeader ?? "Hunter Name (Optional)"}</div>
+                  <div>{labels?.step2.individualDiscountHeader ?? "Individual Discount"}</div>
+                  <div>{labels?.step2.extraDaysHeader ?? "Extra Days Hunting"}</div>
+                  <div>{labels?.step2.extraNightsHeader ?? "Extra Nights Lodging"}</div>
+                </div>
+
+                {/* Mobile header */}
+                <div className="bg-[#4c2c11] px-4 py-4 text-[15px] font-bold uppercase text-white md:hidden">
+                  {labels?.step2.hunterNameHeader ? "Hunter Details" : "Hunter Details"}
+                </div>
+
+                <div className="bg-[#ffffff]">
+                  {hunters.map((hunter, index) => {
+                    const isCoordinator = hunter.id === groupCoordinatorId;
+                    const availableDiscounts = getDiscountOptionsForHunter(hunter.id);
+
+                    return (
+                      <div key={hunter.id}>
+                        {/* ── Desktop row (md+) ── */}
+                        <div
+                          className={`hidden md:grid md:grid-cols-[50px_50px_1.5fr_2fr_1.3fr_1.3fr] items-center gap-2 border-b border-[#d9d9d9] px-5 py-4 text-[14px] md:px-6 ${
+                            index % 2 === 0 ? "bg-[#fff7ee]" : "bg-white"
+                          }`}
+                        >
+                          <div className="flex justify-center">
+                            <input
+                              type="radio"
+                              name="groupCoordinator"
+                              checked={isCoordinator}
+                              onChange={() => {
+                                setGroupCoordinatorId(hunter.id);
+                                setHunters((prev) =>
+                                  prev.map((h) => {
+                                    if (h.id === hunter.id)
+                                      return { ...h, discountCode: "ADULT_COORDINATOR" };
+                                    if (
+                                      h.id === groupCoordinatorId &&
+                                      h.discountCode === "ADULT_COORDINATOR"
+                                    )
+                                      return { ...h, discountCode: "NONE" };
+                                    return h;
+                                  })
+                                );
+                              }}
+                              className="h-4 w-4 accent-[#f26f2d] cursor-pointer"
+                            />
+                          </div>
+                          <div className="text-center text-[14px] font-bold text-[#4c2c11]">
+                            {`${index + 1})`}
+                          </div>
+                          <input
+                            value={hunter.name}
+                            onChange={(e) =>
+                              setHunters((prev) =>
+                                prev.map((item, i) =>
+                                  i === index ? { ...item, name: e.target.value } : item
+                                )
+                              )
+                            }
+                            placeholder={
+                              isCoordinator
+                                ? "Group Coordinator (Optional)"
+                                : `Hunter ${index + 1} (Optional)`
+                            }
+                            maxLength={120}
+                            className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                          />
+                          <select
+                            value={hunter.discountCode}
+                            onChange={(e) =>
+                              setHunters((prev) =>
+                                prev.map((item, i) =>
+                                  i === index ? { ...item, discountCode: e.target.value } : item
+                                )
+                              )
+                            }
+                            disabled={isCoordinator}
+                            className={`h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40 ${
+                              isCoordinator ? "bg-gray-100 cursor-not-allowed" : ""
                             }`}
                           >
-                            <div className="flex justify-center">
+                            {availableDiscounts.map((opt) => (
+                              <option key={opt.code} value={opt.code}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                          <select
+                            value={hunter.extraDays}
+                            onChange={(e) =>
+                              setHunters((prev) =>
+                                prev.map((item, i) =>
+                                  i === index
+                                    ? { ...item, extraDays: Number(e.target.value) }
+                                    : item
+                                )
+                              )
+                            }
+                            className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                          >
+                            <option value={0}>None</option>
+                            <option value={1}>1 Extra Day</option>
+                            <option value={2}>2 Extra Days</option>
+                            <option value={3}>3 Extra Days</option>
+                          </select>
+                          <select
+                            value={hunter.extraNights}
+                            onChange={(e) =>
+                              setHunters((prev) =>
+                                prev.map((item, i) =>
+                                  i === index
+                                    ? { ...item, extraNights: Number(e.target.value) }
+                                    : item
+                                )
+                              )
+                            }
+                            className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                          >
+                            <option value={0}>None</option>
+                            <option value={1}>1 Extra Night</option>
+                            <option value={2}>2 Extra Nights</option>
+                            <option value={3}>3 Extra Nights</option>
+                          </select>
+                        </div>
+
+                        {/* ── Mobile card ── */}
+                        <div
+                          className={`block border-b border-[#d9d9d9] p-4 md:hidden ${
+                            index % 2 === 0 ? "bg-[#fff7ee]" : "bg-white"
+                          }`}
+                        >
+                          {/* Card header: coordinator radio + hunter number */}
+                          <div className="mb-3 flex items-center gap-3">
+                            <label className="flex cursor-pointer items-center gap-2 text-[13px] font-semibold text-[#4c2c11]">
                               <input
                                 type="radio"
                                 name="groupCoordinator"
@@ -785,12 +894,25 @@ export default function QuoteReservePage() {
                                     })
                                   );
                                 }}
-                                className="h-4 w-4 accent-[#f26f2d] cursor-pointer"
+                                className="h-4 w-4 accent-[#f26f2d]"
                               />
-                            </div>
-                            <div className="text-center text-[14px] font-bold text-[#4c2c11]">
-                              {`${index + 1})`}
-                            </div>
+                              Coordinator
+                            </label>
+                            <span className="ml-auto text-[15px] font-bold text-[#4c2c11]">
+                              Hunter {index + 1}
+                              {isCoordinator && (
+                                <span className="ml-2 rounded bg-[#f26f2d] px-2 py-0.5 text-[11px] font-bold uppercase text-white">
+                                  Lead
+                                </span>
+                              )}
+                            </span>
+                          </div>
+
+                          {/* Name */}
+                          <div className="mb-3">
+                            <label className="mb-1 block text-[12px] font-semibold uppercase tracking-wide text-[#7a5a3a]">
+                              {labels?.step2.hunterNameHeader ?? "Hunter Name (Optional)"}
+                            </label>
                             <input
                               value={hunter.name}
                               onChange={(e) =>
@@ -808,6 +930,13 @@ export default function QuoteReservePage() {
                               maxLength={120}
                               className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
                             />
+                          </div>
+
+                          {/* Discount */}
+                          <div className="mb-3">
+                            <label className="mb-1 block text-[12px] font-semibold uppercase tracking-wide text-[#7a5a3a]">
+                              {labels?.step2.individualDiscountHeader ?? "Individual Discount"}
+                            </label>
                             <select
                               value={hunter.discountCode}
                               onChange={(e) =>
@@ -819,7 +948,7 @@ export default function QuoteReservePage() {
                               }
                               disabled={isCoordinator}
                               className={`h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40 ${
-                                isCoordinator ? "bg-gray-100 cursor-not-allowed" : ""
+                                isCoordinator ? "bg-gray-100 cursor-not-allowed opacity-70" : ""
                               }`}
                             >
                               {availableDiscounts.map((opt) => (
@@ -828,55 +957,70 @@ export default function QuoteReservePage() {
                                 </option>
                               ))}
                             </select>
-                            <select
-                              value={hunter.extraDays}
-                              onChange={(e) =>
-                                setHunters((prev) =>
-                                  prev.map((item, i) =>
-                                    i === index
-                                      ? { ...item, extraDays: Number(e.target.value) }
-                                      : item
-                                  )
-                                )
-                              }
-                              className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
-                            >
-                              <option value={0}>None</option>
-                              <option value={1}>1 Extra Day</option>
-                              <option value={2}>2 Extra Days</option>
-                              <option value={3}>3 Extra Days</option>
-                            </select>
-                            <select
-                              value={hunter.extraNights}
-                              onChange={(e) =>
-                                setHunters((prev) =>
-                                  prev.map((item, i) =>
-                                    i === index
-                                      ? { ...item, extraNights: Number(e.target.value) }
-                                      : item
-                                  )
-                                )
-                              }
-                              className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
-                            >
-                              <option value={0}>None</option>
-                              <option value={1}>1 Extra Night</option>
-                              <option value={2}>2 Extra Nights</option>
-                              <option value={3}>3 Extra Nights</option>
-                            </select>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+
+                          {/* Extra days + nights side by side */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="mb-1 block text-[12px] font-semibold uppercase tracking-wide text-[#7a5a3a]">
+                                {labels?.step2.extraDaysHeader ?? "Extra Days"}
+                              </label>
+                              <select
+                                value={hunter.extraDays}
+                                onChange={(e) =>
+                                  setHunters((prev) =>
+                                    prev.map((item, i) =>
+                                      i === index
+                                        ? { ...item, extraDays: Number(e.target.value) }
+                                        : item
+                                    )
+                                  )
+                                }
+                                className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                              >
+                                <option value={0}>None</option>
+                                <option value={1}>1 Extra Day</option>
+                                <option value={2}>2 Extra Days</option>
+                                <option value={3}>3 Extra Days</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="mb-1 block text-[12px] font-semibold uppercase tracking-wide text-[#7a5a3a]">
+                                {labels?.step2.extraNightsHeader ?? "Extra Nights"}
+                              </label>
+                              <select
+                                value={hunter.extraNights}
+                                onChange={(e) =>
+                                  setHunters((prev) =>
+                                    prev.map((item, i) =>
+                                      i === index
+                                        ? { ...item, extraNights: Number(e.target.value) }
+                                        : item
+                                    )
+                                  )
+                                }
+                                className="h-10 w-full rounded-sm border border-[#b5a090] bg-white px-3 text-[14px] text-[#4c2c11] outline-none focus:border-[#f26f2d] focus:ring-2 focus:ring-[#f26f2d]/40"
+                              >
+                                <option value={0}>None</option>
+                                <option value={1}>1 Extra Night</option>
+                                <option value={2}>2 Extra Nights</option>
+                                <option value={3}>3 Extra Nights</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
+
                 <div className="mt-4 px-4 text-[13px] text-[#6b6b6b] sm:px-6 md:px-8">
                   <span className="font-semibold">Note:</span> Group Coordinator receives 10%
                   discount and cannot select another individual discount. Junior (50% off) and Youth
                   (free) discounts apply to the full package subtotal.
                 </div>
-                <div className="grid grid-cols-1 items-center gap-4 px-4 py-6 sm:px-6 md:grid-cols-[auto_340px] md:px-8 md:py-7">
-                  <label className="text-[15px] font-semibold text-[#2b1a0f]">
+                <div className="grid grid-cols-1 items-center gap-3 px-4 py-5 sm:px-6 md:grid-cols-[auto_340px] md:px-8 md:py-7">
+                  <label className="text-[14px] font-semibold text-[#2b1a0f] sm:text-[15px]">
                     {labels?.step2.emailLabel ??
                       "Enter your email to receive a copy of the quote (optional):"}
                   </label>
@@ -917,20 +1061,20 @@ export default function QuoteReservePage() {
             {step === 3 && (
               <div className="bg-[#f5f5f5]">
                 <div className="overflow-hidden">
-                  <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
+                  <div className="bg-[#4c2c11] px-4 py-5 text-[16px] font-bold uppercase text-white sm:px-8 sm:text-[18px]">
                     {labels?.step3?.overviewTitle}
                   </div>
 
                   <div className="border-b border-[#d9d9d9] px-4 py-6 text-center text-[14px] leading-7 text-[#2b1a0f] sm:px-8 sm:py-8">
                     <p className="font-semibold">{labels?.step3?.overviewIntro}</p>
                     <p className="mt-6 font-semibold">{labels?.step3?.optionsLabel}</p>
-                    <p className="mt-4 text-[18px] font-black">{labels?.step3?.optionOneTitle}</p>
+                    <p className="mt-4 text-[16px] font-black sm:text-[18px]">{labels?.step3?.optionOneTitle}</p>
                     <div className="mt-3 space-y-2">
                       {(labels?.step3?.optionOneBullets || []).map((bullet) => (
                         <p key={bullet}>✓ {bullet}</p>
                       ))}
                     </div>
-                    <p className="mt-6 text-[18px] font-black">{labels?.step3?.optionTwoTitle}</p>
+                    <p className="mt-6 text-[16px] font-black sm:text-[18px]">{labels?.step3?.optionTwoTitle}</p>
                     <div className="mt-3 space-y-2">
                       {(labels?.step3?.optionTwoBullets || []).map((bullet) => (
                         <p key={bullet}>✓ {bullet}</p>
@@ -938,7 +1082,7 @@ export default function QuoteReservePage() {
                     </div>
                   </div>
 
-                  <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
+                  <div className="bg-[#4c2c11] px-4 py-5 text-[16px] font-bold uppercase text-white sm:px-8 sm:text-[18px]">
                     {labels?.step3?.groupSelectionsTitle ?? "Group Selections"}
                   </div>
 
@@ -978,12 +1122,13 @@ export default function QuoteReservePage() {
                     {selectedWeek?.label || "-"}
                   </div>
 
-                  <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
+                  <div className="bg-[#4c2c11] px-4 py-5 text-[16px] font-bold uppercase text-white sm:px-8 sm:text-[18px]">
                     {labels?.step3?.hunterSelectionsTitle ?? "Hunter Selections"}
                   </div>
 
-                  <div className="overflow-x-auto px-2 py-4 sm:px-4">
-                    <table className="min-w-275 w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
+                  {/* ── Desktop pricing table (md+) ── */}
+                  <div className="hidden md:block overflow-x-auto px-2 py-4 sm:px-4">
+                    <table className="min-w-[900px] w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
                       <thead>
                         <tr className="bg-[#f26f2d] text-left text-white">
                           <th className="border border-[#d9d9d9] px-2 py-2">#</th>
@@ -1007,23 +1152,15 @@ export default function QuoteReservePage() {
                             <td className="border border-[#d9d9d9] px-2 py-2">
                               {row.name?.trim() || `Hunter ${index + 1}`}
                             </td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">
-                              {row.discountLabel}
-                            </td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">
-                              ${row.baseRate.toFixed(2)}
-                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">{row.discountLabel}</td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">${row.baseRate.toFixed(2)}</td>
                             <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
                               {row.volumeDiscount < 0
                                 ? `-$${Math.abs(row.volumeDiscount).toFixed(2)}`
                                 : `$${row.volumeDiscount.toFixed(2)}`}
                             </td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">
-                              ${row.extraHunting.toFixed(2)}
-                            </td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">
-                              ${row.extraLodging.toFixed(2)}
-                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">${row.extraHunting.toFixed(2)}</td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">${row.extraLodging.toFixed(2)}</td>
                             <td className="border border-[#d9d9d9] px-2 py-2 text-red-600">
                               {row.juniorDiscount < 0
                                 ? `-$${Math.abs(row.juniorDiscount).toFixed(2)}`
@@ -1039,31 +1176,96 @@ export default function QuoteReservePage() {
                                 ? `-$${Math.abs(row.earlyBirdDiscount).toFixed(2)}`
                                 : `$${row.earlyBirdDiscount.toFixed(2)}`}
                             </td>
-                            <td className="border border-[#d9d9d9] px-2 py-2">
-                              ${row.tax.toFixed(2)}
-                            </td>
-                            <td className="border border-[#d9d9d9] px-2 py-2 font-bold">
-                              ${row.total.toFixed(2)}
-                            </td>
+                            <td className="border border-[#d9d9d9] px-2 py-2">${row.tax.toFixed(2)}</td>
+                            <td className="border border-[#d9d9d9] px-2 py-2 font-bold">${row.total.toFixed(2)}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
-
-                    <div className="mt-4 flex justify-center md:justify-end">
-                      <button className="rounded-md bg-[#f26f2d] px-8 py-3 text-[15px] font-bold uppercase text-white">
-                        {labels?.step3?.totalsBadgeLabel ?? "Totals"}
-                      </button>
-                    </div>
-
-                    <div className="mt-5 text-center text-[16px] font-semibold text-[#2b1a0f] md:text-right md:text-[18px]">
-                      {labels?.step3?.totalPriceLabel ??
-                        "Total price after applicable discounts and state sales tax:"}{" "}
-                      <span className="text-[24px] font-semibold">${grandTotal.toFixed(2)}</span>
-                    </div>
                   </div>
 
-                  <div className="bg-[#4c2c11] px-4 py-5 text-[18px] font-bold uppercase text-white sm:px-8">
+                  {/* ── Mobile pricing cards ── */}
+                  <div className="block md:hidden space-y-3 px-3 py-4">
+                    {pricingRows.map((row, index) => (
+                      <div
+                        key={row.id}
+                        className="rounded-lg border border-[#d9d9d9] bg-white overflow-hidden"
+                      >
+                        {/* Card header */}
+                        <div className="flex items-center justify-between bg-[#f26f2d] px-4 py-2.5">
+                          <span className="text-[13px] font-bold text-white">
+                            Hunter {index + 1}{row.name?.trim() ? ` — ${row.name.trim()}` : ""}
+                          </span>
+                          <span className="text-[15px] font-black text-white">
+                            ${row.total.toFixed(2)}
+                          </span>
+                        </div>
+                        {/* Card body: 2-col label/value grid */}
+                        <div className="divide-y divide-[#f0ebe5]">
+                          {[
+                            { label: "Discount", value: row.discountLabel, red: false },
+                            { label: "Base Rate", value: `$${row.baseRate.toFixed(2)}`, red: false },
+                            {
+                              label: "Volume Discount",
+                              value: row.volumeDiscount < 0
+                                ? `-$${Math.abs(row.volumeDiscount).toFixed(2)}`
+                                : `$${row.volumeDiscount.toFixed(2)}`,
+                              red: row.volumeDiscount < 0,
+                            },
+                            { label: "Extra Hunting", value: `$${row.extraHunting.toFixed(2)}`, red: false },
+                            { label: "Extra Lodging", value: `$${row.extraLodging.toFixed(2)}`, red: false },
+                            {
+                              label: "Jr/Youth Disc",
+                              value: row.juniorDiscount < 0
+                                ? `-$${Math.abs(row.juniorDiscount).toFixed(2)}`
+                                : `$${row.juniorDiscount.toFixed(2)}`,
+                              red: row.juniorDiscount < 0,
+                            },
+                            {
+                              label: "Adult Disc",
+                              value: row.individualDiscount < 0
+                                ? `-$${Math.abs(row.individualDiscount).toFixed(2)}`
+                                : `$${row.individualDiscount.toFixed(2)}`,
+                              red: row.individualDiscount < 0,
+                            },
+                            {
+                              label: "Early Bird",
+                              value: row.earlyBirdDiscount < 0
+                                ? `-$${Math.abs(row.earlyBirdDiscount).toFixed(2)}`
+                                : `$${row.earlyBirdDiscount.toFixed(2)}`,
+                              red: row.earlyBirdDiscount < 0,
+                            },
+                            { label: taxLabel, value: `$${row.tax.toFixed(2)}`, red: false },
+                          ].map(({ label, value, red }) => (
+                            <div key={label} className="flex items-center justify-between px-4 py-2 text-[13px]">
+                              <span className="text-[#7a5a3a] font-medium">{label}</span>
+                              <span className={`font-semibold ${red ? "text-red-600" : "text-[#2b1a0f]"}`}>
+                                {value}
+                              </span>
+                            </div>
+                          ))}
+                          <div className="flex items-center justify-between bg-[#fff7ee] px-4 py-2.5 text-[14px]">
+                            <span className="font-bold text-[#2b1a0f]">Total</span>
+                            <span className="font-black text-[#2b1a0f]">${row.total.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Grand total */}
+                  <div className="flex flex-col items-center gap-3 px-4 py-4 md:flex-row md:justify-end md:px-4">
+                    <button className="rounded-md bg-[#f26f2d] px-8 py-3 text-[15px] font-bold uppercase text-white">
+                      {labels?.step3?.totalsBadgeLabel ?? "Totals"}
+                    </button>
+                    <p className="text-center text-[15px] font-semibold text-[#2b1a0f] md:text-right md:text-[18px]">
+                      {labels?.step3?.totalPriceLabel ??
+                        "Total price after applicable discounts and state sales tax:"}{" "}
+                      <span className="text-[22px] font-semibold sm:text-[24px]">${grandTotal.toFixed(2)}</span>
+                    </p>
+                  </div>
+
+                  <div className="bg-[#4c2c11] px-4 py-5 text-[16px] font-bold uppercase text-white sm:px-8 sm:text-[18px]">
                     {labels?.step3?.depositTitle ?? "Deposit/Booking Information"}
                   </div>
 
