@@ -287,24 +287,7 @@ function PropertyMap({ selectedId, onSelectCamp }: MapProps) {
                       </p>
                     </div>
                     <p className="text-xs leading-relaxed">{camp.description}</p>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <a
-                        href={camp.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded bg-[#281703] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#3a2510]"
-                      >
-                        View Details
-                      </a>
-                      <a
-                        href={camp.directionsUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded border border-[#d9c8b5] px-3 py-1.5 text-xs font-semibold text-[#281703] transition hover:bg-[#f7efe6]"
-                      >
-                        Directions
-                      </a>
-                    </div>
+                    
                   </div>
                 </Popup>
               </Marker>
