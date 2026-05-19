@@ -152,6 +152,10 @@ model Quote {
   depositRate   Decimal @db.Decimal(5, 4)
   depositAmount Decimal @db.Decimal(12, 2) // Final deposit after any minimum adjustment
 
+  paymentStatus String?
+  paypalOrderId String?
+  depositPaidAt DateTime?
+
   minimumAdjustment Decimal @default(0) @db.Decimal(12, 2) // For "Have it all to myself"
 
   youthCount  Int @default(0)

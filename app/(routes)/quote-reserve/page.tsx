@@ -458,7 +458,7 @@ export default function QuoteReservePage() {
     setSubmitMessage("");
 
     try {
-      const response = await fetch("/api/quote", {
+      const response = await fetch("/api/quote/paypal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -468,7 +468,6 @@ export default function QuoteReservePage() {
           packageId: groupData.packageId,
           hunterCount: groupData.hunterCount,
           earlyBird: groupData.earlyBird === "Yes",
-          groupCoordinatorId,
           hunters: hunters.map((h) => ({
             name: h.name,
             discountCode: h.discountCode,
@@ -482,12 +481,12 @@ export default function QuoteReservePage() {
       });
 
       const data = await response.json();
-      if (response.ok) {
-        setSubmitMessage(`Quote submitted successfully! Quote #: ${data.quoteNumber}`);
-        if (data.pdfUrl) setQuotePdfUrl(data.pdfUrl);
-      } else {
-        setSubmitMessage(data.error || "Something went wrong.");
+      if (response.ok && data.approvalUrl) {
+        window.location.href = data.approvalUrl;
+        return;
       }
+
+      setSubmitMessage(data.error || "Unable to start PayPal checkout.");
     } catch (error) {
       setSubmitMessage("Network error. Please try again.");
     } finally {
@@ -1340,8 +1339,8 @@ export default function QuoteReservePage() {
                         className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-wider text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
                       >
                         {isSubmitting
-                          ? "Submitting..."
-                          : labels?.step3?.submitButton ?? "Submit Quote Request »"}
+                          ? "Redirecting..."
+                          : labels?.step3?.submitButton ?? "Pay Deposit with PayPal »"}
                       </button>
                     </div>
 
