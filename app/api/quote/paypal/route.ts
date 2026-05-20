@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const baseUrl = new URL(req.url).origin;
+    const baseUrl = 'https://dakota.craftiqstudio.com';
     const { approvalUrl, orderId } = await createPayPalOrder(
       calculation.totals.depositTotal,
       `${baseUrl}/api/quote/paypal/capture?quoteId=${quote.id}`,

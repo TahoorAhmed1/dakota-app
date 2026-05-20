@@ -95,7 +95,7 @@ export type CalculatorLabels = {
 export type CalculatorSettings = {
   salesTaxRate: number;
   earlyBirdRate: number;
-  extraDayRate: number;
+  extraDayRate: number;       // NOTE: not used by current calculator, kept for API compatibility
   extraNightRate: number;
   processingFeeRate: number;
   hunterCountOptions: number[];
@@ -106,16 +106,16 @@ export type CalculatorSettings = {
   labels: CalculatorLabels;
 };
 
-// Default settings - Strictly from your documents
+// Default settings – corrected to match client Excel spec
 export const defaultCalculatorSettings: CalculatorSettings = {
-  salesTaxRate: 0.057,           // 5.7% SD sales tax
-  earlyBirdRate: 0.05,           // 5% early bird
-  extraDayRate: 150,             // Extra day rate per day
-  extraNightRate: 105,           // From Packages & Pricing.docx
-  processingFeeRate: 0.0,        // No processing fee by default
-  hunterCountOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15],
-  extraDayOptions: [0, 1, 2, 3, 4, 5],
-  extraNightOptions: [0, 1, 2, 3, 4, 5],
+  salesTaxRate: 0.057,           // 5.7% SD sales tax ✅
+  earlyBirdRate: 0.05,           // 5% early bird ✅
+  extraDayRate: 150,             // dead code – daily hunt rate computed dynamically ✅
+  extraNightRate: 100,           // ✅ FIXED: client spec says $100/night, not $105
+  processingFeeRate: 0.0,        // No processing fee by default ✅
+  hunterCountOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15], // kept for fallback, UI uses dynamic range
+  extraDayOptions: [0, 1, 2, 3],   // ✅ matched to UI dropdown (0–3)
+  extraNightOptions: [0, 1, 2, 3], // ✅ matched to UI dropdown (0–3)
   earlyBirdOptions: [
     { label: "Yes", value: "Yes" },
     { label: "No", value: "No" },
