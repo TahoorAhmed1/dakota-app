@@ -147,7 +147,7 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />      
       </main>
       {/* <Footer /> */}

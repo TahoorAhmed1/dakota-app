@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -92,6 +93,7 @@ function SlotCell({
 }) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [edit, setEdit] = useState<CellEdit>({
     tag: slot.availabilityTag,
     minGroupSize: String(slot.minGroupSize),
@@ -110,14 +112,27 @@ function SlotCell({
   }, [slot]);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
-    function handle(e: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
   const isDirty =
@@ -152,95 +167,121 @@ function SlotCell({
   const meta = TAG_META[slot.availabilityTag];
 
   return (
-    <div className="relative" ref={panelRef}>
+    <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
         className={`flex w-full items-center gap-1.5 rounded-lg border px-2 py-1.5 text-left text-[11px] font-semibold transition-colors hover:opacity-80 ${meta.bg} ${meta.text} border-current/20`}
       >
         <span className={`h-2 w-2 shrink-0 rounded-full ${meta.dot}`} />
-        <span className="truncate">{slot.packageCode}</span>
-        <span className="ml-auto shrink-0 opacity-60">✎</span>
+        <span className="truncate">{slot.packageLabel || slot.packageCode}</span>
+        <span className="ml-auto shrink-0 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-semibold text-black/60">
+          {slot.packageCode}
+        </span>
+        <span className="ml-2 shrink-0 opacity-70">✎</span>
       </button>
 
-      {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-72 rounded-2xl border border-black/10 bg-white p-4 shadow-2xl">
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-black/40">
-            {slot.campName} · {slot.weekLabel} · {slot.packageLabel}
-          </p>
-
-          <div className="mb-3">
-            <label className="mb-1 block text-xs font-medium text-black/60">Status</label>
-            <div className="grid grid-cols-2 gap-1.5">
-              {ALL_TAGS.map((t) => {
-                const m = TAG_META[t];
-                return (
-                  <button
-                    key={t}
-                    onClick={() => setEdit((d) => ({ ...d, tag: t }))}
-                    className={`flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs font-semibold transition-all ${
-                      edit.tag === t
-                        ? `${m.bg} ${m.text} border-current ring-2 ring-offset-1 ring-orange-400`
-                        : "border-black/10 bg-gray-50 text-black/50 hover:bg-gray-100"
-                    }`}
-                  >
-                    <span className={`h-2 w-2 rounded-full ${m.dot}`} />
-                    {m.label}
-                  </button>
-                );
-              })}
+      {open && isMounted && createPortal(
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            ref={panelRef}
+            className="w-full max-w-2xl overflow-hidden rounded-4xl border border-black/10 bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-black/40">Edit slot</p>
+                <h3 className="text-lg font-bold text-black">{slot.packageLabel || slot.packageCode}</h3>
+                <p className="text-sm text-black/60">{slot.campName} · {slot.weekLabel}</p>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-2xl font-medium leading-none text-black/40 transition hover:text-black"
+                aria-label="Close modal"
+              >
+                ×
+              </button>
             </div>
-          </div>
 
-          <div className="mb-3 grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-1 block text-xs font-medium text-black/60">Min. Group</label>
-              <input
-                type="number"
-                min={1}
-                value={edit.minGroupSize}
-                onChange={(e) => setEdit((d) => ({ ...d, minGroupSize: e.target.value }))}
-                className="w-full rounded-xl border border-black/20 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+            <div className="mb-3">
+              <label className="mb-1 block text-xs font-medium text-black/60">Status</label>
+              <div className="grid grid-cols-2 gap-1.5">
+                {ALL_TAGS.map((t) => {
+                  const m = TAG_META[t];
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => setEdit((d) => ({ ...d, tag: t }))}
+                      className={`flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs font-semibold transition-all ${
+                        edit.tag === t
+                          ? `${m.bg} ${m.text} border-current ring-2 ring-offset-1 ring-orange-400`
+                          : "border-black/10 bg-gray-50 text-black/50 hover:bg-gray-100"
+                      }`}
+                    >
+                      <span className={`h-2 w-2 rounded-full ${m.dot}`} />
+                      {m.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mb-3 grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-black/60">Min. Group</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={edit.minGroupSize}
+                  onChange={(e) => setEdit((d) => ({ ...d, minGroupSize: e.target.value }))}
+                  className="w-full rounded-xl border border-black/20 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-black/60">Lodging Cap.</label>
+                <input
+                  type="number"
+                  min={0}
+                  value={edit.lodgingCapacity}
+                  onChange={(e) => setEdit((d) => ({ ...d, lodgingCapacity: e.target.value }))}
+                  className="w-full rounded-xl border border-black/20 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="mb-1 block text-xs font-medium text-black/60">Hover Tooltip Text</label>
+              <textarea
+                rows={3}
+                placeholder="e.g. 4 spots available · 3-day package · min 4 hunters"
+                value={edit.hoverText}
+                onChange={(e) => setEdit((d) => ({ ...d, hoverText: e.target.value }))}
+                className="w-full resize-none rounded-xl border border-black/20 px-2 py-1.5 text-sm placeholder:text-black/30 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-black/60">Lodging Cap.</label>
-              <input
-                type="number"
-                min={0}
-                value={edit.lodgingCapacity}
-                onChange={(e) => setEdit((d) => ({ ...d, lodgingCapacity: e.target.value }))}
-                className="w-full rounded-xl border border-black/20 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
-              />
+
+            <div className="flex gap-2">
+              <button
+                onClick={handleSave}
+                disabled={saving || !isDirty}
+                className="flex-1 rounded-xl bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-40"
+              >
+                {saving ? "Saving…" : "Save"}
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                className="rounded-xl border border-black/20 px-3 py-1.5 text-sm font-medium text-black/60 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
             </div>
           </div>
-
-          <div className="mb-4">
-            <label className="mb-1 block text-xs font-medium text-black/60">Hover Tooltip Text</label>
-            <textarea
-              rows={3}
-              placeholder="e.g. 4 spots available · 3-day package · min 4 hunters"
-              value={edit.hoverText}
-              onChange={(e) => setEdit((d) => ({ ...d, hoverText: e.target.value }))}
-              className="w-full resize-none rounded-xl border border-black/20 px-2 py-1.5 text-sm placeholder:text-black/30 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={handleSave}
-              disabled={saving || !isDirty}
-              className="flex-1 rounded-xl bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-40"
-            >
-              {saving ? "Saving…" : "Save"}
-            </button>
-            <button
-              onClick={() => setOpen(false)}
-              className="rounded-xl border border-black/20 px-3 py-1.5 text-sm font-medium text-black/60 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -421,7 +462,7 @@ export default function AvailabilityPage() {
               </tr>
             )}
             {visibleCamps.map(([campId, campName], campIdx) => (
-              <tr key={campId} className={campIdx % 2 === 0 ? "bg-white" : "bg-orange-50/40"}>
+              <tr key={campId} className={campIdx % 2 === 0 ? "bg-white" : "bg-orange-50"}>
                 <td className="sticky left-0 z-10 border-r border-black/10 bg-inherit px-4 py-3 font-semibold text-black whitespace-nowrap">
                   {campName}
                 </td>

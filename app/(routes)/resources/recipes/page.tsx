@@ -168,7 +168,7 @@ export default function RecipesPage() {
           </div>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       <Footer />
     </>

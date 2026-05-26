@@ -123,7 +123,7 @@ export default function VideosPage() {
         </section>
       </main>
       
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
     </>
   );

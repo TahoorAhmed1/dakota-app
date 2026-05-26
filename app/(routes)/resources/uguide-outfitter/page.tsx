@@ -73,7 +73,7 @@ export default function UguideOutfitterPage() {
         </section>
       </main>
 
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
     </>
   );

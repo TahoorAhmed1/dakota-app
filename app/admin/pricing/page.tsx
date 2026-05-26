@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import AdminLoadingState from "@/components/admin/admin-loading-state";
 import { getAdminKeyFromStorage, clearAdminKey } from "@/lib/admin-client";
+import { ArrowRightLeft } from "lucide-react";
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -13,7 +14,13 @@ function delay(ms: number) {
 
 type Camp = { id: string; name: string };
 type HuntWeek = { id: string; label: string };
-type Package = { id: string; code: string; label: string; nights: number; days: number };
+type Package = {
+  id: string;
+  code: string;
+  label: string;
+  nights: number;
+  days: number;
+};
 type PricingRow = {
   id: string;
   campId: string;
@@ -89,7 +96,10 @@ async function fetchPricingRows(adminKey?: string) {
   throw new Error("Failed to fetch pricing rows.");
 }
 
-async function createPricingRow(data: Omit<PricingRow, 'id' | 'camp' | 'week' | 'package'>, adminKey?: string) {
+async function createPricingRow(
+  data: Omit<PricingRow, "id" | "camp" | "week" | "package">,
+  adminKey?: string,
+) {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -108,7 +118,9 @@ async function createPricingRow(data: Omit<PricingRow, 'id' | 'camp' | 'week' | 
   if (!response.ok) {
     const message =
       (typeof payload?.error === "string" && payload.error) ||
-      (typeof payload?.details === "object" && payload.details ? JSON.stringify(payload.details) : null) ||
+      (typeof payload?.details === "object" && payload.details
+        ? JSON.stringify(payload.details)
+        : null) ||
       `Failed to create pricing row: ${response.statusText}`;
     throw new Error(message);
   }
@@ -116,7 +128,16 @@ async function createPricingRow(data: Omit<PricingRow, 'id' | 'camp' | 'week' | 
   return payload;
 }
 
-async function updatePricingRow(id: string, data: Partial<Omit<PricingRow, 'id' | 'campId' | 'weekId' | 'packageId' | 'camp' | 'week' | 'package'>>, adminKey?: string) {
+async function updatePricingRow(
+  id: string,
+  data: Partial<
+    Omit<
+      PricingRow,
+      "id" | "campId" | "weekId" | "packageId" | "camp" | "week" | "package"
+    >
+  >,
+  adminKey?: string,
+) {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -196,7 +217,10 @@ async function fetchVolumeRules(adminKey?: string) {
   throw new Error("Failed to fetch volume rules.");
 }
 
-async function createVolumeRule(data: Omit<VolumeRule, 'id'>, adminKey?: string) {
+async function createVolumeRule(
+  data: Omit<VolumeRule, "id">,
+  adminKey?: string,
+) {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -222,7 +246,11 @@ async function createVolumeRule(data: Omit<VolumeRule, 'id'>, adminKey?: string)
   return payload;
 }
 
-async function updateVolumeRule(id: string, data: Partial<Omit<VolumeRule, 'id'>>, adminKey?: string) {
+async function updateVolumeRule(
+  id: string,
+  data: Partial<Omit<VolumeRule, "id">>,
+  adminKey?: string,
+) {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -286,6 +314,7 @@ export default function PricingPage() {
     packageId: "",
     baseRate: 0,
     minGroupSize: 1,
+    lodgingCapacity: 1,
     isAvailable: true,
     availabilityTag: null,
   });
@@ -296,6 +325,15 @@ export default function PricingPage() {
     displayOrder: 0,
     isActive: true,
   });
+  const [openCamps, setOpenCamps] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    // If nothing explicitly opened yet, open the first camp by default
+    if (Object.keys(openCamps).length === 0 && pricingRows.length > 0) {
+      const firstCamp = pricingRows[0].camp?.name || "Unknown Camp";
+      setOpenCamps({ [firstCamp]: true });
+    }
+  }, [pricingRows, openCamps]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -324,8 +362,6 @@ export default function PricingPage() {
     loadData();
   }, [router]);
 
-
-
   const handleAddPricingRule = async () => {
     if (
       !newPricing.campId ||
@@ -341,7 +377,12 @@ export default function PricingPage() {
 
     try {
       const adminKey = getAdminKeyFromStorage();
-      const { camp, week, package: pkg, ...rest } = await createPricingRow(newPricing, adminKey || undefined);
+      const {
+        camp,
+        week,
+        package: pkg,
+        ...rest
+      } = await createPricingRow(newPricing, adminKey || undefined);
       setPricingRows([...pricingRows, { ...rest, camp, week, package: pkg }]);
       setNewPricing({
         campId: "",
@@ -349,12 +390,15 @@ export default function PricingPage() {
         packageId: "",
         baseRate: 0,
         minGroupSize: 1,
+        lodgingCapacity: 1,
+        dailyHuntRate: 0,
         isAvailable: true,
         availabilityTag: null,
       });
       toast.success("Pricing rule created successfully.");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to create pricing rule";
+      const message =
+        err instanceof Error ? err.message : "Failed to create pricing rule";
       setError(message);
       toast.error(message);
     } finally {
@@ -374,7 +418,8 @@ export default function PricingPage() {
       setPricingRows(pricingRows.filter((r) => r.id !== id));
       toast.success("Pricing rule deleted successfully.");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to delete pricing rule";
+      const message =
+        err instanceof Error ? err.message : "Failed to delete pricing rule";
       setError(message);
       toast.error(message);
     } finally {
@@ -383,19 +428,31 @@ export default function PricingPage() {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUpdatePricingRule = async (id: string, field: string, value: any) => {
+  const handleUpdatePricingRule = async (
+    id: string,
+    field: string,
+    value: any,
+  ) => {
     setSaving(true);
     setError("");
 
     try {
       const adminKey = getAdminKeyFromStorage();
-      const { camp, week, package: pkg, ...rest } = await updatePricingRow(id, { [field]: value }, adminKey || undefined);
+      const {
+        camp,
+        week,
+        package: pkg,
+        ...rest
+      } = await updatePricingRow(id, { [field]: value }, adminKey || undefined);
       setPricingRows(
-        pricingRows.map((r) => (r.id === id ? { ...rest, camp, week, package: pkg } : r))
+        pricingRows.map((r) =>
+          r.id === id ? { ...rest, camp, week, package: pkg } : r,
+        ),
       );
       toast.success("Pricing rule updated successfully.");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to update pricing rule";
+      const message =
+        err instanceof Error ? err.message : "Failed to update pricing rule";
       setError(message);
       toast.error(message);
     } finally {
@@ -413,7 +470,10 @@ export default function PricingPage() {
 
     try {
       const adminKey = getAdminKeyFromStorage();
-      const createdRule = await createVolumeRule(newVolumeRule, adminKey || undefined);
+      const createdRule = await createVolumeRule(
+        newVolumeRule,
+        adminKey || undefined,
+      );
       setVolumeRules([...volumeRules, createdRule]);
       setNewVolumeRule({
         minHunters: 1,
@@ -424,7 +484,8 @@ export default function PricingPage() {
       });
       toast.success("Volume rule created successfully.");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to create volume rule";
+      const message =
+        err instanceof Error ? err.message : "Failed to create volume rule";
       setError(message);
       toast.error(message);
     } finally {
@@ -444,7 +505,8 @@ export default function PricingPage() {
       setVolumeRules(volumeRules.filter((r) => r.id !== id));
       toast.success("Volume rule deleted successfully.");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to delete volume rule";
+      const message =
+        err instanceof Error ? err.message : "Failed to delete volume rule";
       setError(message);
       toast.error(message);
     } finally {
@@ -453,17 +515,26 @@ export default function PricingPage() {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUpdateVolumeRule = async (id: string, field: string, value: any) => {
+  const handleUpdateVolumeRule = async (
+    id: string,
+    field: string,
+    value: any,
+  ) => {
     setSaving(true);
     setError("");
 
     try {
       const adminKey = getAdminKeyFromStorage();
-      const updatedRule = await updateVolumeRule(id, { [field]: value }, adminKey || undefined);
+      const updatedRule = await updateVolumeRule(
+        id,
+        { [field]: value },
+        adminKey || undefined,
+      );
       setVolumeRules(volumeRules.map((r) => (r.id === id ? updatedRule : r)));
       toast.success("Volume rule updated successfully.");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to update volume rule";
+      const message =
+        err instanceof Error ? err.message : "Failed to update volume rule";
       setError(message);
       toast.error(message);
     } finally {
@@ -491,11 +562,15 @@ export default function PricingPage() {
 
         {/* Add New Pricing Rule */}
         <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
-          <h4 className="mb-4 text-lg font-semibold text-black">Add Pricing Rule</h4>
+          <h4 className="mb-4 text-lg font-semibold text-black">
+            Add Pricing Rule
+          </h4>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
             <select
               value={newPricing.campId}
-              onChange={(e) => setNewPricing({ ...newPricing, campId: e.target.value })}
+              onChange={(e) =>
+                setNewPricing({ ...newPricing, campId: e.target.value })
+              }
               className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               disabled={saving}
             >
@@ -508,7 +583,9 @@ export default function PricingPage() {
             </select>
             <select
               value={newPricing.weekId}
-              onChange={(e) => setNewPricing({ ...newPricing, weekId: e.target.value })}
+              onChange={(e) =>
+                setNewPricing({ ...newPricing, weekId: e.target.value })
+              }
               className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               disabled={saving}
             >
@@ -521,7 +598,9 @@ export default function PricingPage() {
             </select>
             <select
               value={newPricing.packageId}
-              onChange={(e) => setNewPricing({ ...newPricing, packageId: e.target.value })}
+              onChange={(e) =>
+                setNewPricing({ ...newPricing, packageId: e.target.value })
+              }
               className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               disabled={saving}
             >
@@ -537,17 +616,37 @@ export default function PricingPage() {
               placeholder="Base Rate"
               value={newPricing.baseRate || ""}
               onChange={(e) =>
-                setNewPricing({ ...newPricing, baseRate: parseFloat(e.target.value) })
+                setNewPricing({
+                  ...newPricing,
+                  baseRate: parseFloat(e.target.value),
+                })
+              }
+              className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              disabled={saving}
+            />
+
+            <input
+              type="number"
+              placeholder="Min Group"
+              value={newPricing.minGroupSize || ""}
+              onChange={(e) =>
+                setNewPricing({
+                  ...newPricing,
+                  minGroupSize: parseInt(e.target.value),
+                })
               }
               className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               disabled={saving}
             />
             <input
               type="number"
-              placeholder="Min Group"
-              value={newPricing.minGroupSize || ""}
+              placeholder="Lodging Capacity"
+              value={newPricing.lodgingCapacity || ""}
               onChange={(e) =>
-                setNewPricing({ ...newPricing, minGroupSize: parseInt(e.target.value) })
+                setNewPricing({
+                  ...newPricing,
+                  lodgingCapacity: parseInt(e.target.value) || 1,
+                })
               }
               className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               disabled={saving}
@@ -556,92 +655,217 @@ export default function PricingPage() {
           <button
             onClick={handleAddPricingRule}
             disabled={saving}
-            className="mt-4 w-full rounded-xl bg-orange-500 px-4 py-2 font-medium text-black transition hover:bg-orange-400 disabled:opacity-50 sm:w-auto"
+            className="mt-4 w-full rounded-xl bg-orange-500 px-4 py-2 font-medium text-white transition hover:bg-orange-400 disabled:opacity-50 sm:w-auto"
           >
             Add Pricing Rule
           </button>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
-          <table className="w-full">
-            <thead className="border-b border-black bg-black">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-white">Camp</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-white">Week</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
-                  Package
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
-                  Base Rate
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
-                  Min Group
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-white">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {pricingRows.map((row) => (
-              <tr key={row.id} className="border-b border-black/10 hover:bg-orange-50">
-                <td className="px-6 py-4">{row.camp?.name || row.campId}</td>
-                <td className="px-6 py-4">{row.week?.label || row.weekId}</td>
-                <td className="px-6 py-4">
-                  {row.package ? `${row.package.nights}N/${row.package.days}D` : row.packageId}
-                </td>
-                <td className="px-6 py-4">
-                  <input
-                    type="number"
-                    value={row.baseRate}
-                    onChange={(e) =>
-                      handleUpdatePricingRule(row.id, "baseRate", parseFloat(e.target.value))
-                    }
-                    className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300 sm:w-32"
-                    disabled={saving}
-                  />
-                </td>
-                <td className="px-6 py-4">
-                  <input
-                    type="number"
-                    value={row.minGroupSize}
-                    onChange={(e) =>
-                      handleUpdatePricingRule(row.id, "minGroupSize", parseInt(e.target.value))
-                    }
-                    className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300 sm:w-32"
-                    disabled={saving}
-                  />
-                </td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleDeletePricingRule(row.id)}
-                    disabled={saving}
-                    className="rounded-lg bg-black px-3 py-1 text-sm text-white transition hover:bg-orange-500 hover:text-black disabled:opacity-50"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-            </tbody>
-          </table>
+        {/* Grouped Pricing Table */}
+        <div className="space-y-6">
+          {Object.entries(
+            pricingRows.reduce(
+              (acc, row) => {
+                const campName = row.camp?.name || "Unknown Camp";
+
+                if (!acc[campName]) {
+                  acc[campName] = [];
+                }
+
+                acc[campName].push(row);
+
+                return acc;
+              },
+              {} as Record<string, PricingRow[]>,
+            ),
+          ).map(([campName, rows]) => {
+            const isOpen = openCamps[campName] ?? false;
+
+            return (
+              <div
+                key={campName}
+                className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.08)]"
+              >
+                {/* Camp Header (click to toggle) */}
+                <div
+                  className="flex cursor-pointer items-center justify-between border-b border-black/10 bg-orange-500 px-6 py-4"
+                  onClick={() =>
+                    setOpenCamps((s) => ({ ...s, [campName]: !isOpen }))
+                  }
+                  role="button"
+                  aria-expanded={isOpen}
+                >
+                  <div>
+                    <h4 className="text-xl font-bold text-white">{campName}</h4>
+                    <p className="text-sm text-white">
+                      {rows.length} pricing rule{rows.length > 1 ? "s" : ""}
+                    </p>
+                  </div>
+                  <div className="ml-4 text-black/80">
+                    <span
+                      className={`inline-block transform transition-transform ${
+                        isOpen ? "rotate-90" : "rotate-0"
+                      }`}
+                    >
+                      <ArrowRightLeft/>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Table (collapsible). Fixed max height with vertical scroll when open. */}
+                {isOpen && (
+                  <div className="overflow-x-auto max-h-72 overflow-y-auto">
+                        <table className="w-full">
+                          <thead className="border-b border-black bg-black">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                        Week
+                      </th>
+
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                        Package
+                      </th>
+
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                        Base Rate
+                      </th>
+
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                        Min Group
+                      </th>
+
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                        Lodging
+                      </th>
+
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                        Status
+                      </th>
+
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {rows.map((row) => (
+                      <tr
+                        key={row.id}
+                        className="border-b border-black/10 hover:bg-orange-50"
+                      >
+                        <td className="px-6 py-4 font-medium">
+                          {row.week?.label || row.weekId}
+                        </td>
+
+                        <td className="px-6 py-4">
+                          {row.package ? (
+                            <div>
+                              <p className="font-semibold">
+                                {row.package.code}
+                              </p>
+
+                              <p className="text-sm text-black/60">
+                                {row.package.nights}N / {row.package.days}D
+                              </p>
+                            </div>
+                          ) : (
+                            row.packageId
+                          )}
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <input
+                            type="number"
+                            value={row.baseRate}
+                            onChange={(e) =>
+                              handleUpdatePricingRule(
+                                row.id,
+                                "baseRate",
+                                parseFloat(e.target.value),
+                              )
+                            }
+                            className="w-28 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                            disabled={saving}
+                          />
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <input
+                            type="number"
+                            value={row.minGroupSize}
+                            onChange={(e) =>
+                              handleUpdatePricingRule(
+                                row.id,
+                                "minGroupSize",
+                                parseInt(e.target.value),
+                              )
+                            }
+                            className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                            disabled={saving}
+                          />
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span className="rounded-full bg-black px-3 py-1 text-sm text-white">
+                            {row.lodgingCapacity || 1}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <span
+                            className={`rounded-full px-3 py-1 text-sm font-medium ${
+                              row.isAvailable
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {row.isAvailable ? "Available" : "Unavailable"}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-4">
+                          <button
+                            onClick={() => handleDeletePricingRule(row.id)}
+                            disabled={saving}
+                            className="rounded-lg bg-black px-3 py-2 text-sm text-white transition hover:bg-orange-500 hover:text-black disabled:opacity-50"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Volume Discount Rules */}
       <div className="space-y-4">
-        <h3 className="text-2xl font-semibold text-black">Volume Discount Rules</h3>
+        <h3 className="text-2xl font-semibold text-black">
+          Volume Discount Rules
+        </h3>
 
         {/* Add New Volume Rule */}
         <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-[0_12px_30px_rgba(0,0,0,0.08)]">
-          <h4 className="mb-4 text-lg font-semibold text-black">Add Volume Rule</h4>
+          <h4 className="mb-4 text-lg font-semibold text-black">
+            Add Volume Rule
+          </h4>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             <input
               type="number"
               placeholder="Min Hunters"
               value={newVolumeRule.minHunters || ""}
               onChange={(e) =>
-                setNewVolumeRule({ ...newVolumeRule, minHunters: parseInt(e.target.value) })
+                setNewVolumeRule({
+                  ...newVolumeRule,
+                  minHunters: parseInt(e.target.value),
+                })
               }
               className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               disabled={saving}
@@ -651,7 +875,10 @@ export default function PricingPage() {
               placeholder="Max Hunters (optional)"
               value={newVolumeRule.maxHunters || ""}
               onChange={(e) =>
-                setNewVolumeRule({ ...newVolumeRule, maxHunters: e.target.value ? parseInt(e.target.value) : null })
+                setNewVolumeRule({
+                  ...newVolumeRule,
+                  maxHunters: e.target.value ? parseInt(e.target.value) : null,
+                })
               }
               className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
               disabled={saving}
@@ -700,61 +927,70 @@ export default function PricingPage() {
             </thead>
             <tbody>
               {volumeRules.map((rule) => (
-              <tr key={rule.id} className="border-b border-black/10 hover:bg-orange-50">
-                <td className="px-6 py-4">
-                  <input
-                    type="number"
-                    value={rule.minHunters}
-                    onChange={(e) =>
-                      handleUpdateVolumeRule(rule.id, "minHunters", parseInt(e.target.value))
-                    }
-                    className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
-                    disabled={saving}
-                  />
-                </td>
-                <td className="px-6 py-4">
-                  <input
-                    type="number"
-                    value={rule.maxHunters || ""}
-                    onChange={(e) =>
-                      handleUpdateVolumeRule(rule.id, "maxHunters", e.target.value ? parseInt(e.target.value) : null)
-                    }
-                    className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
-                    disabled={saving}
-                  />
-                </td>
-                <td className="px-6 py-4">
-                  <input
-                    type="number"
-                    value={rule.amountOffPerHead}
-                    onChange={(e) =>
-                      handleUpdateVolumeRule(
-                        rule.id,
-                        "amountOffPerHead",
-                        parseFloat(e.target.value) || 0
-                      )
-                    }
-                    className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
-                    disabled={saving}
-                  />
-                </td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleDeleteVolumeRule(rule.id)}
-                    disabled={saving}
-                    className="rounded-lg bg-black px-3 py-1 text-sm text-white transition hover:bg-orange-500 hover:text-black disabled:opacity-50"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+                <tr
+                  key={rule.id}
+                  className="border-b border-black/10 hover:bg-orange-50"
+                >
+                  <td className="px-6 py-4">
+                    <input
+                      type="number"
+                      value={rule.minHunters}
+                      onChange={(e) =>
+                        handleUpdateVolumeRule(
+                          rule.id,
+                          "minHunters",
+                          parseInt(e.target.value),
+                        )
+                      }
+                      className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                      disabled={saving}
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <input
+                      type="number"
+                      value={rule.maxHunters || ""}
+                      onChange={(e) =>
+                        handleUpdateVolumeRule(
+                          rule.id,
+                          "maxHunters",
+                          e.target.value ? parseInt(e.target.value) : null,
+                        )
+                      }
+                      className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                      disabled={saving}
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <input
+                      type="number"
+                      value={rule.amountOffPerHead}
+                      onChange={(e) =>
+                        handleUpdateVolumeRule(
+                          rule.id,
+                          "amountOffPerHead",
+                          parseFloat(e.target.value) || 0,
+                        )
+                      }
+                      className="w-24 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                      disabled={saving}
+                    />
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => handleDeleteVolumeRule(rule.id)}
+                      disabled={saving}
+                      className="rounded-lg bg-black px-3 py-1 text-sm text-white transition hover:bg-orange-500 hover:text-black disabled:opacity-50"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
-
-
     </div>
   );
 }

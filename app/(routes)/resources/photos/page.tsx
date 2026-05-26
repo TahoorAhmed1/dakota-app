@@ -53,7 +53,7 @@ export default function PhotosPage() {
         </div>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       <Footer />
     </>

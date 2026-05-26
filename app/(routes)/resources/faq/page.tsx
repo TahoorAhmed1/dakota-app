@@ -190,7 +190,7 @@ export default function FAQPage() {
           </div>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       {/* <Footer /> */}
     </>

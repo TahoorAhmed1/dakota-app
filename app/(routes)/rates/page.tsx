@@ -202,7 +202,7 @@ export default function RatesPage() {
         </div>
       </section>
 
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
     </main>
   );

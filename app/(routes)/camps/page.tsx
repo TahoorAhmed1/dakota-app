@@ -476,7 +476,7 @@ export default function CampsPage() {
           </div>
         </section>
 
-        <OurPartners />
+        {/* <OurPartners /> */}
         {/* <LatestNews /> */}
       </main>
 

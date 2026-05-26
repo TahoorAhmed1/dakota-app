@@ -45,7 +45,7 @@ export default async function Home() {
       <Testimonials />
 
 
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
     </div>
   );

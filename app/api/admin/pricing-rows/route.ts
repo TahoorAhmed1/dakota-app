@@ -8,84 +8,230 @@ const createPricingRowSchema = z.object({
   campId: z.string().min(1),
   weekId: z.string().min(1),
   packageId: z.string().min(1),
+
   baseRate: z.number().min(0),
+
   minGroupSize: z.number().int().min(1),
-  lodgingCapacity: z.number().int().min(1),
-  dailyHuntRate: z.number().min(0),
+
+  lodgingCapacity: z.number().int().min(1).default(1),
+
+  dailyHuntRate: z.number().min(0).optional(),
+
   isAvailable: z.boolean().default(true),
+
   availabilityTag: z.string().optional().nullable(),
 });
 
 export async function GET(req: NextRequest) {
   const access = assertAdminAccess(req);
+
   if (!access.ok) {
-    return NextResponse.json({ error: access.error }, { status: access.status });
+    return NextResponse.json(
+      { error: access.error },
+      { status: access.status },
+    );
   }
 
   try {
     const pricingRows = await prisma.campWeekPricing.findMany({
-      orderBy: [{ weekId: "asc" }, { campId: "asc" }, { packageId: "asc" }],
+      orderBy: {
+        createdAt: "asc",
+      },
       include: {
-        camp: { select: { name: true } },
-        week: { select: { label: true } },
-        package: { select: { code: true, label: true, nights: true, days: true } },
+        camp: {
+          select: {
+            name: true,
+          },
+        },
+        week: {
+          select: {
+            label: true,
+          },
+        },
+        package: {
+          select: {
+            code: true,
+            label: true,
+            nights: true,
+            days: true,
+          },
+        },
       },
     });
 
     return NextResponse.json(pricingRows);
   } catch (error) {
     console.error("ADMIN PRICING ROWS GET ERROR", error);
-    return NextResponse.json({ error: "Unable to load pricing rows." }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        error: "Unable to load pricing rows.",
+      },
+      {
+        status: 500,
+      },
+    );
   }
 }
 
 export async function POST(req: NextRequest) {
   const access = assertAdminAccess(req);
+
   if (!access.ok) {
-    return NextResponse.json({ error: access.error }, { status: access.status });
+    return NextResponse.json(
+      { error: access.error },
+      { status: access.status },
+    );
   }
 
   try {
-    const parsed = createPricingRowSchema.safeParse(await req.json());
+    const body = await req.json();
+
+    const parsed = createPricingRowSchema.safeParse(body);
+
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Invalid pricing row data.", details: parsed.error.flatten() },
-        { status: 400 }
+        {
+          error: "Invalid pricing row data.",
+          details: parsed.error.flatten(),
+        },
+        {
+          status: 400,
+        },
       );
     }
 
     const data = parsed.data;
 
-    const pricingRow = await prisma.campWeekPricing.create({
-      data,
-      include: {
-        camp: { select: { name: true } },
-        week: { select: { label: true } },
-        package: { select: { code: true, label: true, nights: true, days: true } },
+    const [campExists, weekExists, packageExists] = await prisma.$transaction([
+      prisma.camp.findUnique({
+        where: { id: data.campId },
+        select: { id: true },
+      }),
+      prisma.huntWeek.findUnique({
+        where: { id: data.weekId },
+        select: { id: true },
+      }),
+      prisma.packageOption.findUnique({
+        where: { id: data.packageId },
+        select: { id: true },
+      }),
+    ]);
+
+    const missingIds = [];
+    if (!campExists) missingIds.push("campId");
+    if (!weekExists) missingIds.push("weekId");
+    if (!packageExists) missingIds.push("packageId");
+
+    if (missingIds.length > 0) {
+      return NextResponse.json(
+        {
+          error: `Invalid ${missingIds.join(", ")}. Please verify all selected IDs exist in the system.`,
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+    const existingPricingRow = await prisma.campWeekPricing.findFirst({
+      where: {
+        campId: data.campId,
+        weekId: data.weekId,
+        packageId: data.packageId,
       },
     });
 
-    return NextResponse.json(pricingRow, { status: 201 });
+    if (existingPricingRow) {
+      return NextResponse.json(
+        {
+          error:
+            "Pricing row already exists for this Camp / Week / Package combination.",
+        },
+        {
+          status: 409,
+        },
+      );
+    }
+
+    const pricingRow = await prisma.campWeekPricing.create({
+      data: {
+        ...data,
+
+        // Auto calculate if not provided
+        dailyHuntRate: data.dailyHuntRate ?? Number(data.baseRate) / 3,
+      },
+
+      include: {
+        camp: {
+          select: {
+            name: true,
+          },
+        },
+
+        week: {
+          select: {
+            label: true,
+          },
+        },
+
+        package: {
+          select: {
+            code: true,
+            label: true,
+            nights: true,
+            days: true,
+          },
+        }, 
+      },
+    });
+
+    return NextResponse.json(pricingRow, {
+      status: 201,
+    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+
     console.error("ADMIN PRICING ROWS POST ERROR:", {
       message: errorMessage,
       error: error instanceof Error ? error : String(error),
     });
-    
-    // Provide more specific error messages
-    if (errorMessage.includes("foreign key") || errorMessage.includes("fk_constraint")) {
-      return NextResponse.json({ 
-        error: "Invalid camp, week, or package ID. Please verify all selected IDs exist in the system." 
-      }, { status: 400 });
+
+    if (
+      errorMessage.includes("foreign key") ||
+      errorMessage.includes("fk_constraint")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid camp, week, or package ID. Please verify all selected IDs exist in the system.",
+        },
+        {
+          status: 400,
+        },
+      );
     }
-    
-    if (errorMessage.includes("Unique constraint") || errorMessage.includes("unique")) {
-      return NextResponse.json({ 
-        error: "This pricing combination (Camp/Week/Package) already exists. Each combination must be unique." 
-      }, { status: 409 });
+
+    if (
+      errorMessage.includes("Unique constraint") ||
+      errorMessage.includes("unique")
+    ) {
+      return NextResponse.json(
+        {
+          error: "This pricing combination already exists.",
+        },
+        {
+          status: 409,
+        },
+      );
     }
-    
-    return NextResponse.json({ error: "Unable to create pricing row. Check server logs for details." }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        error: "Unable to create pricing row. Check server logs for details.",
+      },
+      {
+        status: 500,
+      },
+    );
   }
 }

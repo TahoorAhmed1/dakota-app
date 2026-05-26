@@ -317,7 +317,7 @@ export default function DiscountsPage() {
         </div>
       </section>
 
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
     </main>
   );

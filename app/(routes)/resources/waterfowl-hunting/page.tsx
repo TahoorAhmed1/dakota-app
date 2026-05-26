@@ -88,7 +88,7 @@ This MAP from USFW shows the areas where duck nesting pairs per square mile is h
         </div>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
     </>
   );

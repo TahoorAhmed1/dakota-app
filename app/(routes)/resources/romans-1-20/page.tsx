@@ -58,7 +58,7 @@ export default function Romans120Page() {
           </div>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       <Footer />
     </>

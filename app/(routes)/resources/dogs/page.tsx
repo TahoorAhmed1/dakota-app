@@ -153,7 +153,7 @@ export default function DogsPage() {
           </ul>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       {/* <Footer /> */}
     </>

@@ -38,7 +38,7 @@ export default function PheasantOutlookPage() {
         </ul>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       <Footer />
     </>

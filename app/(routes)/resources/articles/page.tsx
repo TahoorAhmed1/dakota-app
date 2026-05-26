@@ -388,7 +388,7 @@ export default function ArticlesPage() {
           </ul>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       {/* <Footer /> */}
     </>

@@ -139,7 +139,7 @@ export default function LicenseInfoPage() {
           </div>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       {/* <Footer /> */}
     </>

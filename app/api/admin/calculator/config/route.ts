@@ -198,6 +198,7 @@ export async function GET(req: NextRequest) {
     const weeks = await prisma.huntWeek.findMany({
       orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
       select: {
+        id: true,
         label: true,
         slug: true,
         seasonLabel: true,
@@ -211,6 +212,7 @@ export async function GET(req: NextRequest) {
     const packages = await prisma.packageOption.findMany({
       orderBy: [{ displayOrder: "asc" }, { label: "asc" }],
       select: {
+        id: true,
         code: true,
         label: true,
         nights: true,

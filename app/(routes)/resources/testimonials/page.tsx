@@ -73,7 +73,7 @@ export default function TestimonialsPage() {
         </div>
         </section>
       </main>
-      <OurPartners />
+      {/* <OurPartners /> */}
       <LatestNews />
       <Footer />
     </>
