@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { assertAdminAccess } from "@/lib/server/admin-auth";
+import { invalidateCalculatorConfigCache } from "@/lib/server/calculator-data";
+import { invalidateCalculatorConfigCache } from "@/lib/server/calculator-data";
 
 const createPricingRowSchema = z.object({
   campId: z.string().min(1),
@@ -15,6 +17,7 @@ const createPricingRowSchema = z.object({
 
   lodgingCapacity: z.number().int().min(1).default(1),
 
+  nightlyLodgingRate: z.number().min(0).optional(),
   dailyHuntRate: z.number().min(0).optional(),
 
   isAvailable: z.boolean().default(true),
@@ -114,7 +117,7 @@ export async function POST(req: NextRequest) {
       }),
       prisma.packageOption.findUnique({
         where: { id: data.packageId },
-        select: { id: true },
+        select: { id: true, days: true, nights: true },
       }),
     ]);
 
@@ -153,12 +156,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const packageOption = packageExists;
+    const nightlyLodgingRate = data.nightlyLodgingRate ?? 100;
+    const computedDailyHuntRate = data.dailyHuntRate ??
+      Number((Number(data.baseRate) - nightlyLodgingRate * (packageOption?.nights ?? 0)) / Math.max(1, packageOption?.days ?? 1));
+
     const pricingRow = await prisma.campWeekPricing.create({
       data: {
         ...data,
-
-        // Auto calculate if not provided
-        dailyHuntRate: data.dailyHuntRate ?? Number(data.baseRate) / 3,
+        nightlyLodgingRate: nightlyLodgingRate,
+        dailyHuntRate: Number(computedDailyHuntRate.toFixed(2)),
       },
 
       include: {
@@ -185,6 +192,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    invalidateCalculatorConfigCache();
     return NextResponse.json(pricingRow, {
       status: 201,
     });

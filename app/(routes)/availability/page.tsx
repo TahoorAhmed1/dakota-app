@@ -3,6 +3,8 @@ import ImagesCatalog from "@/components/common/images-catalog";
 import SeasonSchedule from "@/components/common/seasonSchedule";
 import { getSeasonScheduleData } from "@/lib/server/season-schedule-data";
 
+export const dynamic = "force-dynamic";
+
 import Testimonials from "@/components/testimonial";
 
 export default async function AvailabilityPage() {

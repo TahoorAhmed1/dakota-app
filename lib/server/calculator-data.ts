@@ -2,11 +2,17 @@ import { prisma } from "@/lib/prisma";
 import { defaultCalculatorSettings, normalizeCalculatorSettings } from "@/lib/calculator-settings";
 import { mapConfigFromDb } from "@/lib/server/quote-engine";
 
-const CALCULATOR_CONFIG_TTL_MS = 10_000;
+const CALCULATOR_CONFIG_TTL_MS = 0;
 
 let cachedCalculatorConfig: ReturnType<typeof mapConfigFromDb> | null = null;
 let cachedCalculatorConfigExpiresAt = 0;
 let inFlightCalculatorConfigPromise: Promise<ReturnType<typeof mapConfigFromDb>> | null = null;
+
+export function invalidateCalculatorConfigCache() {
+  cachedCalculatorConfig = null;
+  cachedCalculatorConfigExpiresAt = 0;
+  inFlightCalculatorConfigPromise = null;
+}
 
 export async function getCalculatorConfig() {
   const now = Date.now();
@@ -55,6 +61,8 @@ export async function getCalculatorConfig() {
         baseRate: true,
         minGroupSize: true,
         lodgingCapacity: true,
+        nightlyLodgingRate: true,
+        dailyHuntRate: true,
         isAvailable: true,
         availabilityTag: true,
       },

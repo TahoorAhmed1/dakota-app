@@ -72,11 +72,24 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const baseUrl = 'https://dakota.craftiqstudio.com';
+    const origin =
+      process.env.APP_ORIGIN ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL;
+
+    if (!origin) {
+      throw new Error(
+        "Missing application origin. Set APP_ORIGIN, NEXT_PUBLIC_APP_URL, or NEXT_PUBLIC_SITE_URL."
+      );
+    }
+
+    const returnUrl = new URL(`/api/quote/paypal/capture?quoteId=${quote.id}`, origin).toString();
+    const cancelUrl = new URL(`/quote-reserve?status=cancel&quoteId=${quote.id}`, origin).toString();
+
     const { approvalUrl, orderId } = await createPayPalOrder(
       calculation.totals.depositTotal,
-      `${baseUrl}/api/quote/paypal/capture?quoteId=${quote.id}`,
-      `${baseUrl}/quote-reserve?status=cancel&quoteId=${quote.id}`
+      returnUrl,
+      cancelUrl
     );
 
     await prisma.quote.update({

@@ -23,6 +23,8 @@ export type CalculatorConfig = {
     baseRate: number;
     minGroupSize: number;
     lodgingCapacity: number;
+    nightlyLodgingRate: number;
+    dailyHuntRate: number;
     isAvailable: boolean;
     availabilityTag: string | null;
   }>;
@@ -126,6 +128,8 @@ export function mapConfigFromDb(data: {
     baseRate: DecimalLike;
     minGroupSize: number;
     lodgingCapacity: number;
+    nightlyLodgingRate: DecimalLike;
+    dailyHuntRate: DecimalLike;
     isAvailable: boolean;
     availabilityTag: string | null;
   }>;
@@ -157,6 +161,8 @@ export function mapConfigFromDb(data: {
     pricingRows: data.pricingRows.map((row) => ({
       ...row,
       baseRate: toNumber(row.baseRate),
+      nightlyLodgingRate: toNumber(row.nightlyLodgingRate),
+      dailyHuntRate: toNumber(row.dailyHuntRate),
     })),
     volumeRules: data.volumeRules.map((rule) => ({
       ...rule,
@@ -210,9 +216,12 @@ export function calculateQuote(input: QuoteCalcInput, config: CalculatorConfig):
       config.discountRules.find((rule) => rule.code === chosenCode) ?? noneRule ?? null;
 
     const rateAfterVolume = pricing.baseRate - volumeDiscount;
-    const earlyBirdDiscount = input.earlyBird
-      ? rateAfterVolume * config.settings.earlyBirdRate
-      : 0;
+    const extraDays = Math.max(0, hunter.extraDays ?? 0);
+    const extraNights = Math.max(0, hunter.extraNights ?? 0);
+    const nightlyLodgingRate = pricing.nightlyLodgingRate ?? config.settings.extraNightRate;
+    const extraHunting = extraDays * (pricing.dailyHuntRate ?? config.settings.extraDayRate);
+    const extraLodging = extraNights * nightlyLodgingRate;
+    const subtotalForPct = rateAfterVolume + extraHunting + extraLodging;
 
     let individualDiscount = 0;
     let juniorDiscount = 0;
@@ -220,37 +229,31 @@ export function calculateQuote(input: QuoteCalcInput, config: CalculatorConfig):
     if (matchedRule) {
       if (matchedRule.category === "JUNIOR") {
         if (matchedRule.type === "PERCENT") {
-          juniorDiscount = rateAfterVolume * (matchedRule.value / 100);
+          juniorDiscount = -subtotalForPct * (matchedRule.value / 100);
         } else {
-          juniorDiscount = matchedRule.value;
+          juniorDiscount = -matchedRule.value;
         }
       }
 
+      if (matchedRule.category === "YOUTH") {
+        const totalLodging = selectedPackage.nights * nightlyLodgingRate + extraLodging;
+        juniorDiscount = -(subtotalForPct - totalLodging);
+      }
+
       if (matchedRule.category === "INDIVIDUAL") {
-        const postEarlyBirdBase = rateAfterVolume - earlyBirdDiscount;
         if (matchedRule.type === "PERCENT") {
-          individualDiscount = postEarlyBirdBase * (matchedRule.value / 100);
+          individualDiscount = -subtotalForPct * (matchedRule.value / 100);
         } else {
-          individualDiscount = matchedRule.value;
+          individualDiscount = -matchedRule.value;
         }
       }
     }
 
-    const extraDays = Math.max(0, hunter.extraDays ?? 0);
-    const extraNights = Math.max(0, hunter.extraNights ?? 0);
-    const extraHunting = extraDays * config.settings.extraDayRate;
-    const extraLodging = extraNights * config.settings.extraNightRate;
-
-    const subtotalBeforeTax =
-      rateAfterVolume -
-      earlyBirdDiscount -
-      individualDiscount -
-      juniorDiscount +
-      extraHunting +
-      extraLodging;
-
-    const taxAmount = subtotalBeforeTax * config.settings.salesTaxRate;
-    const totalAmount = subtotalBeforeTax + taxAmount;
+    const earlyBirdDiscount = input.earlyBird ? -subtotalForPct * config.settings.earlyBirdRate : 0;
+    const taxable = subtotalForPct + juniorDiscount + individualDiscount + earlyBirdDiscount;
+    const taxAmount = taxable * config.settings.salesTaxRate;
+    const totalAmount = taxable + taxAmount;
+    const subtotalBeforeTax = taxable;
 
     return {
       rowIndex: idx + 1,

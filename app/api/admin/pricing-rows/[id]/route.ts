@@ -3,10 +3,14 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { assertAdminAccess } from "@/lib/server/admin-auth";
+import { invalidateCalculatorConfigCache } from "@/lib/server/calculator-data";
 
 const updatePricingRowSchema = z.object({
   baseRate: z.number().min(0).optional(),
   minGroupSize: z.number().int().min(1).optional(),
+  lodgingCapacity: z.number().int().min(0).optional(),
+  nightlyLodgingRate: z.number().min(0).optional(),
+  dailyHuntRate: z.number().min(0).optional(),
   isAvailable: z.boolean().optional(),
   availabilityTag: z.string().optional().nullable(),
 });
@@ -43,6 +47,7 @@ export async function PUT(
       },
     });
 
+    invalidateCalculatorConfigCache();
     return NextResponse.json(pricingRow);
   } catch (error) {
     console.error("ADMIN PRICING ROW PUT ERROR", error);
@@ -69,6 +74,7 @@ export async function DELETE(
       where: { id },
     });
 
+    invalidateCalculatorConfigCache();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("ADMIN PRICING ROW DELETE ERROR", error);

@@ -60,7 +60,8 @@ type CalculatorConfig = {
     lodgingCapacity: number;
     isAvailable: boolean;
     availabilityTag: string | null;
-    lodgingRatePerNight?: number; // per‑camp/package lodging cost ($100 default if omitted)
+    nightlyLodgingRate?: number;
+    dailyHuntRate?: number;
   }>;
   volumeRules: Array<{
     id: string;
@@ -333,9 +334,11 @@ export default function QuoteReservePage() {
     const nights = selectedPackage.nights;
     const days = selectedPackage.days;
 
-    // Lodging rate per night: from pricing row, fallback to settings.extraNightRate (default $100)
-    const lodgingPerNight = selectedPricing.lodgingRatePerNight ?? settings.extraNightRate;
-    const dailyHuntRate = (baseRate - nights * lodgingPerNight) / days;
+    const nightlyLodgingRate =
+      selectedPricing.nightlyLodgingRate ?? settings.extraNightRate;
+    const dailyHuntRate =
+      selectedPricing.dailyHuntRate ??
+      (baseRate - nights * nightlyLodgingRate) / Math.max(1, days);
 
     const earlyBirdRate = settings.earlyBirdRate ?? 0.05;
     const taxRate = settings.salesTaxRate ?? 0.057;
@@ -346,17 +349,15 @@ export default function QuoteReservePage() {
       const volumeDiscount = -volumePerHunter;
 
       const extraHunting = hunter.extraDays * dailyHuntRate;
-      const extraLodging = hunter.extraNights * lodgingPerNight;
+      const extraLodging = hunter.extraNights * nightlyLodgingRate;
 
-      // subtotal before individual / junior / youth / early bird discounts
       const subtotalForPct = baseRate + volumeDiscount + extraHunting + extraLodging;
 
       let juniorYouthDiscount = 0;
       if (rule.category === "JUNIOR") {
         juniorYouthDiscount = -subtotalForPct * 0.5;
       } else if (rule.category === "YOUTH") {
-        // Youth: free hunting, pay only lodging (included + extra)
-        const totalLodging = nights * lodgingPerNight + extraLodging;
+        const totalLodging = nights * nightlyLodgingRate + extraLodging;
         juniorYouthDiscount = -(subtotalForPct - totalLodging);
       }
 
@@ -381,16 +382,25 @@ export default function QuoteReservePage() {
         juniorDiscount: round2(juniorYouthDiscount),
         individualDiscount: round2(adultDiscount),
         earlyBirdDiscount: round2(earlyBirdDiscount),
+        subtotalBeforeTax: round2(taxable),
         tax: round2(tax),
         total: round2(total),
       };
     });
   }, [config, selectedPricing, groupData, hunters, discountMap, settings]);
 
-  const grandTotal = pricingRows.reduce((sum, row) => sum + row.total, 0);
+  const rowSubtotal = pricingRows.reduce((sum, row) => sum + row.subtotalBeforeTax, 0);
+  const minimumAdjustment = selectedPricing
+    ? Math.max(0, selectedPricing.baseRate * selectedPricing.minGroupSize - rowSubtotal)
+    : 0;
+  const subtotalBeforeTax = round2(rowSubtotal + minimumAdjustment);
+  const taxTotal = round2(subtotalBeforeTax * (settings?.salesTaxRate ?? 0.057));
+  const grandTotal = round2(subtotalBeforeTax + taxTotal);
   const today = new Date();
   const depositRate = config ? calculateDepositRate(config.settings.depositSchedule, today) : 1;
-  const depositTotal = round2(grandTotal * depositRate);
+  const depositBase = round2(grandTotal * depositRate);
+  const processingFee = round2(depositBase * (settings?.processingFeeRate ?? 0));
+  const depositTotal = round2(depositBase + processingFee);
 
   const labels = settings?.labels;
   const taxLabel = `Taxes ${((settings?.salesTaxRate ?? 0.057) * 100).toFixed(1)}%`;
@@ -1308,15 +1318,19 @@ export default function QuoteReservePage() {
                       <div className="space-y-2 text-right">
                         <div className="flex justify-between gap-8 text-[14px] text-[#2b1a0f]">
                           <span>Subtotal (before tax)</span>
-                          <span className="font-semibold">
-                            ${(grandTotal - pricingRows.reduce((s, r) => s + r.tax, 0)).toFixed(2)}
-                          </span>
+                          <span className="font-semibold">${subtotalBeforeTax.toFixed(2)}</span>
                         </div>
+                        {minimumAdjustment > 0 && (
+                          <div className="flex justify-between gap-8 text-[14px] text-[#2b1a0f]">
+                            <span>Minimum revenue adjustment</span>
+                            <span className="font-semibold text-red-600">
+                              ${minimumAdjustment.toFixed(2)}
+                            </span>
+                          </div>
+                        )}
                         <div className="flex justify-between gap-8 text-[14px] text-[#2b1a0f]">
                           <span>Sales Tax ({(settings?.salesTaxRate ? (settings.salesTaxRate * 100).toFixed(1) : "5.7")}%)</span>
-                          <span className="font-semibold">
-                            ${pricingRows.reduce((s, r) => s + r.tax, 0).toFixed(2)}
-                          </span>
+                          <span className="font-semibold">${taxTotal.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between gap-8 border-t border-[#d9d9d9] pt-2 text-[16px] font-bold text-[#2b1a0f] md:text-[18px]">
                           <span>{labels?.step3?.totalPriceLabel ?? "Total price after applicable discounts and state sales tax:"}</span>

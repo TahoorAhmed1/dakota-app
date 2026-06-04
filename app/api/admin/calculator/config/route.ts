@@ -5,6 +5,7 @@ import { z } from "zod";
 import { defaultCalculatorSettings } from "@/lib/calculator-settings";
 import { prisma } from "@/lib/prisma";
 import { assertAdminAccess } from "@/lib/server/admin-auth";
+import { invalidateCalculatorConfigCache } from "@/lib/server/calculator-data";
 
 const labelsSchema = z.object({
   stepHeadings: z.object({
@@ -458,6 +459,7 @@ export async function PUT(req: NextRequest) {
       }
     );
 
+    invalidateCalculatorConfigCache();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("ADMIN CONFIG PUT ERROR", error);

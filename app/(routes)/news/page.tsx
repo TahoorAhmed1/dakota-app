@@ -31,6 +31,8 @@ function BreadcrumbHomeIcon() {
   );
 }
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "News & Events | UGUIDE South Dakota",
   description: "Stay up to date with the latest news and events from UGUIDE South Dakota Pheasant Hunting.",

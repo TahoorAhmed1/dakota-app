@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { assertAdminAccess } from "@/lib/server/admin-auth";
+import { invalidateCalculatorConfigCache } from "@/lib/server/calculator-data";
 
 export const runtime = "nodejs";
 
@@ -70,7 +71,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json({
+    const response = {
       id: updated.id,
       campId: updated.campId,
       campName: updated.camp.name,
@@ -84,7 +85,10 @@ export async function PATCH(
       minGroupSize: updated.minGroupSize,
       lodgingCapacity: updated.lodgingCapacity,
       hoverText: updated.hoverText ?? "",
-    });
+    };
+
+    invalidateCalculatorConfigCache();
+    return NextResponse.json(response);
   } catch (error) {
     console.error("ADMIN AVAILABILITY PATCH ERROR", error);
     return NextResponse.json({ error: "Unable to update availability." }, { status: 500 });
