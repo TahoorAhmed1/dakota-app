@@ -1,9 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-const GOOGLE_PLACE_ID = "ChIJ...UGUIDE_PLACEID"; // ← Apna real Place ID daal do
-const GOOGLE_API_KEY = "AIzaSy...demo_key";     // ← Apna real API Key (Places API enabled hona chahiye)
-
 export default function Testimonials() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,17 +12,13 @@ export default function Testimonials() {
 
   async function fetchGoogleReviews() {
     try {
-      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${GOOGLE_PLACE_ID}&fields=reviews&key=${GOOGLE_API_KEY}`;
-      
-      const res = await fetch(url, { 
-        cache: "no-store",        // fresh data chahiye toh
-        next: { revalidate: 3600 } // Next.js mein 1 hour cache (optional)
+      const res = await fetch("/api/google-reviews", {
+        cache: "no-store",
       });
-      
       const data = await res.json();
 
-      if (data.result?.reviews) {
-        setReviews(data.result.reviews);
+      if (data.reviews?.length) {
+        setReviews(data.reviews);
       } else {
         throw new Error("No reviews found");
       }
@@ -146,7 +139,7 @@ export default function Testimonials() {
         </div>
 
         {/* Desktop Carousel (3 cards - left, center, right) - tumhara purana logic improve kiya */}
-        <div className="relative mt-10 hidden h-[520px] overflow-hidden lg:flex lg:items-start lg:justify-center">
+        <div className="relative mt-10 hidden h-130 overflow-hidden lg:flex lg:items-start lg:justify-center">
           {testimonials.map((testimonial, idx) => {
             const offset = ((idx - currentIndex + total) % total);
             const isActive = offset === 0;

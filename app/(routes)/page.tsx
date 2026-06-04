@@ -2,7 +2,6 @@
 import SeasonSchedule from "@/components/common/seasonSchedule";
 import HomeBanner from "@/components/home-banner";
 import LatestNews from "@/components/NewsEvent";
-import OurPartners from "@/components/ourPartners";
 import PackagesSection from "@/components/packages-section";
 import Testimonials from "@/components/testimonial";
 import WaitlistForm from "@/components/waitlist-form";

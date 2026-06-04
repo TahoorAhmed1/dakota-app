@@ -20,6 +20,7 @@ type CampDetail = {
   amenities: string[];
   images: (string | StaticImageData)[];
   informativeLinks?: InformativeLink[];
+  lodgingPhotosUrl?: string;
   packages?: string[];
   acres?: string;
   highlights?: string[];
@@ -55,6 +56,7 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activities", href: "#" },
     ],
+    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/gunners-haven-lodging-amenities/",
     packages: [
       "3-Day Hunt - Minimum 6 Hunters and up for 4-Nights Lodging (Capacity 10)",
     ],
@@ -104,6 +106,7 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activities", href: "#" },
     ],
+    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/meadow-creek-pheasant-camp-lodging-amenities/",
     packages: [
       "4-Day Hunt - See Package Options for Minimums",
       "3-Day Hunt - See Package Options for Minimums",
@@ -159,6 +162,7 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activities", href: "#" },
     ],
+    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/Pheasant-Camp-Lodge-Lodging-Amenities/",
     packages: [
       "3-Days Hunting & 4-Nights Lodging for up to 12 Hunters. See Minimum's & Capacities Chart for more info",
     ],
@@ -213,6 +217,7 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activities", href: "#" },
     ],
+    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/west-river-adventures-lodging-amenities/",
     packages: [
       "3-Days Hunting & 4-Nights Lodging for up to 17 Hunters. See Minimum's & Capacities Chart for more info",
     ],
@@ -250,6 +255,7 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activites", href: "#" },
     ],
+    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/faulkton-pheasant-camp-lodging-amenities/",
     packages: [
       "2 Hunt Package Options",
       "4-Day Hunt - Minimum 13 or More Hunters for 4-Days Hunting & 5-Nights Lodging, Or",
@@ -370,24 +376,6 @@ export default async function CampDetailPage({ params }: { params: any }) {
                 {camp.description}
               </p>
 
-              {camp.informativeLinks && (
-                <div className="mb-6">
-                  <strong className="mb-2 block">Informative Links:</strong>
-                  <ul className="flex flex-wrap gap-3 text-sm">
-                    {camp.informativeLinks.map((link: InformativeLink) => (
-                      <li key={link.label}>
-                        <a
-                          href={link.href}
-                          className="text-[#F16724] underline"
-                        >
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
               {camp.packages && (
                 <div className="mb-6">
                   <h3 className="mb-2 text-lg font-bold text-[#281703]">
@@ -428,9 +416,19 @@ export default async function CampDetailPage({ params }: { params: any }) {
               </div>
 
               <div className="mt-8 text-black">
-                <h3 className="mb-4 text-xl font-bold text-[#281703]">
-                  Amenities
-                </h3>
+                <div className="mb-4 flex flex-wrap items-center gap-4">
+                  <h3 className="text-xl font-bold text-[#281703]">Amenities</h3>
+                  {camp.lodgingPhotosUrl && (
+                    <a
+                      href={camp.lodgingPhotosUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[#F16724] underline font-semibold"
+                    >
+                      Lodging Photos
+                    </a>
+                  )}
+                </div>
                 <ul className="space-y-2 text-black">
                   {camp.amenities.map((amenity, index) => (
                     <li key={index} className="flex items-center gap-2">

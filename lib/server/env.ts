@@ -11,6 +11,8 @@ const envSchema = z.object({
   PAYPAL_CLIENT_ID: z.string().optional(),
   PAYPAL_CLIENT_SECRET: z.string().optional(),
   PAYPAL_MODE: z.enum(["sandbox", "live"]).default("sandbox"),
+  GOOGLE_PLACE_ID: z.string().optional(),
+  GOOGLE_PLACES_API_KEY: z.string().optional(),
 });
 
 export const env = envSchema.parse({
@@ -24,4 +26,6 @@ export const env = envSchema.parse({
   PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
   PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET,
   PAYPAL_MODE: process.env.PAYPAL_MODE,
+  GOOGLE_PLACE_ID: process.env.GOOGLE_PLACE_ID,
+  GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
 });

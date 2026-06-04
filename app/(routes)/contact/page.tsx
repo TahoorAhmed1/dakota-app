@@ -27,13 +27,15 @@ const selectChoices = {
   maxGroupSize: ["6", "7", "8", "9", "10", "11+"],
   dogPower: ["0", "1", "2", "3", "4+"],
   timeframe: [
-    "Oct 18-21",
-    "Oct 25-28",
-    "Nov 1-4",
-    "Nov 8-11",
-    "Nov 15-18",
-    "Nov 22-25",
-    "Nov 29-Dec 2",
+    "Week 1",
+    "Week 2",
+    "Week 3",
+    "Week 4",
+    "Week 5",
+    "Week 6",
+    "Week 7",
+    "Week 8",
+    "Week 9",
   ],
 };
 
@@ -106,10 +108,11 @@ type FormState = {
   firstName: string;
   lastName: string;
   email: string;
-  state: string;
+  stateProvince: string;
   phone: string;
   additionalComments: string;
   captchaChecked: boolean;
+  honeypot: string;
 };
 
 type Errors = Partial<Record<keyof FormState, string>>;
@@ -151,13 +154,15 @@ export default function ContactPage() {
     firstName: "",
     lastName: "",
     email: "",
-    state: "",
+    stateProvince: "",
     phone: "",
     additionalComments: "",
     captchaChecked: false,
+    honeypot: "",
   });
   const [errors, setErrors] = useState<Errors>({});
-  const [submitState, setSubmitState] = useState<"idle" | "success">("idle");
+  const [submitState, setSubmitState] = useState<"idle" | "submitting" | "success">("idle");
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const availableSecondChoices = useMemo(
     () => selectChoices.timeframe.filter((option) => option !== formData.firstChoice),
@@ -210,7 +215,7 @@ export default function ContactPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       nextErrors.email = "Enter a valid email address.";
     }
-    if (!formData.state) nextErrors.state = "Please select your state/province.";
+    if (!formData.stateProvince) nextErrors.stateProvince = "Please select your state/province.";
     if (!formData.phone.trim()) {
       nextErrors.phone = "Phone number is required.";
     } else if (!/^[0-9+()\-\s]{7,}$/.test(formData.phone)) {
@@ -233,12 +238,40 @@ export default function ContactPage() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validate()) return;
 
-    setSubmitState("success");
-    console.log("Contact form submitted", formData);
+    setSubmitState("submitting");
+    setServerError(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          stateProvince: formData.stateProvince,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        setServerError(result.error || "Unable to submit your request. Please try again later.");
+        setSubmitState("idle");
+        return;
+      }
+
+      setSubmitState("success");
+      setFormData((prev) => ({
+        ...prev,
+        honeypot: "",
+      }));
+    } catch (error) {
+      console.error("Contact submission error", error);
+      setServerError("Something went wrong while submitting the form. Please try again later.");
+      setSubmitState("idle");
+    }
   };
 
   return (
@@ -486,13 +519,13 @@ export default function ContactPage() {
                 <div>
                   <RequiredLabel>State/Province</RequiredLabel>
                   <CustomSelect
-                    name="state"
-                    value={formData.state}
+                    name="stateProvince"
+                    value={formData.stateProvince}
                     onChange={handleChange}
                     options={createOptions(stateOptions)}
                     placeholder="Choose"
                   />
-                  <ErrorText message={errors.state} />
+                  <ErrorText message={errors.stateProvince} />
                 </div>
                 <div>
                   <Label>Phone (Cell Preferred)</Label>
@@ -511,6 +544,20 @@ export default function ContactPage() {
                 />
               </div>
 
+              <div className="sr-only">
+                <label>
+                  Do not fill this field if you are human
+                  <input
+                    type="text"
+                    name="honeypot"
+                    value={formData.honeypot}
+                    onChange={handleChange}
+                    autoComplete="off"
+                    tabIndex={-1}
+                    className="mt-1 h-10 w-full rounded border border-[#d3d3d3] px-3"
+                  />
+                </label>
+              </div>
               <div className="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-[1fr_auto] sm:items-end">
                 <div>
                   <p className="mb-2 text-[12px] font-medium text-[#2d241b]">
@@ -531,11 +578,17 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="h-11.5 w-full sm:w-auto rounded-xs bg-[linear-gradient(180deg,#ff8c3f_0%,#f16724_100%)] px-6 text-[14px] sm:text-[16px] font-bold uppercase tracking-[0.04em] text-white shadow-[0_6px_14px_rgba(241,103,36,0.35)] transition hover:brightness-[1.03] focus:outline-none focus:ring-2 focus:ring-[#f16724]/40"
+                  disabled={submitState === "submitting"}
+                  className="h-11.5 w-full sm:w-auto rounded-xs bg-[linear-gradient(180deg,#ff8c3f_0%,#f16724_100%)] px-6 text-[14px] sm:text-[16px] font-bold uppercase tracking-[0.04em] text-white shadow-[0_6px_14px_rgba(241,103,36,0.35)] transition hover:brightness-[1.03] focus:outline-none focus:ring-2 focus:ring-[#f16724]/40 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Submit Form
+                  {submitState === "submitting" ? "Submitting..." : "Submit Form"}
                 </button>
               </div>
+              {serverError && (
+                <div className="mt-4 rounded-lg border border-[#e3b3a1] bg-[#ffe5db] px-4 py-3 text-[13px] text-[#8e3e23]">
+                  {serverError}
+                </div>
+              )}
 
               {submitState === "success" && (
                 <div className="mt-5 rounded-lg border border-[#c9ddb7] bg-[#f3faea] px-4 py-3 text-[13px] text-[#406127]">

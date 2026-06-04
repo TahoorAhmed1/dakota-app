@@ -17,28 +17,13 @@ const menu: MenuItem[] = [
   { label: "HOME", href: "/" },
   { label: "ABOUT", href: "/about" },
   { label: "AVAILABILITY", href: "/availability" },
+  { label: "RATES & PRICING", href: "/rates" },
+  { label: "PAYMENTS", href: "/payments" },
   { label: "CONTACT", href: "/contact" },
   { label: "QUOTE-RESERVE", href: "/quote-reserve" },
   { label: "CAMPS & MAP", href: "/camps" },
   { label: "DISCOUNTS", href: "/discounts" },
-  {
-    label: "RESOURCES",
-    href: "/resources",
-    dropdown: [
-      {
-        label: "Rates & Pricing",
-        href: "/rates",
-        desc: "Package rates & booking info",
-      },
-      { label: "NEWS", href: "/news", desc: "Latest news & updates" },
-
-      {
-        label: "Policies & Info",
-        href: "/resources",
-        desc: "Hunting policies, FAQ & more",
-      },
-    ],
-  },
+  { label: "RESOURCES", href: "/resources" },
 ];
 
 function Header() {
@@ -83,6 +68,7 @@ function Header() {
                     key={item.label}
                     className="relative"
                     onMouseEnter={() => setOpenDropdown(item.label)}
+                    onMouseLeave={() => setOpenDropdown(null)}
                   >
                     <Link
                       href={item.href}
@@ -96,7 +82,7 @@ function Header() {
                       <span className="text-[10px]">▾</span>
                     </Link>
                     {openDropdown === item.label && (
-                      <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3" onMouseLeave={() => setOpenDropdown(null)}>
+                      <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
                         <div className="min-w-56 overflow-hidden rounded-xl border border-[#e9e2db] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.12)]">
                           {item.dropdown!.map((child) => (
                             <Link

@@ -55,6 +55,7 @@ type ContactPayload = {
   lastName?: string;
   email?: string;
   stateProvince?: string;
+  state?: string;
   phone?: string;
   additionalComments?: string;
   honeypot?: string;
@@ -74,7 +75,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const body = (await req.json()) as ContactPayload;
+    const rawBody = (await req.json()) as ContactPayload;
+    const body: ContactPayload = {
+      ...rawBody,
+      stateProvince: rawBody.stateProvince ?? rawBody.state ?? "",
+    };
 
     if (body.honeypot) {
       return NextResponse.json(
