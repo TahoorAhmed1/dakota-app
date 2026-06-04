@@ -143,6 +143,7 @@ function delay(ms: number) {
 export default function QuoteReservePage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
   const [quotePdfUrl, setQuotePdfUrl] = useState("");
 
@@ -482,6 +483,51 @@ export default function QuoteReservePage() {
     const errors = validateStepTwo();
     setValidationErrors(errors);
     if (Object.keys(errors).length === 0) setStep(3);
+  };
+
+  const handleDownloadPdf = async () => {
+    const errors = validateStepThree();
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setIsDownloadingPdf(true);
+
+    try {
+      const response = await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          seasonLabel: groupData.seasonLabel,
+          campId: groupData.campId,
+          weekId: groupData.weekId,
+          packageId: groupData.packageId,
+          hunterCount: groupData.hunterCount,
+          earlyBird: groupData.earlyBird === "Yes",
+          hunters: hunters.map((h) => ({
+            name: h.name,
+            discountCode: h.discountCode,
+            extraDays: h.extraDays,
+            extraNights: h.extraNights,
+          })),
+          quoteEmail,
+          bookingName,
+          bookingEmail,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.pdfUrl) {
+        // Open PDF in a new tab
+        window.open(data.pdfUrl, "_blank");
+        return;
+      }
+
+      setSubmitMessage(data.error || "Unable to generate quotation PDF.");
+    } catch (error) {
+      setSubmitMessage("Network error. Please try again.");
+    } finally {
+      setIsDownloadingPdf(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -1409,15 +1455,26 @@ export default function QuoteReservePage() {
                       >
                         {labels?.step3?.backButton ?? "Back to Step 2"}
                       </button>
-                      <button
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
-                        className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-wider text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
-                      >
-                        {isSubmitting
-                          ? "Redirecting..."
-                          : labels?.step3?.submitButton ?? "Pay Deposit with PayPal »"}
-                      </button>
+                      <div className="flex flex-col-reverse gap-3 md:flex-row md:items-center md:gap-3">
+                        <button
+                          onClick={handleDownloadPdf}
+                          disabled={isDownloadingPdf}
+                          className="w-full rounded-md border-2 border-[#f26f2d] bg-white px-8 py-4 text-[15px] font-bold uppercase tracking-wider text-[#f26f2d] shadow-md transition hover:bg-[#fff7ee] disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+                        >
+                          {isDownloadingPdf
+                            ? "Generating PDF..."
+                            : "Download Quotation PDF"}
+                        </button>
+                        <button
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                          className="w-full rounded-md bg-[#f26f2d] px-8 py-4 text-[15px] font-bold uppercase tracking-wider text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50 md:w-auto"
+                        >
+                          {isSubmitting
+                            ? "Redirecting..."
+                            : labels?.step3?.submitButton ?? "Pay Deposit with PayPal »"}
+                        </button>
+                      </div>
                     </div>
 
                     {submitMessage && (
