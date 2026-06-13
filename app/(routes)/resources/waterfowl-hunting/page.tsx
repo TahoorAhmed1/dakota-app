@@ -75,20 +75,9 @@ This MAP from USFW shows the areas where duck nesting pairs per square mile is h
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-          {[
-            { src: "/images/waterfowl-1.jpg", alt: "Duck Hunting" },
-            { src: "/images/waterfowl-2.jpg", alt: "Goose Hunting" },
-            { src: "/images/waterfowl-3.jpg", alt: "Waterfowl Camp" },
-          ].map((img, idx) => (
-            <div key={idx} className="overflow-hidden rounded-lg shadow-md">
-              <Image src={img.src} alt={img.alt} width={400} height={300} className="object-cover w-full h-full" />
-            </div>
-          ))}
-        </div>
+     
         </section>
       </main>
-      {/* <OurPartners /> */}
       <LatestNews />
     </>
   );

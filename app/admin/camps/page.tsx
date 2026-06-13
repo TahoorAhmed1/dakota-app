@@ -173,7 +173,6 @@ export default function AdminCampsPage() {
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-white">Name</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-white">Slug</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-white">Nightly Rate</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-white">Min Group</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-white">Capacity</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-white">Active</th>
@@ -197,14 +196,7 @@ export default function AdminCampsPage() {
                       className="rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300 w-full"
                     />
                   </td>
-                  <td className="px-6 py-4">
-                    <input
-                      type="number"
-                      value={camp.nightlyLodgingRate ?? ""}
-                      onChange={(e) => handleUpdate(camp.id, "nightlyLodgingRate", e.target.value === "" ? null : Number(e.target.value))}
-                      className="w-28 rounded-xl border border-black/20 px-3 py-2 text-black focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
-                    />
-                  </td>
+                
                   <td className="px-6 py-4">
                     <input
                       type="number"
