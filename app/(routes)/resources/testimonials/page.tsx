@@ -1,4 +1,5 @@
 // app/resources/testimonials/page.tsx
+import Header from "@/components/common/header";
 import LatestNews from "@/components/NewsEvent";
 import Link from "next/link";
 
@@ -72,7 +73,6 @@ export default function TestimonialsPage() {
       </main>
       {/* <OurPartners /> */}
       <LatestNews />
-      <Footer />
     </>
   );
 }

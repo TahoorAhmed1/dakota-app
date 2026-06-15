@@ -1,5 +1,7 @@
 // app/resources/pheasant-outlook/page.tsx
+
 import LatestNews from "@/components/NewsEvent";
+import Footer from "@/components/Footer"; // Add correct path
 import Link from "next/link";
 
 export default function PheasantOutlookPage() {
@@ -9,11 +11,24 @@ export default function PheasantOutlookPage() {
         {/* Banner Section */}
         <section className="relative flex min-h-70 items-center justify-center overflow-hidden bg-[#E7DCCF] px-4 pb-12 pt-24 sm:min-h-80 sm:px-6 sm:pb-14 sm:pt-28 md:min-h-90">
           <div className="relative z-10 flex flex-col items-center text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#241304] mb-4">UGUIDE Pheasant Outlook</h1>
-            <nav className="text-sm text-[#281703]" aria-label="Breadcrumb">
-              <Link href="/" className="hover:text-[#E4803A]">Home</Link>
+            <h1 className="mb-4 text-3xl font-bold text-[#241304] sm:text-4xl">
+              UGUIDE Pheasant Outlook
+            </h1>
+
+            <nav
+              className="text-sm text-[#281703]"
+              aria-label="Breadcrumb"
+            >
+              <Link href="/" className="hover:text-[#E4803A]">
+                Home
+              </Link>
               <span className="mx-2">›</span>
-              <Link href="/resources" className="hover:text-[#E4803A]">Resources</Link>
+              <Link
+                href="/resources"
+                className="hover:text-[#E4803A]"
+              >
+                Resources
+              </Link>
               <span className="mx-2">›</span>
               <span>Pheasant Outlook</span>
             </nav>
@@ -21,22 +36,45 @@ export default function PheasantOutlookPage() {
         </section>
 
         {/* Content Section */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-12">
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <p className="mb-6 text-[#31261d]">
+            Stay informed on the latest pheasant hunting forecasts, crop reports,
+            and seasonal outlooks.
+          </p>
 
-        <p className="mb-6 text-[#31261d]">
-          Stay informed on the latest pheasant hunting forecasts, crop reports, and seasonal outlooks.
-        </p>
+          <ul className="space-y-3 text-[#31261d]">
+            <li>
+              <Link
+                href="/resources/pheasant-outlook/2026-food-plot-system"
+                className="text-[#E4803A] underline"
+              >
+                UGUIDE 2026 Food Plot System
+              </Link>
+            </li>
 
-        <ul className="space-y-3 text-[#31261d]">
-          <li><Link href="/resources/pheasant-outlook/2026-food-plot-system" className="text-[#E4803A] underline">UGUIDE 2026 Food Plot System</Link></li>
-          <li><Link href="/resources/pheasant-outlook/2025-season-end-conclusions" className="text-[#E4803A] underline">2025 Pheasant Season End Conclusions</Link></li>
-          <li><Link href="/resources/pheasant-outlook/2025-week-8-crop-harvest" className="text-[#E4803A] underline">2025 Week 8 Crop & Pheasant Harvest</Link></li>
-        </ul>
+            <li>
+              <Link
+                href="/resources/pheasant-outlook/2025-season-end-conclusions"
+                className="text-[#E4803A] underline"
+              >
+                2025 Pheasant Season End Conclusions
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="/resources/pheasant-outlook/2025-week-8-crop-harvest"
+                className="text-[#E4803A] underline"
+              >
+                2025 Week 8 Crop & Pheasant Harvest
+              </Link>
+            </li>
+          </ul>
         </section>
+
+        <LatestNews />
       </main>
-      {/* <OurPartners /> */}
-      <LatestNews />
-      <Footer />
+
     </>
   );
 }

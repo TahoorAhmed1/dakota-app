@@ -1,23 +1,50 @@
-﻿import Image from "next/image";
+﻿"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { prisma } from "@/lib/prisma";
+type NewsPost = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  createdAt: string;
+};
 
-async function getLatestPosts() {
-  try {
-    return await prisma.newsPost.findMany({
-      where: { isPublished: true },
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      select: { id: true, slug: true, title: true, description: true, imageUrl: true, createdAt: true },
-    });
-  } catch {
-    return [];
-  }
-}
+export default function LatestNews() {
+  const [posts, setPosts] = useState<NewsPost[]>([]);
 
-export default async function LatestNews() {
-  const posts = await getLatestPosts();
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadLatestPosts() {
+      try {
+        const response = await fetch("/api/news", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch news posts.");
+        }
+
+        const payload = (await response.json()) as NewsPost[];
+        setPosts(payload.slice(0, 3));
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        setPosts([]);
+      }
+    }
+
+    loadLatestPosts();
+
+    return () => controller.abort();
+  }, []);
 
   if (posts.length === 0) return null;
 
