@@ -518,7 +518,7 @@ export default function QuoteReservePage() {
       const data = await response.json();
       if (response.ok && data.pdfUrl) {
         // Open PDF in a new tab
-        window.open(data.pdfUrl, "_blank");
+        window.open(data.pdfUrl, "_blank", "noopener,noreferrer");
         return;
       }
 
@@ -1230,7 +1230,7 @@ export default function QuoteReservePage() {
 
                   {/* Desktop pricing table */}
                   <div className="hidden md:block overflow-x-auto px-2 py-4 sm:px-4">
-                    <table className="min-w-[900px] w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
+                    <table className="min-w-225 w-full border border-[#d9d9d9] bg-white text-[12px] text-[#2b1a0f]">
                       <thead>
                         <tr className="bg-[#f26f2d] text-left text-white">
                           <th className="border border-[#d9d9d9] px-2 py-2">#</th>

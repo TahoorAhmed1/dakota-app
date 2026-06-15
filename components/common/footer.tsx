@@ -105,7 +105,7 @@ export default function Footer() {
     <footer className="Footerback relative bg-cover bg-center py-8 text-black sm:py-10">
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col items-center text-center pt-10">
-          <Image src={logo} alt="U Guide" className="mb-3 mt-8 h-auto w-[180px] sm:mt-12 sm:w-[220px]" />
+          <Image src={logo} alt="U Guide" className="mb-3 mt-8 h-auto w-45 sm:mt-12 sm:w-55" />
 
           <div className="mt-2 flex flex-wrap justify-center gap-3 sm:gap-4">
             {socialLinks.map(({ Icon, href }, i) => (
@@ -129,10 +129,7 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Contact</h3>
             <p className="text-sm leading-7">
-              Chris Hitzeman - UGUIDE<br/>
-              Faulkton, SD 57438<br/>
-              chris@uguidesdpheasants.com<br/>
-              (605) 598-6925
+              Start with the Contact or Quote-Reserve forms so we can qualify your group and route the request to the right camp.
             </p>
           </div>
 
@@ -162,7 +159,7 @@ export default function Footer() {
 
             <form
               onSubmit={handleSubmit}
-              className="flex w-full max-w-[420px] flex-col gap-3 rounded-lg bg-white p-3 shadow-[0_1px_0_rgba(0,0,0,0.05)] sm:h-[58px] sm:flex-row sm:items-center sm:gap-0 sm:px-2.5 sm:py-2"
+              className="flex w-full max-w-105 flex-col gap-3 rounded-lg bg-white p-3 shadow-[0_1px_0_rgba(0,0,0,0.05)] sm:h-14.5 sm:flex-row sm:items-center sm:gap-0 sm:px-2.5 sm:py-2"
             >
               <input
                 type="email"

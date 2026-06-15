@@ -94,6 +94,8 @@ export default function PackagesSection() {
                 </div>
                 <Link
                   href="/quote-reserve"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`mt-8 rounded-md px-6 py-3 text-sm font-semibold transition-colors ${
                     i === 1
                       ? "bg-white text-orange-600 hover:bg-orange-50"
@@ -110,6 +112,8 @@ export default function PackagesSection() {
         <div className="mt-4 text-center">
           <Link
             href="/rates"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-xs font-semibold uppercase tracking-wide text-orange-500 underline underline-offset-4 hover:text-orange-400"
           >
             View Full Rates & Pricing →

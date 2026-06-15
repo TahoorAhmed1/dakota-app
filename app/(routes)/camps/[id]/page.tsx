@@ -11,6 +11,14 @@ import flukton6 from "@/assets/flukton/image6.jpg";
 
 type InformativeLink = { label: string; href: string };
 
+const workingInformativeLinks: InformativeLink[] = [
+  { label: "Lodging Photos", href: "#lodging-photos" },
+  { label: "Amenities", href: "#amenities" },
+  { label: "Videos", href: "#videos" },
+  { label: "Reviews", href: "#reviews" },
+  { label: "Request Quote", href: "/quote-reserve" },
+];
+
 type CampDetail = {
   name: string;
   location: string;
@@ -20,7 +28,6 @@ type CampDetail = {
   amenities: string[];
   images: (string | StaticImageData)[];
   informativeLinks?: InformativeLink[];
-  lodgingPhotosUrl?: string;
   packages?: string[];
   acres?: string;
   highlights?: string[];
@@ -56,7 +63,6 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activities", href: "#" },
     ],
-    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/gunners-haven-lodging-amenities/",
     packages: [
       "3-Day Hunt - Minimum 6 Hunters and up for 4-Nights Lodging (Capacity 10)",
     ],
@@ -106,7 +112,6 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activities", href: "#" },
     ],
-    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/meadow-creek-pheasant-camp-lodging-amenities/",
     packages: [
       "4-Day Hunt - See Package Options for Minimums",
       "3-Day Hunt - See Package Options for Minimums",
@@ -162,7 +167,6 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activities", href: "#" },
     ],
-    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/Pheasant-Camp-Lodge-Lodging-Amenities/",
     packages: [
       "3-Days Hunting & 4-Nights Lodging for up to 12 Hunters. See Minimum's & Capacities Chart for more info",
     ],
@@ -217,7 +221,6 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activities", href: "#" },
     ],
-    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/west-river-adventures-lodging-amenities/",
     packages: [
       "3-Days Hunting & 4-Nights Lodging for up to 17 Hunters. See Minimum's & Capacities Chart for more info",
     ],
@@ -255,7 +258,6 @@ const campDetails: Record<string, CampDetail> = {
       { label: "Availability", href: "#" },
       { label: "Tourism Activites", href: "#" },
     ],
-    lodgingPhotosUrl: "https://www.uguidesdpheasants.com/faulkton-pheasant-camp-lodging-amenities/",
     packages: [
       "2 Hunt Package Options",
       "4-Day Hunt - Minimum 13 or More Hunters for 4-Days Hunting & 5-Nights Lodging, Or",
@@ -326,7 +328,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
   return (
     <main className="flex flex-col">
       {/* Hero */}
-      <section className="CampsImage relative flex min-h-[340px] items-center justify-center px-4 pb-20 pt-24 sm:min-h-[430px] sm:px-6 sm:pb-24 sm:pt-28 md:min-h-[520px] lg:min-h-[580px]">
+      <section className="CampsImage relative flex min-h-85 items-center justify-center px-4 pb-20 pt-24 sm:min-h-107.5 sm:px-6 sm:pb-24 sm:pt-28 md:min-h-130 lg:min-h-145">
         <div className="absolute inset-0 bg-[#f1c08b]/35" />
         <div className="absolute inset-0 bg-black/10" />
 
@@ -361,6 +363,19 @@ export default async function CampDetailPage({ params }: { params: any }) {
             <span>›</span>
             <span>{camp.name}</span>
           </div>
+        </div>
+        <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-white/70 animate-bounce">
+          <span className="text-[11px] tracking-widest uppercase">Scroll Down</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
       </section>
 
@@ -417,17 +432,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
 
               <div className="mt-8 text-black">
                 <div className="mb-4 flex flex-wrap items-center gap-4">
-                  <h3 className="text-xl font-bold text-[#281703]">Amenities</h3>
-                  {camp.lodgingPhotosUrl && (
-                    <a
-                      href={camp.lodgingPhotosUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[#F16724] underline font-semibold"
-                    >
-                      Lodging Photos
-                    </a>
-                  )}
+                  <h3 id="amenities" className="text-xl font-bold text-[#281703]">Amenities</h3>
                 </div>
                 <ul className="space-y-2 text-black">
                   {camp.amenities.map((amenity, index) => (
@@ -439,9 +444,30 @@ export default async function CampDetailPage({ params }: { params: any }) {
                 </ul>
               </div>
 
+              <div className="mt-8 rounded-2xl border border-[#d8c7b7] bg-[#fffaf5] p-4">
+                <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-[#281703]">
+                  Informative Links
+                </h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {workingInformativeLinks.map((link) => (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      target={link.href.startsWith("#") ? undefined : "_blank"}
+                      rel={link.href.startsWith("#") ? undefined : "noopener noreferrer"}
+                      className="rounded-full border border-[#e4cdb7] bg-white px-3 py-1.5 text-xs font-semibold text-[#e4803a] transition hover:border-[#e4803a] hover:text-[#281703]"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
               <div className="mt-8">
                 <Link
                   href="/quote-reserve"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block text-[#F16724] underline font-semibold transition-colors"
                 >
                   Request Quote
@@ -452,7 +478,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
             <div className="space-y-6">
               {/* VIDEOS */}
               {camp.videos && camp.videos.length > 0 && (
-                <div>
+                <div id="videos">
                   <h3 className="mb-3 font-bold text-[#281703]">Videos</h3>
                   <div className="space-y-4">
                     {camp.videos.map((v, i) => (
@@ -474,7 +500,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
         {camp.reviews && (
           <div className="mx-auto mt-5 max-w-7xl">
             <div className="mb-2 text-left">
-              <h3 className="text-3xl font-bold text-[#281703]">
+              <h3 id="reviews" className="text-3xl font-bold text-[#281703]">
                 {camp.reviewTitle || "Reviews"}
               </h3>
             </div>
@@ -490,7 +516,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
           </div>
         )}
 
-        <div className="mx-auto mt-10 grid max-w-7xl grid-cols-1 gap-10">
+        <div id="lodging-photos" className="mx-auto mt-10 grid max-w-7xl grid-cols-1 gap-10">
           {camp.images.map((img, i) => (
             <Image
               key={i}

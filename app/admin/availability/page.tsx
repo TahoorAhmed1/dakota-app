@@ -238,7 +238,7 @@ function SlotCell({
                   min={1}
                   value={edit.minGroupSize}
                   onChange={(e) => setEdit((d) => ({ ...d, minGroupSize: e.target.value }))}
-                  className="w-full rounded-xl border border-black/20 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                  className="w-full rounded-xl border text-black border-black/20 px-2 py-1.5 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-300"
                 />
               </div>
               <div>

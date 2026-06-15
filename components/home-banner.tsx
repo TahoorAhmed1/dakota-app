@@ -20,16 +20,18 @@ function HomeBanner() {
           />
 
           {/* Motto */}
-          <p className="text-center text-lg font-semibold tracking-[0.22em] text-white/90 uppercase drop-shadow sm:text-2xl md:text-3xl lg:text-4xl">
+          <p className="max-w-4xl text-left text-lg font-semibold tracking-[0.22em] text-white/90 uppercase drop-shadow sm:text-2xl md:text-3xl lg:text-4xl">
             {motto}
           </p>
 
-          <div className=" w-full  items-center gap-4 py-4 sm:py-6 md:w-auto md:flex hidden md:gap-6 lg:gap-10">
-            <Link href="/contact" className="w-full rounded-md border-2 border-white px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-white hover:text-[#2b1a0f] md:w-auto">
+          <div className="hidden w-full items-center gap-4 py-4 sm:py-6 md:flex md:w-auto md:gap-6 lg:gap-10">
+            <Link href="/contact" target="_blank" rel="noopener noreferrer" className="w-full rounded-md border-2 border-white px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-white hover:text-[#2b1a0f] md:w-auto">
               {ctaPrimary}
             </Link>
             <Link
               href="/quote-reserve"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full rounded-md border-2 border-orange-400 bg-orange-500 px-8 py-4 text-center text-base font-semibold text-white transition-colors hover:bg-orange-400 md:w-auto"
             >
               {ctaSecondary}

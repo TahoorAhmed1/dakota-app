@@ -249,8 +249,7 @@ export default function ResourcesAccordionSection() {
       <div className="mx-auto max-w-280">
         <div className="mx-auto max-w-220 text-center">
           <h2 className="text-[32px] font-bold leading-[1.08] tracking-[-0.02em] text-[#281703] sm:text-[42px] lg:text-[58px]">
-            UGUIDE South Dakota Pheasant Hunting Specials
-          </h2>
+UGUIDE South Dakota pheasant hunting specials and resource listings          </h2>
 
           <p className="mx-auto mt-4 max-w-190 text-[14px] font-semibold leading-normal text-[#2f2b27] sm:text-[15px]">
             Click on specific links to get more info about the special or related camp. Remember to go to{" "}

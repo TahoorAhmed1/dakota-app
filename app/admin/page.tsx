@@ -64,6 +64,8 @@ export default function AdminDashboard() {
     { label: "Pricing Rules", value: config.pricingRows.length, href: "/admin/pricing" },
     { label: "Volume Discounts", value: config.volumeRules.length, href: "/admin/pricing" },
     { label: "Discount Codes", value: config.discountRules.length, href: "/admin/discounts" },
+    { label: "Waitlist Entries", value: "View", href: "/admin/waitlist" },
+    { label: "Newsletter Subscribers", value: "View", href: "/admin/newsletter" },
   ];
 
   return (
@@ -104,6 +106,8 @@ export default function AdminDashboard() {
             { label: "Configure Pricing", href: "/admin/pricing" },
             { label: "Edit Calculator Settings", href: "/admin/settings" },
             { label: "Set Up Discounts", href: "/admin/discounts" },
+            { label: "View Waitlist", href: "/admin/waitlist" },
+            { label: "View Newsletter Subscribers", href: "/admin/newsletter" },
           ].map((action) => (
             <Link
               key={action.href}

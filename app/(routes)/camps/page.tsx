@@ -52,7 +52,7 @@ const camps: CampData[] = [
     description:
       "Rolling wheat fields and shelter belts in the heart of central South Dakota pheasant country. Strong bird populations all season long with comfortable on-site lodging.",
     position: [45.034, -99.148],
-    href: "https://www.uguidesdpheasants.com/pheasant-hunts/faulkton/",
+    href: "/camps/faulkton",
     directionsUrl: "https://www.google.com/maps?q=45.034,-99.148",
   },
   {
@@ -65,7 +65,7 @@ const camps: CampData[] = [
     description:
       "Prime north-central habitat with quick access to multiple shelterbelt blocks and excellent mixed grain field edges. A favorite among returning UGUIDE hunters.",
     position: [45.509, -99.99],
-    href: "https://www.uguidesdpheasants.com/pheasant-hunts/gunners-haven/",
+    href: "/camps/gunners-haven",
     directionsUrl: "https://www.google.com/maps?q=45.509,-99.990",
   },
   {
@@ -78,7 +78,7 @@ const camps: CampData[] = [
     description:
       "Expansive native grass and crop land in Perkins County with low hunting pressure. Outstanding late-season pheasant movement across wide-open northwest prairie.",
     position: [45.65, -102.199],
-    href: "https://www.uguidesdpheasants.com/pheasant-hunts/meadow-creek/",
+    href: "/camps/meadow-creek",
     directionsUrl: "https://www.google.com/maps?q=45.857,-102.199",
   },
   {
@@ -91,7 +91,7 @@ const camps: CampData[] = [
     description:
       "South-central river corridor access with cut corn, milo, and cattail slough properties. Full lodge amenities for the most discerning upland hunting group.",
     position: [43.157, -98.543],
-    href: "https://www.uguidesdpheasants.com/pheasant-hunts/pheasant-camp-lodge/",
+    href: "/camps/pheasant-camp-lodge",
     directionsUrl: "https://www.google.com/maps?q=43.157,-98.543",
   },
   {
@@ -104,7 +104,7 @@ const camps: CampData[] = [
     description:
       "Classic west-river terrain with Missouri River breaks, large wheat fields, and native grasslands. An authentic western South Dakota fair-chase pheasant hunt.",
     position: [45.43, -101.071],
-    href: "https://www.uguidesdpheasants.com/pheasant-hunts/west-river-adventures/",
+    href: "/camps/west-river",
     directionsUrl: "https://www.google.com/maps?q=45.430,-101.071",
   },
 ];
@@ -454,6 +454,8 @@ export default function CampsPage() {
                 <div className="pt-2 text-center">
                   <Link
                     href="/quote-reserve"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-7 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-orange-400"
                   >
                     Book Your Hunt Online

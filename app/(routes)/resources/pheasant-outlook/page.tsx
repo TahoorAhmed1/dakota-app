@@ -1,14 +1,10 @@
 // app/resources/pheasant-outlook/page.tsx
-import Header from "@/components/common/header";
-import Footer from "@/components/common/footer";
-import OurPartners from "@/components/ourPartners";
 import LatestNews from "@/components/NewsEvent";
 import Link from "next/link";
 
 export default function PheasantOutlookPage() {
   return (
     <>
-      <Header />
       <main className="flex flex-col">
         {/* Banner Section */}
         <section className="relative flex min-h-70 items-center justify-center overflow-hidden bg-[#E7DCCF] px-4 pb-12 pt-24 sm:min-h-80 sm:px-6 sm:pb-14 sm:pt-28 md:min-h-90">

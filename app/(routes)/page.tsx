@@ -41,6 +41,23 @@ export default async function Home() {
       </section>
 
       <PackagesSection />
+
+      <section className="bg-white px-4 py-10 md:px-6 md:py-16">
+        <div className="mx-auto max-w-6xl rounded-3xl border border-[#e2d4c2] bg-[#fdf8f3] px-4 py-10 shadow-[0_12px_30px_rgba(40,23,3,0.06)] sm:px-6 lg:px-10">
+          <div className="mx-auto mb-8 max-w-2xl text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-500">Waitlist</p>
+            <h2 className="mt-3 text-3xl font-bold uppercase text-black sm:text-4xl">
+              Join the Waitlist
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-black/70 sm:text-base">
+              If your preferred hunt week is full, leave your details below and we’ll contact you when a spot opens.
+            </p>
+          </div>
+
+          <WaitlistForm />
+        </div>
+      </section>
+
       <Testimonials />
 
 

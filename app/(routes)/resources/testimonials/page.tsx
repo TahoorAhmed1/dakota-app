@@ -1,7 +1,4 @@
 // app/resources/testimonials/page.tsx
-import Header from "@/components/common/header";
-import Footer from "@/components/common/footer";
-import OurPartners from "@/components/ourPartners";
 import LatestNews from "@/components/NewsEvent";
 import Link from "next/link";
 
