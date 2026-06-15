@@ -40,7 +40,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <PackagesSection />
 
       <section className="bg-white px-4 py-10 md:px-6 md:py-16">
         <div className="mx-auto max-w-6xl rounded-3xl border border-[#e2d4c2] bg-[#fdf8f3] px-4 py-10 shadow-[0_12px_30px_rgba(40,23,3,0.06)] sm:px-6 lg:px-10">
