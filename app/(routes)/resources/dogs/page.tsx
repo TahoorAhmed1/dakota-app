@@ -35,7 +35,7 @@ export default function DogsPage() {
           <ul className="list-disc pl-5 space-y-2 text-[#31261d]">
             <li>
               <Link
-                href="/resources/dogs/finding-a-breeder"
+                href="/resources/dogs/breeder"
                 className="text-[#E4803A] underline"
               >
                 Finding a Breeder
@@ -49,7 +49,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/pre-season-conditioning"
+                href="/resources/dogs/birds"
                 className="text-[#E4803A] underline"
               >
                 Pre-Season Conditioning – Health & More Birds
@@ -66,7 +66,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/retriever-marking"
+                href="/resources/dogs/dogmark"
                 className="text-[#E4803A] underline"
               >
                 Get ready for your U-Guide Hunt, can your dog mark?
@@ -77,7 +77,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/intro-to-bird-and-gun"
+                href="/resources/dogs/birdandgun"
                 className="text-[#E4803A] underline"
               >
                 INTRO TO BIRD AND GUN
@@ -88,7 +88,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/hunting-dog-training-tips"
+                href="/resources/dogs/trainingtips"
                 className="text-[#E4803A] underline"
               >
                 Hunting Dog Training Tips
@@ -99,7 +99,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/warm-the-water"
+                href="/resources/dogs/tipg1"
                 className="text-[#E4803A] underline"
               >
                 Warm the Water: Hunting Dog Training Tip G1
@@ -110,7 +110,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/puppy-name-selection"
+                href="/resources/dogs/nameselection"
                 className="text-[#E4803A] underline"
               >
                 Your New Puppy - Name Selection
@@ -121,7 +121,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/upland-bird-dog-selection"
+                href="/resources/dogs/puppyselection"
                 className="text-[#E4803A] underline"
               >
                 Upland Bird Dog Puppy Selection
@@ -132,7 +132,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/german-shorthair-pointer"
+                href="/resources/dogs/pointer"
                 className="text-[#E4803A] underline"
               >
                 My Game Player - German Shorthair Pointer
@@ -143,7 +143,7 @@ export default function DogsPage() {
             </p>
             <li>
               <Link
-                href="/resources/dogs/hunting-puppies"
+                href="/resources/dogs/huntingpuppy"
                 className="text-[#E4803A] underline"
               >
                 Hunting Puppies, Where to Find Them and How Much to Spend

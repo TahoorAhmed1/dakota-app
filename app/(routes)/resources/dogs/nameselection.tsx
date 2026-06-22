@@ -1,0 +1,16 @@
+By: Russel Madison - Buckeye Shorthairs
+for UGUIDE South Dakota Pheasant Hunting
+
+How to Name a New Puppy
+
+As you ride home from the final visit at the breeders toting puppy in hand, you now face one of the biggest challenges you will ever face. This decision is one that you will ultimately have to live with for the remainder of the dog's life. What are you going to name this fine specimen of a bird dog?
+
+The naming process is a job for the breeder. Most good breeders want a way to track their litters as they grow and mature. It is particularly useful when dogs are entered into different tests and trials. All the rankings and results are kept in record form leaving a trail for a breeder to follow, thus giving evidence of breeding success. Since most of the puppies will be carried away, and sometimes far, far away, it becomes difficult to track the success of the breeding. Breeders will use a method to distinguish one breeding from another; the most popular is alphabetical. In the first breeding, all the puppies will have a registered name that begins with the letter "A". The second litter will be "B" and so on. Some breeders will allow the new owner to assist in the naming as long as the correct nomenclature is followed. Lastly, a breeder may also add a phrase or word to designate what kennel is responsible for that particular bloodline or breeding.
+
+Not all breeders use the above and will have the dog named before you get them home. In the case that you get to select the registered name, I suggest the name be picked in such a manner that the dog can live up to the name. The same superstition is used in horse racing. It is thought that if you name a horse "Black Horse 2nd", then the best the horse will ever finish is second. I think the same holds true for dogs. I would recommend giving a name that only leaves the young hopeful reaching for the stars.
+
+As stated previously, the breeder will probably be the person to give the Registered Name, but that does not mean that you can't give a second name (kennel name). A kennel name will be used as the dog's everyday name. It is worth mentioning at this point that experts and studies alike have proven that dogs respond best to 2 syllable names and 1 syllable commands. One will also want to be certain to select a name that will not bring shame or disarray while hunting in the bird fields. Eventually there will come a time that you will be forced to shout your dog's name and you do not want to become embarrassed when doing so. I once knew a person who allowed his daughter to name the new addition to the family and regretted it the rest of Toto's life. Yes he actually shouted out "Dorothy's Lil Toto" when hunting. It was somewhat difficult to keep a straight face when he occasionally belted out in a deep masculine voice, "Dorothy's Lil Toto". Shortly after that, the dog's name was shortened to Toto.
+
+In conclusion, naming a new puppy is always a fun experience. Some thought should precede the final name selection. If done correctly, the young hopeful will have a name to be proud of and the name will not be limiting by nature.
+
+Russel Madison is the owner of www.buckeyeshorthairs.com in Ohio. Russel breeds and trains German Shorthairs and also has a hunting guide service.
