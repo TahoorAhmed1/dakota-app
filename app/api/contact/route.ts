@@ -156,24 +156,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (process.env.CONTACT_WEBHOOK_URL) {
-      const webhookResponse = await fetch(process.env.CONTACT_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submission),
-      });
 
-      if (!webhookResponse.ok) {
-        return NextResponse.json(
-          { error: "Submission failed while forwarding to webhook." },
-          { status: 502 }
-        );
-      }
-    } else {
-      console.log("CONTACT FORM SUBMISSION:", submission);
-    }
 
     return NextResponse.json({
       message: "Thank you. Your request has been submitted successfully.",

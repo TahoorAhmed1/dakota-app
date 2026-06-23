@@ -376,7 +376,7 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
                 className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] items-center text-sm border-b bg-white border-[#3a2b20]"
               >
                 <div className="p-3 text-center flex justify-center items-center h-full text-orange-600 font-semibold border-r border-[#3a2b20]">
-                  {row.week}
+                  {row.week.split("—")[0]}
                 </div>
                 <div className="p-3 text-[#4a3b2f] flex items-center h-full border-r border-[#3a2b20]">
                   {row.date}

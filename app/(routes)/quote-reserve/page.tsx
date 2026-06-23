@@ -238,21 +238,18 @@ export default function QuoteReservePage() {
     [config, groupData.weekId]
   );
 
-  const availablePricingRows = useMemo(() => {
+  const matchingPricingRows = useMemo(() => {
     if (!config || !groupData.campId || !groupData.weekId) return [];
     return config.pricingRows.filter(
-      (row) =>
-        row.campId === groupData.campId &&
-        row.weekId === groupData.weekId &&
-        row.isAvailable === true
+      (row) => row.campId === groupData.campId && row.weekId === groupData.weekId
     );
   }, [config, groupData.campId, groupData.weekId]);
 
   const packageOptions = useMemo(() => {
     if (!config) return [];
-    const availablePackageIds = new Set(availablePricingRows.map((row) => row.packageId));
+    const availablePackageIds = new Set(matchingPricingRows.map((row) => row.packageId));
     return config.packages.filter((pkg) => availablePackageIds.has(pkg.id));
-  }, [config, availablePricingRows]);
+  }, [config, matchingPricingRows]);
 
   useEffect(() => {
     if (packageOptions.length === 0) {

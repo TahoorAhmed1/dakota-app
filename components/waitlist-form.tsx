@@ -10,15 +10,23 @@ type FormState = {
   notes: string;
 };
 
-const empty: FormState = { name: "", email: "", phone: "", weekPref: "", notes: "" };
+const empty: FormState = {
+  name: "",
+  email: "",
+  phone: "",
+  weekPref: "",
+  notes: "",
+};
 
 export default function WaitlistForm() {
   const [form, setForm] = useState<FormState>(empty);
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -35,7 +43,9 @@ export default function WaitlistForm() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error ?? "Something went wrong");
+        throw new Error(
+          (data as { error?: string }).error ?? "Something went wrong",
+        );
       }
       setStatus("success");
       setForm(empty);
@@ -48,9 +58,9 @@ export default function WaitlistForm() {
   if (status === "success") {
     return (
       <div className="mx-auto max-w-xl rounded-xl border border-green-200 bg-green-50 px-8 py-10 text-center">
-        <p className="text-lg font-bold text-green-800">You&apos;re on the list!</p>
-        <p className="mt-2 text-sm leading-relaxed text-green-700">
-          We&apos;ll reach out as soon as space opens up for your preferred week. Thank you for your interest in UGUIDE.
+        <p className="mt-2 text-xs leading-relaxed text-green-700">
+          We’ll reach out to you shortly with how the Pheasant Camp Waitlist
+          process works. Thank you for your interest in UGUIDE{" "}
         </p>
       </div>
     );
@@ -128,7 +138,9 @@ export default function WaitlistForm() {
         />
       </div>
       {status === "error" && (
-        <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-600">{errorMsg}</p>
+        <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-600">
+          {errorMsg}
+        </p>
       )}
       <button
         type="submit"

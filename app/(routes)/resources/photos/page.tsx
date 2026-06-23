@@ -1,9 +1,9 @@
-// app/resources/photos/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import LatestNews from "@/components/NewsEvent";
 import Link from "next/link";
+import ImagesCatalog from "@/components/common/images-catalog";
 
 type GalleryImage = {
   id: string;
@@ -64,37 +64,9 @@ export default function PhotosPage() {
           </div>
         </section>
 
-        {/* Content Section */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-12">
-          <p className="text-[#31261d] italic mb-6">
-            Browse recent photos from our galleries and jump into the categories that interest you.
-          </p>
+        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+       
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-            {[
-              { title: "Unguided", href: "/resources/photos/unguided" },
-              { title: "Self Guided", href: "/resources/photos/self-guided" },
-              { title: "Prescribed Burns", href: "/resources/photos/prescribed-burns" },
-              { title: "Hatch!", href: "/resources/photos/hatch" },
-              { title: "UGUIDE Food Cover Plots", href: "/resources/photos/food-cover-plots" },
-              { title: "Conservation Farming 2018", href: "/resources/photos/conservation-farming-2018" },
-              { title: "Gunner's Haven", href: "/resources/photos/gunners-haven" },
-              { title: "Pheasant Hunting", href: "/resources/photos/pheasant-hunting" },
-              { title: "Covers", href: "/resources/photos/covers" },
-              { title: "Waterfowl Hunting", href: "/resources/photos/waterfowl" },
-              { title: "Pheasant Camp Lodge", href: "/resources/photos/pheasant-camp-lodge" },
-            ].map((gallery) => (
-              <div key={gallery.title} className="p-4 border rounded shadow-sm hover:shadow-md">
-                <h2 className="font-semibold text-lg mb-2">{gallery.title}</h2>
-                <Link href={gallery.href} className="text-[#E4803A] underline">
-                  View Gallery
-                </Link>
-              </div>
-            ))}
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-[#281703] mb-4">Featured Photos</h2>
             {isLoading ? (
               <p className="text-sm text-[#31261d]">Loading photos…</p>
             ) : error ? (
@@ -110,15 +82,11 @@ export default function PhotosPage() {
                       alt={image.alt || image.caption || "UGUIDE photo"}
                       className="h-72 w-full object-cover"
                     />
-                    <div className="p-4">
-                      <p className="text-sm font-semibold text-[#281703]">{image.caption || image.category}</p>
-                      <p className="text-xs text-[#4d433d]">{image.category}</p>
-                    </div>
+                 
                   </article>
                 ))}
               </div>
             )}
-          </div>
         </section>
       </main>
       <LatestNews />

@@ -12,11 +12,11 @@ import type {
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((m) => m.MapContainer),
-  { ssr: false }
+  { ssr: false },
 );
 const TileLayer = dynamic(
   () => import("react-leaflet").then((m) => m.TileLayer),
-  { ssr: false }
+  { ssr: false },
 );
 const Marker = dynamic(() => import("react-leaflet").then((m) => m.Marker), {
   ssr: false,
@@ -152,7 +152,7 @@ function PropertyMap({ selectedId, onSelectCamp }: MapProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("map");
   const [markerIcon, setMarkerIcon] = useState<DivIcon | null>(null);
   const [activeMarkerIcon, setActiveMarkerIcon] = useState<DivIcon | null>(
-    null
+    null,
   );
   const mapRef = useRef<LeafletMap | null>(null);
   const mapWrapRef = useRef<HTMLDivElement | null>(null);
@@ -261,36 +261,35 @@ function PropertyMap({ selectedId, onSelectCamp }: MapProps) {
           mapRef.current = instance;
         }}
       >
-            <TileLayer
-              url={mapTile[viewMode].url}
-              attribution={mapTile[viewMode].attribution}
-              maxZoom={18}
-            />
-            {camps.map((camp) => (
-              <Marker
-                key={camp.id}
-                position={camp.position}
-                icon={selectedId === camp.id ? activeMarkerIcon : markerIcon}
-                title={camp.name}
-                eventHandlers={{ click: () => onSelectCamp(camp.id) }}
-              >
-                <Tooltip direction="top" offset={[0, -26]} opacity={1}>
-                  {camp.name}
-                </Tooltip>
-                <Popup minWidth={240}>
-                  <div className="space-y-2 p-1 text-left text-sm leading-snug text-[#2e2b28]">
-                    <div>
-                      <p className="font-bold text-[#281703]">{camp.name}</p>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-[#F16724]">
-                        {camp.region}
-                      </p>
-                    </div>
-                    <p className="text-xs leading-relaxed">{camp.description}</p>
-                    
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
+        <TileLayer
+          url={mapTile[viewMode].url}
+          attribution={mapTile[viewMode].attribution}
+          maxZoom={18}
+        />
+        {camps.map((camp) => (
+          <Marker
+            key={camp.id}
+            position={camp.position}
+            icon={selectedId === camp.id ? activeMarkerIcon : markerIcon}
+            title={camp.name}
+            eventHandlers={{ click: () => onSelectCamp(camp.id) }}
+          >
+            <Tooltip direction="top" offset={[0, -26]} opacity={1}>
+              {camp.name}
+            </Tooltip>
+            <Popup minWidth={240}>
+              <div className="space-y-2 p-1 text-left text-sm leading-snug text-[#2e2b28]">
+                <div>
+                  <p className="font-bold text-[#281703]">{camp.name}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#F16724]">
+                    {camp.region}
+                  </p>
+                </div>
+                <p className="text-xs leading-relaxed">{camp.description}</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
     </div>
   );
@@ -338,12 +337,13 @@ function CampCard({
             {camp.description}
           </p>
           <div className="mt-3">
-            <Link
+            <a
+              target="_blank"
               href={`/camps/${camp.id}`}
               className="text-sm font-semibold text-[#F16724] hover:underline"
             >
               Read more
-            </Link>
+            </a>
           </div>
         </div>
       </div>

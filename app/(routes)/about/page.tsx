@@ -248,15 +248,7 @@ export default function AboutPage() {
             </aside>
           </div>
 
-          <p className="mt-10 text-[14px] font-medium leading-relaxed text-[#31261d] sm:text-[15px]">
-            Everything to you need to know about{" "}
-            <Link
-              href="/quote-reserve"
-              className="font-semibold italic text-[#ef7a2e] underline underline-offset-4 transition-opacity hover:opacity-80"
-            >
-              Reserving Next Years UGUIDE South Dakota Pheasant Hunt.
-            </Link>
-          </p>
+       
 
           <div className="mt-12 flex justify-center sm:mt-14">
             <CampingExp />
