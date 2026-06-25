@@ -85,20 +85,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (process.env.QUOTE_WEBHOOK_URL) {
-      await fetch(process.env.QUOTE_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          quoteId: quote.id,
-          quoteNumber,
-          payload,
-          calculation,
-        }),
-      });
-    }
 
     return NextResponse.json({
       success: true,

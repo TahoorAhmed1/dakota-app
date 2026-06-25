@@ -514,7 +514,6 @@ export default function QuoteReservePage() {
 
       const data = await response.json();
       if (response.ok && data.pdfUrl) {
-        // Open PDF in a new tab
         window.open(data.pdfUrl, "_blank", "noopener,noreferrer");
         return;
       }
