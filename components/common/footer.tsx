@@ -137,6 +137,8 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Services</h3>
             <ul className="space-y-2 text-sm">
+              <li><Link href="/faq" className="hover:underline transition-colors">FAQ</Link></li>
+              <li><Link href="/policies" className="hover:underline transition-colors">Policies</Link></li>
               <li><Link href="/availability" className="hover:underline transition-colors">Availability</Link></li>
               <li><Link href="/quote-reserve" className="hover:underline transition-colors">Quote-Reserve</Link></li>
               <li><Link href="/resources/pheasant-outlook" className="hover:underline transition-colors">UGUIDE Pheasant Outlook</Link></li>

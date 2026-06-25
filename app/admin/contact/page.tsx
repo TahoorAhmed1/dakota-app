@@ -1,36 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
-import AdminLoadingState from "@/components/admin/admin-loading-state";
-import { clearAdminKey, getAdminKeyFromStorage } from "@/lib/admin-client";
-
-type ContactSubmission = {
-  id: string;
-  huntType: string;
-  experience: string;
-  minGroupSize: string;
-  maxGroupSize: string;
-  dogPower: string;
-  firstChoice: string;
-  secondChoice: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  stateProvince: string;
-  phone: string;
-  additionalComments: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export default function AdminContactPage() {
-  const router = useRouter();
-  const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+ 
 
   useEffect(() => {
     const load = async () => {
