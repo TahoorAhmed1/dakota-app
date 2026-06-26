@@ -169,36 +169,12 @@ function PackageCard({ pkg }: { pkg: Package }) {
 
 export default function PackagesSection() {
   return (
-    <div className="bg-[#160d04]">
-      {/* ── Key Info Bar ─────────────────────────────────────────────── */}
-      <div className="border-b border-[#3d2810] bg-[#1f1308]">
-        <div className="mx-auto max-w-[1200px] px-5 py-4 sm:px-8">
-          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center text-[11px] font-bold uppercase tracking-[0.15em] text-[#c89b6a]">
-            <li>SD Statewide Limit · 3 Roosters/Day</li>
-            <li className="text-[#3d2810]">|</li>
-            <li>Season Opens 3rd Saturday of October</li>
-            <li className="text-[#3d2810]">|</li>
-            <li>UGUIDE Hunts Through Mid-December</li>
-            <li className="text-[#3d2810]">|</li>
-            <li>
-              <Link
-                href="https://gfp.sd.gov/licenses/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 hover:text-[#d26f2f]"
-              >
-                Buy Your SD License Online →
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
+    <div className="py-24">
+      
 
       {/* ── Section Header ───────────────────────────────────────────── */}
       <section className="mx-auto max-w-[1200px] px-5 pb-0 pt-20 sm:px-8 lg:px-10">
-        <p className="text-center text-[11px] font-bold uppercase tracking-[0.22em] text-[#d26f2f]">
-          Self-Guided Pheasant Hunting
-        </p>
+     
         <h2 className="mt-3 text-center text-4xl font-bold uppercase leading-none tracking-[-0.03em] text-white sm:text-5xl">
           Packages &amp; Pricing
         </h2>
