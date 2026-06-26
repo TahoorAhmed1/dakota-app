@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getAdminKeyFromStorage } from "@/lib/admin-client";
 
 export default function ContactPage() {
   const router = useRouter();
