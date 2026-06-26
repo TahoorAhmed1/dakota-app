@@ -2,8 +2,8 @@ import React from "react";
 
 function page() {
   return (
-    <div>
-      <div className="space-y-6 text-[#31261d]">
+      <main className="px-4 py-10 sm:px-6 sm:py-14 lg:px-8 ">
+      <div className="mx-auto max-w-6xl space-y-8 rounded-3xl  text-black py-20 my-40 shadow-[0_18px_60px_rgba(36,19,4,0.08)] sm:p-10">
         <p>
           With the hunting season just around the corner, now is a good time to
           talk about conditioning your dog for performance during early hunting.
@@ -149,7 +149,7 @@ function page() {
           <p>www.nativedogfood.com</p>
         </footer>
       </div>
-    </div>
+    </main>
   );
 }
 
