@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-white text-black   pt-40">
+    <div className="min-h-screen  text-black   pt-40">
       <div className="mx-auto max-w-5xl px-6 py-12">
         {/* Header */}
         <div className="border-b border-black pb-6">
