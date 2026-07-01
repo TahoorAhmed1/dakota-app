@@ -245,52 +245,54 @@ const campDetails: Record<string, CampDetail> = {
     name: "Faulkton South Dakota Pheasant Hunting | Faulkton, SD",
     location: "Faulkton, South Dakota",
     county: "Faulk County",
-    description: `In regards to habitat and accommodation's, a more thoroughly equipped UGUIDE Pheasant Camp you will not find. The Faulkton Pheasant Camp is located in  the heart of central South Dakota. This camps offers every type of cover in habitat you could ask for in a wild pheasant hunting property. Please review links, video and testimonials below to get a great idea of what this pheasant camp is all about.`,
+    description:
+      "In regards to habitat and accommodations, a more thoroughly equipped UGUIDE Pheasant Camp you will not find. The Faulkton Pheasant Camp is located in the heart of central South Dakota. This camp offers every type of cover and habitat you could ask for in a wild pheasant hunting property. Please review the links, video and testimonials below to get a great idea of what this pheasant camp is all about.",
     images: [flukton1, flukton2, flukton3, flukton4, flukton5, flukton6],
     informativeLinks: [
-      { label: "Lodging", href: "#" },
-      { label: "Hunting Land", href: "#" },
-      { label: "Location Map", href: "#" },
-      { label: "Local Weather", href: "#" },
-      { label: "Availability", href: "#" },
-      { label: "Tourism Activites", href: "#" },
+      // { label: "Lodging", href: "#" },
+      // { label: "Hunting Land", href: "#" },
+      // { label: "Location Map", href: "#" },
+      // { label: "Local Weather", href: "#" },
+      // { label: "Availability", href: "#" },
+      // { label: "Tourism Activities", href: "#" },
     ],
     packages: [
       "2 Hunt Package Options",
-      "4-Day Hunt - Minimum 13 or More Hunters for 4-Days Hunting & 5-Nights Lodging, Or",
-      "3-Day Hunt - 17 Hunters required 3-Days Hunting & 4-Nights Lodging",
+      "4-Day Hunt - Minimum 13 or more hunters for 4 days hunting & 5 nights lodging, or",
+      "3-Day Hunt - 17 hunters required for 3 days hunting & 4 nights lodging",
     ],
-    acres: `3200 +/- Acres total. Abundance of all different types of CRP and many acres of corn, milo and soybean food plots for prime pheasant hunts. Read more on the Hunting and Land Photos Page (Link above)
+    acres: `3200 +/- acres total. Abundance of all different types of CRP and many acres of corn, milo and soybean food plots for prime pheasant hunts. Read more on the Hunting and Land Photos page.
 1,200 acres of trees, shrubs, dugouts, lake, cattails, sloughs, natural breaks, railroad grades, food plots and more.`,
     capacity: "Group sizes up to 17",
     highlights: [
-      "5 minutes west of Faulkton South Dakota - Faulk County",
+      "5 minutes west of Faulkton, South Dakota - Faulk County",
       "Group sizes up to 17",
-      "Highlights: Free use of (2) Kubota RTV 1100 UTV's, and 2001 F350 Diesel Crew Cab Truck (Fuel charges may apply), fishing in walleye stocked lake included.",
-      "Excellent waterfowl hunting. No additional charge. Many sloughs to hunt.",
-      "Pheasant Hunters Lodge home over-looking a very quiet remote private setting.",
-      "5 Bedrooms, 2 Bathrooms/Showers/Toilets, all linens/towels/washclothes provided",
-      "Sink, Stove and Fridge and compliment of cooking amenities",
+      "Free use of (2) Kubota RTV 1100 UTVs and a 2001 F350 Diesel Crew Cab Truck (fuel charges may apply)",
+      "Fishing in the walleye-stocked lake is included",
+      "Excellent waterfowl hunting at no additional charge, with many sloughs to hunt",
+      "Pheasant Hunters Lodge overlooks a very quiet remote private setting",
+      "5 bedrooms, 2 bathrooms/showers/toilets, all linens, towels and washcloths provided",
+      "Sink, stove and fridge with complete cooking amenities",
       "HDTV & Satellite",
       "WIFI High Speed Internet",
       "Dining table and chairs for 10",
-      "Heated insulated Dog Kennel, 10 sanitary dog huts with comfort mats and water. Dairy board walls and automatic lights.",
+      "Heated insulated dog kennel with 10 sanitary dog huts, comfort mats and water",
       "State of the Art Bird Cleaning Station",
       "Clay pigeon thrower with complimentary box of shells and 25 targets for each hunter",
-      "Bon Fire Pit",
+      "Bonfire pit",
       "Weber Gas BBQ Grill",
     ],
     amenities: [
-      "Free use of (2) Kubota RTV 1100 UTV's",
+      "Free use of (2) Kubota RTV 1100 UTVs",
       "2001 F350 Diesel Crew Cab Truck",
-      "Fishing in walleye stocked lake",
+      "Fishing in the walleye-stocked lake",
       "Waterfowl hunting access",
-      "5 Bedroom Lodge",
-      "2 Bathrooms with showers",
-      "Full kitchen with amenities",
+      "5-bedroom lodge",
+      "2 bathrooms with showers",
+      "Full kitchen with cooking amenities",
       "HDTV & Satellite",
       "High Speed WIFI",
-      "Dog Kennel (10 huts)",
+      "Dog kennel with 10 huts",
       "Bird Cleaning Station",
       "Clay pigeon thrower + shells",
       "Bonfire pit",
@@ -465,27 +467,31 @@ export default async function CampDetailPage({ params }: { params: any }) {
                   Informative Links
                 </h3>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {workingInformativeLinks.map((link) => (
-                    <Link
-                      key={link.label}
-                      href={link.href}
-                      target={link.href.startsWith("#") ? undefined : "_blank"}
-                      rel={
-                        link.href.startsWith("#")
-                          ? undefined
-                          : "noopener noreferrer"
-                      }
-                      className="rounded-full border border-[#e4cdb7] bg-white px-3 py-1.5 text-xs font-semibold text-[#e4803a] transition hover:border-[#e4803a] hover:text-[#281703]"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                  {(camp.informativeLinks ?? workingInformativeLinks).map(
+                    (link) => (
+                      <Link
+                        key={link.label}
+                        href={link.href}
+                        target={
+                          link.href.startsWith("#") ? undefined : "_blank"
+                        }
+                        rel={
+                          link.href.startsWith("#")
+                            ? undefined
+                            : "noopener noreferrer"
+                        }
+                        className="rounded-full border border-[#e4cdb7] bg-white px-3 py-1.5 text-xs font-semibold text-[#e4803a] transition hover:border-[#e4803a] hover:text-[#281703]"
+                      >
+                        {link.label}
+                      </Link>
+                    ),
+                  )}
                 </div>
               </div>
 
               <div className="mt-8">
                 <Link
-                  href="/quote-reserve"
+                  href="https://www.uguidesdpheasants.com/cost-calculator/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block text-[#F16724] underline font-semibold transition-colors"
