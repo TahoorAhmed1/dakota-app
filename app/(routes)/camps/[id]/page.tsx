@@ -37,7 +37,6 @@ type CampDetail = {
 };
 
 const campDetails: Record<string, CampDetail> = {
-  
   "gunners-haven": {
     name: "Gunner's Haven Pheasant Camp",
     location: "Selby, South Dakota",
@@ -66,7 +65,8 @@ const campDetails: Record<string, CampDetail> = {
     packages: [
       "3-Day Hunt - Minimum 6 Hunters and up for 4-Nights Lodging (Capacity 10)",
     ],
-    acres: "3000 acres of total land access for hunting. 850 acres of leased land with 800 of it in CRP. 50 acres of corn and milo food plots in 15 individual plots variety of cover on 700 acres of waterbank, along tree plots and food plots. 20 acres of tree plots, various shelterbelts. 50 acres of creekbeds, sloughs and grass waterways.",
+    acres:
+      "3000 acres of total land access for hunting. 850 acres of leased land with 800 of it in CRP. 50 acres of corn and milo food plots in 15 individual plots variety of cover on 700 acres of waterbank, along tree plots and food plots. 20 acres of tree plots, various shelterbelts. 50 acres of creekbeds, sloughs and grass waterways.",
     highlights: [
       "Abundant acres of private access, high pheasant populations, no charge waterfowl options",
       "Pheasant Camp lodging for groups of 6 to 10 located on-site and not far from town",
@@ -76,9 +76,7 @@ const campDetails: Record<string, CampDetail> = {
       "Excellent waterfowl hunting in area. No additional charge. Many sloughs to hunt",
       "75 miles west of Aberdeen SD - Walworth County",
     ],
-    videos: [
-      "https://www.youtube.com/embed/HuAeIAM9OK8?si=aTPR7uOLi_qlyMT5",
-    ],
+    videos: ["https://www.youtube.com/embed/HuAeIAM9OK8?si=aTPR7uOLi_qlyMT5"],
     reviewTitle: "Gunner's Haven Pheasant Camp Reviews",
     reviews: [
       `"Chris, we had a good time at Gunners Haven. Saw a lot of birds. Ended up with 31-32 between the 5 of us for 3 days hunting. The owners were great hosts and the weather worked out perfect for the dogs. We appreciated the fact that they let us bring the dogs inside at night and park the dog trailer in their heated shop to help them stay warm after hunting as hard as they did during the trip. Overall it was a great trip." - Wes, OK`,
@@ -116,7 +114,8 @@ const campDetails: Record<string, CampDetail> = {
       "4-Day Hunt - See Package Options for Minimums",
       "3-Day Hunt - See Package Options for Minimums",
     ],
-    acres: "3700 +/- Acres total. Abundance of all different types of CRP, crops and food plots for prime pheasant hunts. 1230 acres of CRP, 130 acres of food plots (29 total plots), 315 Cropland acres of milo/millet, 50 acres of dam/slough/creekbed, 60 Creekbed acres, 1000 acres of hayed/grazed pasture (can find grouse or huns here)",
+    acres:
+      "3700 +/- Acres total. Abundance of all different types of CRP, crops and food plots for prime pheasant hunts. 1230 acres of CRP, 130 acres of food plots (29 total plots), 315 Cropland acres of milo/millet, 50 acres of dam/slough/creekbed, 60 Creekbed acres, 1000 acres of hayed/grazed pasture (can find grouse or huns here)",
     highlights: [
       "Abundant multi-species upland birds, abundant acreage, high in privacy and seclusion",
       "On site lodge located in the middle of the hunting property",
@@ -170,7 +169,8 @@ const campDetails: Record<string, CampDetail> = {
     packages: [
       "3-Days Hunting & 4-Nights Lodging for up to 12 Hunters. See Minimum's & Capacities Chart for more info",
     ],
-    acres: "700 +/- Acres of exclusively private premium pheasant hunting for your group. All types of cover including 600 acres of CRP in 16 blocks, 100 acres of tree belts in 12 blocks, 55,000 trees planted since 2002, 30 acres of sloughs across 3 parcels. Essentially 90% of total acres are premium high quality huntable acres. 60 acres of corn, milo and other custom food plots in 27 individual plots.",
+    acres:
+      "700 +/- Acres of exclusively private premium pheasant hunting for your group. All types of cover including 600 acres of CRP in 16 blocks, 100 acres of tree belts in 12 blocks, 55,000 trees planted since 2002, 30 acres of sloughs across 3 parcels. Essentially 90% of total acres are premium high quality huntable acres. 60 acres of corn, milo and other custom food plots in 27 individual plots.",
     highlights: [
       "This Outfitter is a Pheasants Forever Life Member",
       "The whole setup is one huge Man Cave!",
@@ -179,9 +179,7 @@ const campDetails: Record<string, CampDetail> = {
       "Waterfowl hunting, as conditions allow, no additional charge",
       "You can start hunting by walking out of lodge",
     ],
-    videos: [
-      "https://www.youtube.com/embed/9a93ewFtOKs?si=sYRdbV6fUxMG2p7D",
-    ],
+    videos: ["https://www.youtube.com/embed/9a93ewFtOKs?si=sYRdbV6fUxMG2p7D"],
     reviewTitle: "Pheasant Camp Lodge Reviews",
     reviews: [
       `"Best Trip Ever - My group of 9 four of us from Tennessee and 5 from Indiana hunted Uguides Pheasant Camp Lodge near Lake Andes last week Fri, Sat and Sun. On Fri the wind blew 40+ mph. We couldn't keep our hats on our head. The birds were super spooky but we were able to scratch out 15. Sat the wind died down and the birds held better. With that and some great shooting we limited with 27. On Sun the fat old guys were pooped but we still got 21 if we would have worked as hard as Sat we would have surely limited that day also. On the way to the airport we ran into freezing rain. I guess a good time to get back to Tennessee. 65 degrees when got off the plane on Nashville. Once my body quits hurting I will be looking forward to next year" - Chip`,
@@ -224,7 +222,8 @@ const campDetails: Record<string, CampDetail> = {
     packages: [
       "3-Days Hunting & 4-Nights Lodging for up to 17 Hunters. See Minimum's & Capacities Chart for more info",
     ],
-    acres: "3834 +/- Acres total. 1450 acres of CRP for prime pheasant hunts. 100 acres of food plots planned per season.",
+    acres:
+      "3834 +/- Acres total. 1450 acres of CRP for prime pheasant hunts. 100 acres of food plots planned per season.",
     highlights: [
       "This Outfitter is a Pheasants Forever Life Member",
       "More land than you can hunt",
@@ -233,9 +232,7 @@ const campDetails: Record<string, CampDetail> = {
       "1.5 hours west of Aberdeen SD - Dewey County",
       "Group sizes up to 17, 2 lodges, 4 bathrooms",
     ],
-    videos: [
-      "https://www.youtube.com/embed/9a93ewFtOKs?si=sYRdbV6fUxMG2p7D",
-    ],
+    videos: ["https://www.youtube.com/embed/9a93ewFtOKs?si=sYRdbV6fUxMG2p7D"],
     reviewTitle: "West River Adventures Pheasant Camp Reviews",
     reviews: [
       `"Chris, just wanted to fill you in on another great experience at a UGUIDE camp. Our opening weekend hunt at the West River property left absolutely nothing to be desired. I must admit that I was a bit concerned about the number of birds we would see after reading the survey reports from the Game, Fish and Parks and realizing that all of the crops were still in the fields due to the recent wet conditions. Those fears were quickly put aside as we saw hundreds of birds each of our three days of hunting at West River. Our 13 man group downed our allotted 39 birds each day despite the difficult hunting conditions (VERY wet and quite windy). During our return trip home, members of our group talked to a lot of different hunters and we heard very few stories of hunters bagging their daily limits - much less downing 13 man limits for 3 straight days! The hosts were fantastic. They joined us for dinner at the lodge the first night we were there and immediately fell right in with the group, getting to know everybody and telling us tales that had us all in stitches until fairly late in the evening. As for accommodations, the lodge was just right. There was ample room for our entire group (and would have been ample room for several more, if we had them), everybody had their own bed, the kitchen was large and well stocked (we cooked breakfast and dinner at the lodge each day we were there), the dog kennel area was perfect for our pack of Vizsla's and GSP's, and the recent renovations Ron made to the lodge worked out really well. We all had nothing but positive memories to reflect on during our respective drives back to Louisiana and Texas. As evidence of that, our entire group has informed me that they would like to re-book, so count us in for Week 1 next year and, hopefully, for many years to come." - Matt, LA`,
@@ -365,7 +362,9 @@ export default async function CampDetailPage({ params }: { params: any }) {
           </div>
         </div>
         <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-white/70 animate-bounce">
-          <span className="text-[11px] tracking-widest uppercase">Scroll Down</span>
+          <span className="text-[11px] tracking-widest uppercase">
+            Scroll Down
+          </span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"
@@ -374,7 +373,11 @@ export default async function CampDetailPage({ params }: { params: any }) {
             stroke="currentColor"
             strokeWidth={2}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
       </section>
@@ -394,20 +397,28 @@ export default async function CampDetailPage({ params }: { params: any }) {
               {camp.packages && (
                 <div className="mb-6">
                   <h3 className="mb-2 text-lg font-bold text-[#281703]">
-                    {camp.name.includes("Faulkton") ? "Faulkton Pheasant Camp" : "Hunt Package Options"}
+                    {camp.name.includes("Faulkton")
+                      ? "Faulkton Pheasant Camp"
+                      : "Hunt Package Options"}
                   </h3>
                   <ul className="list-disc pl-5 text-sm text-black">
                     {camp.packages.map((p: string, i: number) => (
                       <li key={i}>{p}</li>
                     ))}
                   </ul>
-                  {camp.acres && <p className="mt-3 text-sm whitespace-pre-line text-black">{camp.acres}</p>}
+                  {camp.acres && (
+                    <p className="mt-3 text-sm whitespace-pre-line text-black">
+                      {camp.acres}
+                    </p>
+                  )}
                 </div>
               )}
 
               {camp.highlights && (
                 <div className="mb-6">
-                  <h3 className="mb-2 text-lg font-bold text-[#281703]">Highlights</h3>
+                  <h3 className="mb-2 text-lg font-bold text-[#281703]">
+                    Highlights
+                  </h3>
                   <ul className="list-disc pl-5 text-sm text-black">
                     {camp.highlights.map((highlight: string, i: number) => (
                       <li key={i}>{highlight}</li>
@@ -432,7 +443,12 @@ export default async function CampDetailPage({ params }: { params: any }) {
 
               <div className="mt-8 text-black">
                 <div className="mb-4 flex flex-wrap items-center gap-4">
-                  <h3 id="amenities" className="text-xl font-bold text-[#281703]">Amenities</h3>
+                  <h3
+                    id="amenities"
+                    className="text-xl font-bold text-[#281703]"
+                  >
+                    Amenities
+                  </h3>
                 </div>
                 <ul className="space-y-2 text-black">
                   {camp.amenities.map((amenity, index) => (
@@ -454,7 +470,11 @@ export default async function CampDetailPage({ params }: { params: any }) {
                       key={link.label}
                       href={link.href}
                       target={link.href.startsWith("#") ? undefined : "_blank"}
-                      rel={link.href.startsWith("#") ? undefined : "noopener noreferrer"}
+                      rel={
+                        link.href.startsWith("#")
+                          ? undefined
+                          : "noopener noreferrer"
+                      }
                       className="rounded-full border border-[#e4cdb7] bg-white px-3 py-1.5 text-xs font-semibold text-[#e4803a] transition hover:border-[#e4803a] hover:text-[#281703]"
                     >
                       {link.label}
@@ -472,7 +492,9 @@ export default async function CampDetailPage({ params }: { params: any }) {
                 >
                   Request Quote
                 </Link>
+
               </div>
+            
             </div>
 
             <div className="space-y-6">
@@ -516,7 +538,17 @@ export default async function CampDetailPage({ params }: { params: any }) {
           </div>
         )}
 
-        <div id="lodging-photos" className="mx-auto mt-10 grid max-w-7xl grid-cols-1 gap-10">
+
+        <div
+          id="lodging-photos"
+          className="mx-auto mt-10 grid max-w-7xl grid-cols-1 gap-10"
+        >
+              <Link
+                  href={`/camps/${id}/gallery`}
+                  className="inline-block text-[#F16724] underline font-semibold transition-colors mt-5"
+                >
+                  Photo Gallery
+                </Link>
           {camp.images.map((img, i) => (
             <Image
               key={i}

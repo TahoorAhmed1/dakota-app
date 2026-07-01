@@ -2,7 +2,7 @@ import React from "react";
 
 function Page() {
   return (
-    <div className="min-h-screen bg-white py-10 px-4 text-black">
+    <div className="min-h-screen py-10 px-4 text-black">
       <div className="mx-auto max-w-4xl space-y-8">
         {/* Header */}
         <div>
@@ -26,9 +26,13 @@ function Page() {
               </p>
             </div>
 
-            <button className="rounded-lg border border-black px-5 py-2 transition hover:bg-black hover:text-white">
+            <a
+              href="/pdf/WestRiverAdventures.pdf"
+              download
+              className="rounded-lg border border-black px-5 py-2 transition hover:bg-black hover:text-white"
+            >
               Download PDF
-            </button>
+            </a>
           </div>
         </section>
 

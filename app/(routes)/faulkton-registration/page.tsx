@@ -14,6 +14,28 @@ export default function Page() {
           </p>
         </div>
 
+        {/* Download Card */}
+        <div className="mt-8 rounded-xl border border-black p-6 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">
+                UGUIDE Liability Waiver - Faulkton Pheasant Camp.pdf
+              </h2>
+              <p className="mt-1 text-gray-600">
+                Download, complete, sign, and email the waiver before arrival.
+              </p>
+            </div>
+
+            <a
+              href="/pdf/FaulktonPheasant.pdf"
+              download
+              className="rounded-lg border border-black px-5 py-2 transition hover:bg-black hover:text-white"
+            >
+              Download PDF
+            </a>
+          </div>
+        </div>
+
         {/* Main Content */}
         <div className="mt-10 space-y-8">
           {/* Form Requirements */}

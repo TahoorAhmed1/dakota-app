@@ -27,9 +27,13 @@ function Page() {
               </p>
             </div>
 
-            <button className="rounded-lg border border-black px-5 py-2 transition hover:bg-black hover:text-white">
+            <a
+              href="/pdf/MeadowCreek.pdf"
+              download
+              className="rounded-lg border border-black px-5 py-2 transition hover:bg-black hover:text-white"
+            >
               Download PDF
-            </button>
+            </a>
           </div>
         </div>
 
