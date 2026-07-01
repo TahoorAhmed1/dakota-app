@@ -283,43 +283,7 @@ export default function PackagesSection() {
         </div>
       </section>
 
-      {/* ── Policies / Quick Facts ───────────────────────────────────── */}
-      <section className="border-t border-[#3d2810]">
-        <div className="mx-auto max-w-[1200px] px-5 py-16 sm:px-8 lg:px-10">
-          <p className="text-center text-[11px] font-bold uppercase tracking-[0.22em] text-[#d26f2f]">
-            Good to Know
-          </p>
-          <h3 className="mt-2 text-center text-2xl font-bold uppercase tracking-[-0.02em] text-white">
-            Hunt Policies
-          </h3>
-          <dl className="mt-10 grid gap-px border border-[#3d2810] sm:grid-cols-2 lg:grid-cols-3">
-            {policies.map(({ label, detail }) => (
-              <div
-                key={label}
-                className="border border-[#3d2810] bg-[#1f1308] px-6 py-5"
-              >
-                <dt className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#d26f2f]">
-                  {label}
-                </dt>
-                <dd className="mt-1.5 text-sm leading-snug text-[#c89b6a]">
-                  {detail}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-6 text-center text-xs text-[#7a5535]">
-            Full policies at{" "}
-            <Link
-              href="/resources"
-              className="text-[#d26f2f] underline underline-offset-2 hover:text-[#e8864a]"
-            >
-              UGUIDE Hunting Policies
-            </Link>
-            .
-          </p>
-        </div>
-      </section>
-
+   
       {/* ── CTA Box ──────────────────────────────────────────────────── */}
       <section className="border-t border-[#3d2810] bg-[#d26f2f]">
         <div className="mx-auto max-w-[1200px] px-5 py-16 sm:px-8 lg:px-10">

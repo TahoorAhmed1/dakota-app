@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
 const policies = [
   {
@@ -143,21 +143,75 @@ const policies = [
 const filters = ["All", "Payments", "Service", "Dogs", "CRP Land", "Refunds"];
 
 export default function page() {
-  const [active, setActive] = useState("All");
+  // We'll render policies using an accordion UI similar to the FAQ page.
 
-  const visible =
-    active === "All"
-      ? policies
-      : policies.filter((p) => p.category === active);
+  function AccordionItem({ q, a }: { q: string; a: React.ReactNode }) {
+    const [open, setOpen] = useState(false);
+    return (
+      <div
+        className={`border-b border-[#3D2B0A]/30 transition-colors duration-200 ${
+          open ? "bg-[#3D2B0A]/10" : "hover:bg-[#3D2B0A]/5"
+        }`}
+      >
+        <button
+          onClick={() => setOpen(!open)}
+          className="w-full text-left flex justify-between items-start gap-4 py-5 px-1 group"
+          aria-expanded={open}
+        >
+          <span className="font-semibold text-[#C8860A] text-base leading-snug group-hover:text-[#C8860A] transition-colors duration-150">
+            {q}
+          </span>
+          <span
+            className={`flex-shrink-0 mt-0.5 w-5 h-5 rounded-full border border-[#C8860A] flex items-center justify-center transition-transform duration-300 ${
+              open ? "rotate-45 bg-[#C8860A]" : ""
+            }`}
+          >
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="5"
+                y1="1"
+                x2="5"
+                y2="9"
+                stroke={open ? "#1A1208" : "#C8860A"}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              <line
+                x1="1"
+                y1="5"
+                x2="9"
+                y2="5"
+                stroke={open ? "#1A1208" : "#C8860A"}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          </span>
+        </button>
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            open ? "max-h-96 pb-5" : "max-h-0"
+          }`}
+        >
+          <div className="text-[#B8A88A] text-sm leading-relaxed px-1 pr-8">
+            {a}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen font-sans ">
       {/* ── Hero ── */}
       <section className="relative overflow-hidden pt-20 pb-16 px-6 md:px-12 ">
- 
-
         <div className="relative max-w-5xl mt-10 mx-auto pt-10">
-     
           <h1
             className="text-[#E8E0D0] leading-[1.05] "
             style={{
@@ -168,50 +222,31 @@ export default function page() {
           >
             <span className="text-[#C8860A] italic">policies</span>
           </h1>
-
-      
-
         </div>
       </section>
 
-
-
-      {/* ── Policy Cards ── */}
-      <section className="max-w-5xl mx-auto p b-24">
-        <div className="grid gap-8">
-          {visible.map((policy) => (
-            <div
-              key={policy.id}
-              className="bg-[#1E160C] border border-[#3D2B0A]/60 rounded-lg overflow-hidden hover:border-[#C8860A]/30 transition-all duration-300"
-            >
-              <div className="p-6 md:p-8">
-                <div className="flex items-start gap-4 mb-4">
-                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-[#C8860A]/10 border border-[#C8860A]/30 flex items-center justify-center">
-                    <span className="text-[#C8860A] text-sm font-bold">
-                      {policy.id}
-                    </span>
-                  </span>
-                  <div>
-                    <span className="text-[#C8860A] text-xs font-bold tracking-[0.2em] uppercase mb-1 block">
-                      {policy.category}
-                    </span>
-                    <h3 className="text-[#E8E0D0] text-xl font-semibold leading-tight">
-                      {policy.title}
-                    </h3>
-                  </div>
-                </div>
-                <div className="text-[#B8A88A] text-sm leading-relaxed space-y-3">
-                  {policy.content}
-                </div>
+      {/* ── Policy Accordion ── */}
+      <section className="max-w-5xl mx-auto ">
+        <div className="grid md:grid-cols-2 gap-x-12 gap-y-14">
+          {policies.map((policy) => (
+            <div key={policy.id}>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C8860A] flex-shrink-0" />
+                <h2 className="text-black text-xs font-bold tracking-[0.25em] uppercase">
+                  {policy.category}
+                </h2>
+              </div>
+              <div className="border-t border-[#3D2B0A]/60 pt-1">
+                <AccordionItem q={policy.title} a={policy.content} />
               </div>
             </div>
           ))}
         </div>
       </section>
-
-
-
-    
     </main>
   );
 }
+
+
+    
+ 

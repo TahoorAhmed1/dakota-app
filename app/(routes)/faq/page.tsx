@@ -138,39 +138,8 @@ function AccordionItem({ q, a }: { q: string; a: string }) {
 
 export default function page() {
   return (
-    <main className="min-h-screen  font-sans mt-10">
-      <section className="relative overflow-hidden pt-20 pb-16 px-6 md:px-12 ">
- 
-        <div className="relative max-w-5xl mx-auto ">
-          <p className="text-[#C8860A] text-xs font-semibold tracking-[0.3em] uppercase mb-6">
-            South Dakota · Wild Ringneck Pheasant
-          </p>
-        
-
-          {/* Grain divider */}
-          <div className="flex items-center gap-4 mt-8">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#C8860A]/50 to-transparent" />
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="#C8860A"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="9" cy="9" r="3" />
-              <circle cx="9" cy="2" r="1.5" />
-              <circle cx="9" cy="16" r="1.5" />
-              <circle cx="2" cy="9" r="1.5" />
-              <circle cx="16" cy="9" r="1.5" />
-            </svg>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#C8860A]/50 to-transparent" />
-          </div>
-
-          <p className="text-[#8FB87A] text-sm tracking-widest uppercase mt-6 font-medium">
-            UGUIDE Pheasant Hunting · Frequently Asked Questions
-          </p>
-        </div>
-      </section>
+    <main className="min-h-screen  font-sans mt-30">
+  
 
       {/* ── FAQ Sections ── */}
       <section className="max-w-5xl mx-auto ">
@@ -180,7 +149,7 @@ export default function page() {
               <div className="flex items-center gap-3 mb-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#C8860A] flex-shrink-0" />
                 <h2
-                  className="text-[#C8860A] text-xs font-bold tracking-[0.25em] uppercase"
+                  className="text-black text-xs font-bold tracking-[0.25em] uppercase"
                 >
                   {section.category}
                 </h2>
