@@ -9,6 +9,50 @@ import flukton4 from "@/assets/flukton/image4.jpg";
 import flukton5 from "@/assets/flukton/image5.jpg";
 import flukton6 from "@/assets/flukton/image6.jpg";
 
+import FaulktonCamp1 from "@/assets/FaulktonCamp/1.jpg";
+import FaulktonCamp2 from "@/assets/FaulktonCamp/2.jpg";
+import FaulktonCamp3 from "@/assets/FaulktonCamp/3.jpg";
+import FaulktonCamp4 from "@/assets/FaulktonCamp/4.jpeg";
+import FaulktonCamp5 from "@/assets/FaulktonCamp/5.jpg";
+import FaulktonCamp6 from "@/assets/FaulktonCamp/6.jpg";
+import GunnerHeaven1 from "@/assets/GunnerHeaven/1.jpg";
+import GunnerHeaven2 from "@/assets/GunnerHeaven/2.jpg";
+import GunnerHeaven3 from "@/assets/GunnerHeaven/3.jpg";
+import GunnerHeaven4 from "@/assets/GunnerHeaven/4.jpg";
+import GunnerHeaven5 from "@/assets/GunnerHeaven/5.jpg";
+import MeadowCreek1 from "@/assets/MeadowCreek/1.jpg";
+import MeadowCreek2 from "@/assets/MeadowCreek/2.jpg";
+import MeadowCreek3 from "@/assets/MeadowCreek/3.jpg";
+import MeadowCreek4 from "@/assets/MeadowCreek/4.jpg";
+import MeadowCreek5 from "@/assets/MeadowCreek/5.jpg";
+import MeadowCreek6 from "@/assets/MeadowCreek/6.jpg";
+import MeadowCreek7 from "@/assets/MeadowCreek/7.jpg";
+import MeadowCreek8 from "@/assets/MeadowCreek/8.jpg";
+import MeadowCreek10 from "@/assets/MeadowCreek/10.jpg";
+import MeadowCreek11 from "@/assets/MeadowCreek/11.jpg";
+import MeadowCreek12 from "@/assets/MeadowCreek/12.jpg";
+import MeadowCreek13 from "@/assets/MeadowCreek/13.jpg";
+import PhesantCamp1 from "@/assets/PhesantCamp/1.jpg";
+import PhesantCamp2 from "@/assets/PhesantCamp/2.jpg";
+import PhesantCamp3 from "@/assets/PhesantCamp/3.jpg";
+import PhesantCamp4 from "@/assets/PhesantCamp/4.jpg";
+import PhesantCamp5 from "@/assets/PhesantCamp/5.jpg";
+import PhesantCamp6 from "@/assets/PhesantCamp/6.jpg";
+import PhesantCamp7 from "@/assets/PhesantCamp/7.jpg";
+import PhesantCamp8 from "@/assets/PhesantCamp/8.jpg";
+import PhesantCamp9 from "@/assets/PhesantCamp/9.jpg";
+import WestRiver1 from "@/assets/WestRiver/1.jpg";
+import WestRiver2 from "@/assets/WestRiver/2.jpg";
+import WestRiver3 from "@/assets/WestRiver/3.jpg";
+import WestRiver4 from "@/assets/WestRiver/4.jpg";
+import WestRiver5 from "@/assets/WestRiver/5.jpg";
+import WestRiver6 from "@/assets/WestRiver/6.jpg";
+import WestRiver7 from "@/assets/WestRiver/7.jpg";
+import WestRiver8 from "@/assets/WestRiver/8.jpg";
+import WestRiver9 from "@/assets/WestRiver/9.jpg";
+import WestRiver10 from "@/assets/WestRiver/10.jpg";
+import WestRiver11 from "@/assets/WestRiver/11.jpg";
+import WestRiver12 from "@/assets/WestRiver/12.jpg";
 type InformativeLink = { label: string; href: string };
 
 const workingInformativeLinks: InformativeLink[] = [
@@ -36,6 +80,24 @@ type CampDetail = {
   reviewTitle?: string;
 };
 
+const campImages: Record<string, StaticImageData[]> = {
+  faulkton: [
+   
+  ],
+  "gunners-haven": [
+   
+  ],
+  "meadow-creek": [
+
+  ],
+  "pheasant-camp-lodge": [
+ 
+  ],
+  "west-river": [
+ 
+  ],
+};
+
 const campDetails: Record<string, CampDetail> = {
   "gunners-haven": {
     name: "Gunner's Haven Pheasant Camp",
@@ -53,7 +115,11 @@ const campDetails: Record<string, CampDetail> = {
       "Dining table and chairs",
       "BBQ Grill",
     ],
-    images: [flukton1, flukton2, flukton3, flukton4, flukton5, flukton6],
+    images: [ GunnerHeaven1,
+    GunnerHeaven2,
+    GunnerHeaven3,
+    GunnerHeaven4,
+    GunnerHeaven5,],
     informativeLinks: [
       { label: "Lodging", href: "#" },
       { label: "Hunting Land", href: "#" },
@@ -101,7 +167,18 @@ const campDetails: Record<string, CampDetail> = {
       "Gas BBQ Grill",
       "Vehicle available for your use - 1997 Chevy Tahoe - Replace fuel you use",
     ],
-    images: [flukton1, flukton2, flukton3, flukton4, flukton5, flukton6],
+    images: [    MeadowCreek1,
+    MeadowCreek2,
+    MeadowCreek3,
+    MeadowCreek4,
+    MeadowCreek5,
+    MeadowCreek6,
+    MeadowCreek7,
+    MeadowCreek8,
+    MeadowCreek10,
+    MeadowCreek11,
+    MeadowCreek12,
+    MeadowCreek13],
     informativeLinks: [
       { label: "Lodging", href: "#" },
       { label: "Hunting Land", href: "#" },
@@ -157,7 +234,15 @@ const campDetails: Record<string, CampDetail> = {
       "12X18 Bird cleaning shelter - Heated/Insulated - Hot & Cold running water - Chest Freezer",
       "Sheltered indoor parking and grilling area (fits 6 trucks)",
     ],
-    images: [flukton1, flukton2, flukton3, flukton4, flukton5, flukton6],
+    images: [   PhesantCamp1,
+    PhesantCamp2,
+    PhesantCamp3,
+    PhesantCamp4,
+    PhesantCamp5,
+    PhesantCamp6,
+    PhesantCamp7,
+    PhesantCamp8,
+    PhesantCamp9,],
     informativeLinks: [
       { label: "Lodging", href: "#" },
       { label: "Hunting Land", href: "#" },
@@ -210,7 +295,18 @@ const campDetails: Record<string, CampDetail> = {
       "Free use of Lincoln Navigator, Honda Pioneer and 2 other ATV's",
       "For fly-in hunters: airport pickup and use of SUV at no extra charge (Fuel charges will apply)",
     ],
-    images: [flukton1, flukton2, flukton3, flukton4, flukton5, flukton6],
+    images: [   WestRiver1,
+    WestRiver2,
+    WestRiver3,
+    WestRiver4,
+    WestRiver5,
+    WestRiver6,
+    WestRiver7,
+    WestRiver8,
+    WestRiver9,
+    WestRiver10,
+    WestRiver11,
+    WestRiver12,],
     informativeLinks: [
       { label: "Lodging", href: "#" },
       { label: "Hunting Land", href: "#" },
@@ -247,7 +343,12 @@ const campDetails: Record<string, CampDetail> = {
     county: "Faulk County",
     description:
       "In regards to habitat and accommodations, a more thoroughly equipped UGUIDE Pheasant Camp you will not find. The Faulkton Pheasant Camp is located in the heart of central South Dakota. This camp offers every type of cover and habitat you could ask for in a wild pheasant hunting property. Please review the links, video and testimonials below to get a great idea of what this pheasant camp is all about.",
-    images: [flukton1, flukton2, flukton3, flukton4, flukton5, flukton6],
+    images: [ FaulktonCamp1,
+    FaulktonCamp2,
+    FaulktonCamp3,
+    FaulktonCamp4,
+    FaulktonCamp5,
+    FaulktonCamp6,],
     informativeLinks: [
       // { label: "Lodging", href: "#" },
       // { label: "Hunting Land", href: "#" },
