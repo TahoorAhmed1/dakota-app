@@ -640,19 +640,20 @@ export default async function CampDetailPage({ params }: { params: any }) {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        <div
-          id="lodging-photos"
-          className="mx-auto mt-10 grid max-w-7xl grid-cols-1 gap-10"
-        >
-          <Link
+            <Link
             href={`/camps/${id}/gallery`}
-            className="inline-block text-[#F16724] underline font-semibold transition-colors mt-5"
+            className="inline-block bg-[#F16724] px-3 py-2 text-white underline font-semibold transition-colors mt-5"
           >
             Photo Gallery
           </Link>
+          </div>
+        )}
+
+          
+        <div
+          id="lodging-photos"
+          className="mx-auto mt-10 grid max-w-7xl grid-cols-3 gap-10"
+        >
           {camp.images.map((img, i) => (
             <Image
               key={i}
@@ -660,7 +661,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
               alt={`${camp.name} image ${i + 1}`}
               width={1000}
               height={1000}
-              className="h-96 w-96 rounded object-cover"
+              className=" w-full h-72 rounded object-cover"
             />
           ))}
         </div>
