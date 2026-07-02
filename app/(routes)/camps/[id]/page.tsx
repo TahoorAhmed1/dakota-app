@@ -81,21 +81,11 @@ type CampDetail = {
 };
 
 const campImages: Record<string, StaticImageData[]> = {
-  faulkton: [
-   
-  ],
-  "gunners-haven": [
-   
-  ],
-  "meadow-creek": [
-
-  ],
-  "pheasant-camp-lodge": [
- 
-  ],
-  "west-river": [
- 
-  ],
+  faulkton: [],
+  "gunners-haven": [],
+  "meadow-creek": [],
+  "pheasant-camp-lodge": [],
+  "west-river": [],
 };
 
 const campDetails: Record<string, CampDetail> = {
@@ -115,11 +105,13 @@ const campDetails: Record<string, CampDetail> = {
       "Dining table and chairs",
       "BBQ Grill",
     ],
-    images: [ GunnerHeaven1,
-    GunnerHeaven2,
-    GunnerHeaven3,
-    GunnerHeaven4,
-    GunnerHeaven5,],
+    images: [
+      GunnerHeaven1,
+      GunnerHeaven2,
+      GunnerHeaven3,
+      GunnerHeaven4,
+      GunnerHeaven5,
+    ],
     informativeLinks: [
       { label: "Lodging", href: "#" },
       { label: "Hunting Land", href: "#" },
@@ -167,18 +159,20 @@ const campDetails: Record<string, CampDetail> = {
       "Gas BBQ Grill",
       "Vehicle available for your use - 1997 Chevy Tahoe - Replace fuel you use",
     ],
-    images: [    MeadowCreek1,
-    MeadowCreek2,
-    MeadowCreek3,
-    MeadowCreek4,
-    MeadowCreek5,
-    MeadowCreek6,
-    MeadowCreek7,
-    MeadowCreek8,
-    MeadowCreek10,
-    MeadowCreek11,
-    MeadowCreek12,
-    MeadowCreek13],
+    images: [
+      MeadowCreek1,
+      MeadowCreek2,
+      MeadowCreek3,
+      MeadowCreek4,
+      MeadowCreek5,
+      MeadowCreek6,
+      MeadowCreek7,
+      MeadowCreek8,
+      MeadowCreek10,
+      MeadowCreek11,
+      MeadowCreek12,
+      MeadowCreek13,
+    ],
     informativeLinks: [
       { label: "Lodging", href: "#" },
       { label: "Hunting Land", href: "#" },
@@ -234,15 +228,17 @@ const campDetails: Record<string, CampDetail> = {
       "12X18 Bird cleaning shelter - Heated/Insulated - Hot & Cold running water - Chest Freezer",
       "Sheltered indoor parking and grilling area (fits 6 trucks)",
     ],
-    images: [   PhesantCamp1,
-    PhesantCamp2,
-    PhesantCamp3,
-    PhesantCamp4,
-    PhesantCamp5,
-    PhesantCamp6,
-    PhesantCamp7,
-    PhesantCamp8,
-    PhesantCamp9,],
+    images: [
+      PhesantCamp1,
+      PhesantCamp2,
+      PhesantCamp3,
+      PhesantCamp4,
+      PhesantCamp5,
+      PhesantCamp6,
+      PhesantCamp7,
+      PhesantCamp8,
+      PhesantCamp9,
+    ],
     informativeLinks: [
       { label: "Lodging", href: "#" },
       { label: "Hunting Land", href: "#" },
@@ -295,18 +291,20 @@ const campDetails: Record<string, CampDetail> = {
       "Free use of Lincoln Navigator, Honda Pioneer and 2 other ATV's",
       "For fly-in hunters: airport pickup and use of SUV at no extra charge (Fuel charges will apply)",
     ],
-    images: [   WestRiver1,
-    WestRiver2,
-    WestRiver3,
-    WestRiver4,
-    WestRiver5,
-    WestRiver6,
-    WestRiver7,
-    WestRiver8,
-    WestRiver9,
-    WestRiver10,
-    WestRiver11,
-    WestRiver12,],
+    images: [
+      WestRiver1,
+      WestRiver2,
+      WestRiver3,
+      WestRiver4,
+      WestRiver5,
+      WestRiver6,
+      WestRiver7,
+      WestRiver8,
+      WestRiver9,
+      WestRiver10,
+      WestRiver11,
+      WestRiver12,
+    ],
     informativeLinks: [
       { label: "Lodging", href: "#" },
       { label: "Hunting Land", href: "#" },
@@ -343,12 +341,14 @@ const campDetails: Record<string, CampDetail> = {
     county: "Faulk County",
     description:
       "In regards to habitat and accommodations, a more thoroughly equipped UGUIDE Pheasant Camp you will not find. The Faulkton Pheasant Camp is located in the heart of central South Dakota. This camp offers every type of cover and habitat you could ask for in a wild pheasant hunting property. Please review the links, video and testimonials below to get a great idea of what this pheasant camp is all about.",
-    images: [ FaulktonCamp1,
-    FaulktonCamp2,
-    FaulktonCamp3,
-    FaulktonCamp4,
-    FaulktonCamp5,
-    FaulktonCamp6,],
+    images: [
+      FaulktonCamp1,
+      FaulktonCamp2,
+      FaulktonCamp3,
+      FaulktonCamp4,
+      FaulktonCamp5,
+      FaulktonCamp6,
+    ],
     informativeLinks: [
       // { label: "Lodging", href: "#" },
       // { label: "Hunting Land", href: "#" },
@@ -563,7 +563,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
                 </ul>
               </div>
 
-              <div className="mt-8 rounded-2xl border border-[#d8c7b7] bg-[#fffaf5] p-4">
+              {/* <div className="mt-8 rounded-2xl border border-[#d8c7b7] bg-[#fffaf5] p-4">
                 <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-[#281703]">
                   Informative Links
                 </h3>
@@ -588,7 +588,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
                     ),
                   )}
                 </div>
-              </div>
+              </div> */}
 
               <div className="mt-8">
                 <Link
@@ -599,9 +599,7 @@ export default async function CampDetailPage({ params }: { params: any }) {
                 >
                   Request Quote
                 </Link>
-
               </div>
-            
             </div>
 
             <div className="space-y-6">
@@ -645,17 +643,16 @@ export default async function CampDetailPage({ params }: { params: any }) {
           </div>
         )}
 
-
         <div
           id="lodging-photos"
           className="mx-auto mt-10 grid max-w-7xl grid-cols-1 gap-10"
         >
-              <Link
-                  href={`/camps/${id}/gallery`}
-                  className="inline-block text-[#F16724] underline font-semibold transition-colors mt-5"
-                >
-                  Photo Gallery
-                </Link>
+          <Link
+            href={`/camps/${id}/gallery`}
+            className="inline-block text-[#F16724] underline font-semibold transition-colors mt-5"
+          >
+            Photo Gallery
+          </Link>
           {camp.images.map((img, i) => (
             <Image
               key={i}
