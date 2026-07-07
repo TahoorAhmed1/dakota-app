@@ -3,6 +3,20 @@ import type { SeasonScheduleData } from "@/components/common/seasonSchedule";
 
 type CampStatus = "available" | "pending" | "sold";
 
+function formatWeekDateRange(startDate: Date | null, endDate: Date | null, fallbackLabel: string) {
+  if (!startDate || !endDate) return fallbackLabel;
+
+  const sameYear = startDate.getUTCFullYear() === endDate.getUTCFullYear();
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: sameYear ? undefined : "numeric",
+    timeZone: "UTC",
+  });
+
+  return `${fmt.format(startDate)} – ${fmt.format(endDate)}`;
+}
+
 export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
   const [camps, weeks, pricingRows] = await Promise.all([
     prisma.camp.findMany({
@@ -80,32 +94,33 @@ export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
       hoverText: campHoverTexts[idx],
     }));
 
-    // Format date range
-    let date = week.seasonLabel;
-    if (week.startDate && week.endDate) {
-      const fmtShort = new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        timeZone: "UTC",
-      });
-      const fmtLong = new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        timeZone: "UTC",
-      });
-      date = `${fmtShort.format(week.startDate)}–${fmtLong.format(week.endDate)}`;
-    }
+    const year = week.startDate?.getUTCFullYear() ?? week.endDate?.getUTCFullYear() ?? new Date().getUTCFullYear();
+    const date = formatWeekDateRange(week.startDate, week.endDate, week.seasonLabel);
 
     return {
       week: week.label,
       date,
+      year,
       price: priceMap.get(week.id),
       campStatuses,
       campHoverTexts,
       mobileCamps,
     };
   });
+
+  const groupedRows = rows.reduce<Record<number, typeof rows>>((acc, row) => {
+    const year = row.year ?? new Date().getUTCFullYear();
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(row);
+    return acc;
+  }, {});
+
+  const groups = Object.entries(groupedRows)
+    .map(([year, yearRows]) => ({
+      year: Number(year),
+      rows: yearRows,
+    }))
+    .sort((a, b) => a.year - b.year);
 
   const tableHeaders = [
     "Weeks In Season",
@@ -114,5 +129,5 @@ export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
     "Rate + Tax *",
   ];
 
-  return { rows, campNames, tableHeaders };
+  return { rows, groups, campNames, tableHeaders };
 }

@@ -9,6 +9,7 @@ type CampStatusType = "sold" | "pending" | "available";
 type SeasonRow = {
   week: string;
   date: string;
+  year?: number;
   price?: number;
   campStatuses?: CampStatusType[];
   campHoverTexts?: (string | undefined)[];
@@ -20,11 +21,17 @@ type SeasonRow = {
   }[];
 };
 
+export type SeasonScheduleYearGroup = {
+  year: number;
+  rows: SeasonRow[];
+};
+
 export type SeasonScheduleData = {
   welcomeLabel?: string;
   heading?: string;
   description?: string;
   rows?: SeasonRow[];
+  groups?: SeasonScheduleYearGroup[];
   campNames?: string[];
   tableTopLeftHeader?: string;
   tableTopMiddleHeader?: string;
@@ -49,15 +56,15 @@ export type SeasonScheduleData = {
 };
 
 const DUMMY_ROWS: SeasonRow[] = [
-  { week: "Week 1", date: "Oct. 17–19, 2025 Pheasant Opener Sold Out" },
-  { week: "Week 2", date: "Oct. 24–26 Sold Out" },
-  { week: "Week 3", date: "Oct. 31–Nov. 02 Sold Out" },
-  { week: "Week 4", date: "Nov. 07–09 Sold Out" },
-  { week: "Week 5", date: "Nov. 14–16 Sold Out" },
-  { week: "Week 6", date: "Nov. 21–23 Available" },
-  { week: "Week 7", date: "Nov. 28–30 Thanksgiving Sold Out" },
-  { week: "Week 8", date: "Dec. 05–07 Available" },
-  { week: "Week 9", date: "Dec. 12–14 Sold Out" },
+  { week: "Week 1", date: "Oct. 17–19, 2025 Pheasant Opener Sold Out", year: 2026 },
+  { week: "Week 2", date: "Oct. 24–26 Sold Out", year: 2026 },
+  { week: "Week 3", date: "Oct. 31–Nov. 02 Sold Out", year: 2026 },
+  { week: "Week 4", date: "Nov. 07–09 Sold Out", year: 2026 },
+  { week: "Week 5", date: "Nov. 14–16 Sold Out", year: 2026 },
+  { week: "Week 6", date: "Nov. 21–23 Available", year: 2027 },
+  { week: "Week 7", date: "Nov. 28–30 Thanksgiving Sold Out", year: 2027 },
+  { week: "Week 8", date: "Dec. 05–07 Available", year: 2027 },
+  { week: "Week 9", date: "Dec. 12–14 Sold Out", year: 2027 },
 ];
 
 const DUMMY_CAMP_NAMES = [
@@ -301,12 +308,30 @@ function MobileCarousel({
   );
 }
 
+/* ---------------- HELPERS ---------------- */
+
+function getScheduleGroups(rows: SeasonRow[]): SeasonScheduleYearGroup[] {
+  const grouped = new Map<number, SeasonRow[]>();
+
+  rows.forEach((row) => {
+    const year = row.year ?? new Date().getFullYear();
+    const existing = grouped.get(year) ?? [];
+    existing.push(row);
+    grouped.set(year, existing);
+  });
+
+  return Array.from(grouped.entries())
+    .sort(([a], [b]) => a - b)
+    .map(([year, yearRows]) => ({ year, rows: yearRows }));
+}
+
 /* ---------------- COMPONENT ---------------- */
 
 export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) {
   const rows = data?.rows?.length ? data.rows : DUMMY_ROWS;
   const campNames = data?.campNames?.length ? data.campNames : DUMMY_CAMP_NAMES;
   const tableHeaders = data?.tableHeaders?.length ? data.tableHeaders : DUMMY_TABLE_HEADERS;
+  const yearGroups = data?.groups?.length ? data.groups : getScheduleGroups(rows);
 
   const content = { ...DUMMY_DATA, ...data };
 
@@ -343,62 +368,73 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
           </p>
         </div>
 
-        {/* ── Mobile: carousel (hidden md+) ── */}
-        <MobileCarousel rows={rows} getMobileCampEntries={getMobileCampEntries} />
-
-        {/* ── Desktop: full grid table (hidden below md) ── */}
-        <div className="hidden overflow-x-auto rounded-xl border-2 border-[#3a2b20] bg-[#ecebea] shadow-xl md:block">
-          <div className="min-w-230 lg:min-w-245">
-            <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] bg-[#6b3b16] text-white font-semibold text-sm border-b-2 border-[#3a2b20]">
-              <div className="col-span-2 text-center py-3 border-r border-[#3a2b20]">
-                {content.tableTopLeftHeader}
-              </div>
-              <div className="col-span-5 text-center py-3 border-r border-[#3a2b20]">
-                {content.tableTopMiddleHeader}
-              </div>
-              <div className="text-center py-3">{content.tableTopRightHeader}</div>
+        {yearGroups.map(({ year, rows: yearRows }) => (
+          <div key={year} className="mb-12 last:mb-0">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-2xl font-bold text-[#3a2b20]">{year}</h3>
+              <p className="text-sm text-[#6f5845]">
+                {yearRows.length} week{yearRows.length === 1 ? "" : "s"}
+              </p>
             </div>
 
-            <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] text-[#3c2f23] text-sm font-semibold border-b border-[#3a2b20]">
-              {tableHeaders.map((h, i) => (
-                <div
-                  key={i}
-                  className="p-3 text-center border-r h-full flex justify-center items-center border-[#3a2b20] bg-white last:border-r-0"
-                >
-                  {h}
-                </div>
-              ))}
-            </div>
+            {/* ── Mobile: carousel (hidden md+) ── */}
+            <MobileCarousel rows={yearRows} getMobileCampEntries={getMobileCampEntries} />
 
-            {rows.map((row, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] items-center text-sm border-b bg-white border-[#3a2b20]"
-              >
-                <div className="p-3 text-center flex justify-center items-center h-full text-orange-600 font-semibold border-r border-[#3a2b20]">
-                  {row.week.split("—")[0]}
+            {/* ── Desktop: full grid table (hidden below md) ── */}
+            <div className="hidden overflow-x-auto rounded-xl border-2 border-[#3a2b20] bg-[#ecebea] shadow-xl md:block">
+              <div className="min-w-230 lg:min-w-245">
+                <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] bg-[#6b3b16] text-white font-semibold text-sm border-b-2 border-[#3a2b20]">
+                  <div className="col-span-2 text-center py-3 border-r border-[#3a2b20]">
+                    {content.tableTopLeftHeader}
+                  </div>
+                  <div className="col-span-5 text-center py-3 border-r border-[#3a2b20]">
+                    {content.tableTopMiddleHeader}
+                  </div>
+                  <div className="text-center py-3">{content.tableTopRightHeader}</div>
                 </div>
-                <div className="p-3 text-[#4a3b2f] flex items-center h-full border-r border-[#3a2b20]">
-                  {row.date}
+
+                <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] text-[#3c2f23] text-sm font-semibold border-b border-[#3a2b20]">
+                  {tableHeaders.map((h, i) => (
+                    <div
+                      key={i}
+                      className="p-3 text-center border-r h-full flex justify-center items-center border-[#3a2b20] bg-white last:border-r-0"
+                    >
+                      {h}
+                    </div>
+                  ))}
                 </div>
-                {[0, 1, 2, 3, 4].map((campIdx) => (
+
+                {yearRows.map((row, i) => (
                   <div
-                    key={campIdx}
-                    className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full"
+                    key={i}
+                    className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] items-center text-sm border-b bg-white border-[#3a2b20]"
                   >
-                    <TooltipDot
-                      type={getStatusForCamp(row, campIdx, i)}
-                      hoverText={getHoverTextForCamp(row, campIdx)}
-                    />
+                    <div className="p-3 text-center flex justify-center items-center h-full text-orange-600 font-semibold border-r border-[#3a2b20]">
+                      {row.week.split("—")[0]}
+                    </div>
+                    <div className="p-3 text-[#4a3b2f] flex items-center h-full border-r border-[#3a2b20]">
+                      {row.date}
+                    </div>
+                    {[0, 1, 2, 3, 4].map((campIdx) => (
+                      <div
+                        key={campIdx}
+                        className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full"
+                      >
+                        <TooltipDot
+                          type={getStatusForCamp(row, campIdx, i)}
+                          hoverText={getHoverTextForCamp(row, campIdx)}
+                        />
+                      </div>
+                    ))}
+                    <div className="p-3 text-center text-[#b14b1a] font-semibold flex justify-center items-center h-full">
+                      ${row.price ?? 1299 + i * 100}
+                    </div>
                   </div>
                 ))}
-                <div className="p-3 text-center text-[#b14b1a] font-semibold flex justify-center items-center h-full">
-                  ${row.price ?? 1299 + i * 100}
-                </div>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
+        ))}
 
         <div>
           <h2 className="mt-8 text-center text-[18px] font-bold text-black sm:mt-10 sm:text-[20px]">
