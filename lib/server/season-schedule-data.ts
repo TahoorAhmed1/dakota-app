@@ -3,6 +3,12 @@ import type { SeasonScheduleData } from "@/components/common/seasonSchedule";
 
 type CampStatus = "available" | "pending" | "sold";
 
+function getYearFromSeasonValue(value: string | null | undefined): number | undefined {
+  if (!value) return undefined;
+  const match = value.match(/\b(19|20)\d{2}\b/);
+  return match ? Number(match[0]) : undefined;
+}
+
 function formatWeekDateRange(startDate: Date | null, endDate: Date | null, fallbackLabel: string) {
   if (!startDate || !endDate) return fallbackLabel;
 
@@ -94,7 +100,11 @@ export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
       hoverText: campHoverTexts[idx],
     }));
 
-    const year = week.startDate?.getUTCFullYear() ?? week.endDate?.getUTCFullYear() ?? new Date().getUTCFullYear();
+    const year =
+      week.startDate?.getUTCFullYear() ??
+      week.endDate?.getUTCFullYear() ??
+      getYearFromSeasonValue(week.seasonLabel) ??
+      new Date().getUTCFullYear();
     const date = formatWeekDateRange(week.startDate, week.endDate, week.seasonLabel);
 
     return {
@@ -108,19 +118,35 @@ export async function getSeasonScheduleData(): Promise<SeasonScheduleData> {
     };
   });
 
-  const groupedRows = rows.reduce<Record<number, typeof rows>>((acc, row) => {
+  const groupedRows = rows.reduce<Record<number, { year: number; seasonStartDate?: string; rows: typeof rows }>>((acc, row) => {
     const year = row.year ?? new Date().getUTCFullYear();
-    if (!acc[year]) acc[year] = [];
-    acc[year].push(row);
+    if (!acc[year]) {
+      acc[year] = {
+        year,
+        seasonStartDate: undefined,
+        rows: [],
+      };
+    }
+
+    const group = acc[year];
+    if (!group.seasonStartDate && weeks.find((week) => week.label === row.week)?.startDate) {
+      group.seasonStartDate = weeks
+        .find((week) => week.label === row.week)
+        ?.startDate?.toISOString()
+        .slice(0, 10);
+    }
+
+    group.rows.push(row);
     return acc;
   }, {});
 
-  const groups = Object.entries(groupedRows)
-    .map(([year, yearRows]) => ({
-      year: Number(year),
-      rows: yearRows,
-    }))
-    .sort((a, b) => a.year - b.year);
+  const groups = Object.values(groupedRows)
+    .sort((a, b) => a.year - b.year)
+    .map((group) => ({
+      year: group.year,
+      seasonStartDate: group.seasonStartDate,
+      rows: group.rows,
+    }));
 
   const tableHeaders = [
     "Weeks In Season",

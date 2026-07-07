@@ -8,7 +8,13 @@ type CampStatusType = "sold" | "pending" | "available";
 
 type SeasonRow = {
   week: string;
-  date: string;
+  /**
+   * Optional explicit override, e.g. "Oct 17–19" or a special label like
+   * "Thanksgiving Week". If omitted, the date range is calculated
+   * automatically from the year group's `seasonStartDate` + the row's
+   * position in the season (see `getRowDateLabel`).
+   */
+  date?: string;
   year?: number;
   price?: number;
   campStatuses?: CampStatusType[];
@@ -23,6 +29,20 @@ type SeasonRow = {
 
 export type SeasonScheduleYearGroup = {
   year: number;
+  /**
+   * ISO date (YYYY-MM-DD) of the check-in day for Week 1 of this year's
+   * season. Every subsequent week is assumed to start 7 days later. This is
+   * what lets the "UGUIDE Season Schedule" column show real dates
+   * (e.g. "Oct 15–17") instead of the year repeated on every row.
+   */
+  seasonStartDate?: string;
+  /**
+   * How many days each week's date range spans, e.g. 7 for a full
+   * "Week 1: Oct 15–21" style block. Defaults to 7. Override to 3 (or any
+   * number) only if a specific week should display a shorter stay window
+   * instead of the full week.
+   */
+  dateSpanDays?: number;
   rows: SeasonRow[];
 };
 
@@ -41,6 +61,12 @@ export type SeasonScheduleData = {
   legendReservedText?: string;
   legendPendingText?: string;
   legendAvailableText?: string;
+  /**
+   * How many upcoming season years to show at once. Defaults to 2 (current
+   * season + next season / waitlist). Older years drop off automatically
+   * once the calendar rolls past them.
+   */
+  yearsToShow?: number;
   campingExpData?: {
     eyebrow?: string;
     titlePrefix?: string;
@@ -55,39 +81,66 @@ export type SeasonScheduleData = {
   };
 };
 
-const DUMMY_ROWS: SeasonRow[] = [
-  { week: "Week 1", date: "Oct. 17–19, 2025 Pheasant Opener Sold Out", year: 2026 },
-  { week: "Week 2", date: "Oct. 24–26 Sold Out", year: 2026 },
-  { week: "Week 3", date: "Oct. 31–Nov. 02 Sold Out", year: 2026 },
-  { week: "Week 4", date: "Nov. 07–09 Sold Out", year: 2026 },
-  { week: "Week 5", date: "Nov. 14–16 Sold Out", year: 2026 },
-  { week: "Week 6", date: "Nov. 21–23 Available", year: 2027 },
-  { week: "Week 7", date: "Nov. 28–30 Thanksgiving Sold Out", year: 2027 },
-  { week: "Week 8", date: "Dec. 05–07 Available", year: 2027 },
-  { week: "Week 9", date: "Dec. 12–14 Sold Out", year: 2027 },
-];
-
 const DUMMY_CAMP_NAMES = [
-  "Fulkton",
-  "Gunther's Ranch",
-  "Maddox Creek",
+  "Faulkton Pheasant Camp",
+  "Gunner's Haven Pheasant Camp",
+  "Meadow Creek Pheasant Camp",
   "Pheasant Camp Lodge",
-  "West River Adventures",
+  "West River Adventures Pheasant Camp",
 ];
 
 const DUMMY_TABLE_HEADERS = [
   "Weeks In Season",
   "UGUIDE Season Schedule",
-  "Fulkton",
-  "Gunther's Ranch",
-  "Maddox Creek",
+  "Faulkton Pheasant Camp",
+  "Gunner's Haven Pheasant Camp",
+  "Meadow Creek Pheasant Camp",
   "Pheasant Camp Lodge",
-  "West River Adventures",
+  "West River Adventures Pheasant Camp",
   "Rate + Tax *",
 ];
 
+// Matches the pricing the client provided for the two seasons currently on
+// file. `seasonStartDate` is the Week 1 check-in date for that year — change
+// this one value each year and every date range in the grid recalculates.
+const DUMMY_GROUPS: SeasonScheduleYearGroup[] = [
+  {
+    year: 2026,
+    seasonStartDate: "2026-10-15",
+    rows: [
+      { week: "Week 1", price: 1749 },
+      { week: "Week 2", price: 1649 },
+      { week: "Week 3", price: 1549 },
+      { week: "Week 4", price: 1449 },
+      { week: "Week 5", price: 1449 },
+      { week: "Week 6", price: 1449 },
+      { week: "Week 7", price: 1449 },
+      { week: "Week 8", price: 1299 },
+      { week: "Week 9", price: 999 },
+    ],
+  },
+  {
+    year: 2027,
+    seasonStartDate: "2027-10-14",
+    rows: [
+      { week: "Week 1", price: 1799 },
+      { week: "Week 2", price: 1649 },
+      { week: "Week 3", price: 1549 },
+      { week: "Week 4", price: 1449 },
+      { week: "Week 5", price: 1449 },
+      { week: "Week 6", price: 1449 },
+      { week: "Week 7", price: 1449 },
+      { week: "Week 8", price: 1299 },
+      { week: "Week 9", price: 999 },
+    ],
+  },
+];
+
 const DUMMY_DATA: Required<
-  Omit<SeasonScheduleData, "rows" | "campNames" | "tableHeaders" | "campingExpData">
+  Omit<
+    SeasonScheduleData,
+    "rows" | "groups" | "campNames" | "tableHeaders" | "campingExpData" | "yearsToShow"
+  >
 > = {
   welcomeLabel: "Welcome",
   heading: "UGUIDE South Dakota Pheasant Hunting",
@@ -101,6 +154,55 @@ const DUMMY_DATA: Required<
   legendPendingText: "= Pheasant Camp Hunt PENDING (0)",
   legendAvailableText: "= Pheasant Camp Hunt AVAILABLE (4)",
 };
+
+/* ---------------- DATE HELPERS ---------------- */
+
+const MONTH_ABBR = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+function parseISODate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+/**
+ * Builds a human friendly date range for a given week index (0-based), e.g.
+ * "Oct 15–21" or "Oct 29–Nov 4" when the week crosses a month boundary.
+ */
+function formatWeekDateRange(seasonStartISO: string, weekIndex: number, spanDays = 7): string {
+  const start = addDays(parseISODate(seasonStartISO), weekIndex * 7);
+  const end = addDays(start, Math.max(spanDays - 1, 0));
+
+  const startMonth = MONTH_ABBR[start.getMonth()];
+  const endMonth = MONTH_ABBR[end.getMonth()];
+
+  return startMonth === endMonth
+    ? `${startMonth} ${start.getDate()}–${end.getDate()}`
+    : `${startMonth} ${start.getDate()}–${endMonth} ${end.getDate()}`;
+}
+
+/**
+ * Resolves what to display in the "UGUIDE Season Schedule" column for a row.
+ * An explicit `row.date` always wins (useful for one-off labels like
+ * "Thanksgiving Week"); otherwise it's calculated from the group's
+ * `seasonStartDate` so every week gets its own real date range instead of
+ * the year repeated on every line.
+ */
+function getRowDateLabel(row: SeasonRow, group: SeasonScheduleYearGroup, rowIdx: number): string {
+  if (row.date) return row.date;
+  if (group.seasonStartDate) {
+    return formatWeekDateRange(group.seasonStartDate, rowIdx, group.dateSpanDays ?? 7);
+  }
+  return row.week;
+}
 
 /* ---------------- STATUS DOT ---------------- */
 
@@ -159,9 +261,11 @@ function getCampStatus(campIdx: number, rowIdx: number): "sold" | "available" {
 
 function MobileCarousel({
   rows,
+  dateLabels,
   getMobileCampEntries,
 }: {
   rows: SeasonRow[];
+  dateLabels: string[];
   getMobileCampEntries: (row: SeasonRow, rowIdx: number) => {
     name: string;
     status: CampStatusType;
@@ -212,7 +316,7 @@ function MobileCarousel({
                     </span>
                   </div>
                   <div className="px-4 py-3">
-                    <p className="mb-3 text-[13px] font-medium text-[#4a3b2f]">{row.date}</p>
+                    <p className="mb-3 text-[13px] font-medium text-[#4a3b2f]">{dateLabels[i] || row.week}</p>
                     <div className="space-y-2">
                       {camps.map((camp) => {
                         const status = camp.status;
@@ -308,9 +412,12 @@ function MobileCarousel({
   );
 }
 
-/* ---------------- HELPERS ---------------- */
+/* ---------------- YEAR GROUP HELPERS ---------------- */
 
-function getScheduleGroups(rows: SeasonRow[]): SeasonScheduleYearGroup[] {
+// Fallback path: if the caller only passes a flat `rows` array (legacy
+// shape) instead of `groups`, bucket them by `row.year` the same way the
+// original component did.
+function getScheduleGroupsFromFlatRows(rows: SeasonRow[]): SeasonScheduleYearGroup[] {
   const grouped = new Map<number, SeasonRow[]>();
 
   rows.forEach((row) => {
@@ -325,13 +432,38 @@ function getScheduleGroups(rows: SeasonRow[]): SeasonScheduleYearGroup[] {
     .map(([year, yearRows]) => ({ year, rows: yearRows }));
 }
 
+/**
+ * Keeps only the current season year and the following one(s), so the grid
+ * stays relevant as the calendar rolls forward. Concretely: once it's 2028,
+ * a leftover 2026 group in the data source will simply stop rendering
+ * without needing any manual cleanup — just append a 2028 group whenever
+ * it's ready.
+ */
+function getVisibleYearGroups(
+  groups: SeasonScheduleYearGroup[],
+  referenceDate: Date,
+  yearsToShow: number
+): SeasonScheduleYearGroup[] {
+  const currentYear = referenceDate.getFullYear();
+  return groups
+    .filter((g) => g.year >= currentYear)
+    .sort((a, b) => a.year - b.year)
+    .slice(0, yearsToShow);
+}
+
 /* ---------------- COMPONENT ---------------- */
 
 export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) {
-  const rows = data?.rows?.length ? data.rows : DUMMY_ROWS;
   const campNames = data?.campNames?.length ? data.campNames : DUMMY_CAMP_NAMES;
   const tableHeaders = data?.tableHeaders?.length ? data.tableHeaders : DUMMY_TABLE_HEADERS;
-  const yearGroups = data?.groups?.length ? data.groups : getScheduleGroups(rows);
+
+  const allGroups: SeasonScheduleYearGroup[] = data?.groups?.length
+    ? data.groups
+    : data?.rows?.length
+    ? getScheduleGroupsFromFlatRows(data.rows)
+    : DUMMY_GROUPS;
+
+  const yearGroups = getVisibleYearGroups(allGroups, new Date(), data?.yearsToShow ?? 2);
 
   const content = { ...DUMMY_DATA, ...data };
 
@@ -368,73 +500,87 @@ export default function SeasonSchedule({ data }: { data?: SeasonScheduleData }) 
           </p>
         </div>
 
-        {yearGroups.map(({ year, rows: yearRows }) => (
-          <div key={year} className="mb-12 last:mb-0">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h3 className="text-2xl font-bold text-[#3a2b20]">{year}</h3>
-              <p className="text-sm text-[#6f5845]">
-                {yearRows.length} week{yearRows.length === 1 ? "" : "s"}
-              </p>
-            </div>
+        {yearGroups.map((group) => {
+          const yearRows = group.rows;
+          const dateLabels = yearRows.map((row, i) => getRowDateLabel(row, group, i));
 
-            {/* ── Mobile: carousel (hidden md+) ── */}
-            <MobileCarousel rows={yearRows} getMobileCampEntries={getMobileCampEntries} />
+          return (
+            <div
+              key={group.year}
+              className="mb-10 last:mb-0 rounded-2xl border-2 border-[#3a2b20] bg-[#f7f2ea] p-4 shadow-xl md:p-6"
+            >
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <span className="inline-flex items-center rounded-lg bg-[#6b3b16] px-4 py-2 text-xl font-bold text-white shadow-sm sm:text-2xl">
+                  {group.year} Season
+                </span>
+                <p className="text-sm font-medium text-[#6f5845]">
+                  {yearRows.length} week{yearRows.length === 1 ? "" : "s"}
+                </p>
+              </div>
 
-            {/* ── Desktop: full grid table (hidden below md) ── */}
-            <div className="hidden overflow-x-auto rounded-xl border-2 border-[#3a2b20] bg-[#ecebea] shadow-xl md:block">
-              <div className="min-w-230 lg:min-w-245">
-                <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] bg-[#6b3b16] text-white font-semibold text-sm border-b-2 border-[#3a2b20]">
-                  <div className="col-span-2 text-center py-3 border-r border-[#3a2b20]">
-                    {content.tableTopLeftHeader}
+              {/* ── Mobile: carousel (hidden md+) ── */}
+              <MobileCarousel
+                rows={yearRows}
+                dateLabels={dateLabels}
+                getMobileCampEntries={getMobileCampEntries}
+              />
+
+              {/* ── Desktop: full grid table (hidden below md) ── */}
+              <div className="hidden overflow-x-auto rounded-xl border-2 border-[#3a2b20] bg-[#ecebea] shadow-xl md:block">
+                <div className="min-w-230 lg:min-w-245">
+                  <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] bg-[#6b3b16] text-white font-semibold text-sm border-b-2 border-[#3a2b20]">
+                    <div className="col-span-2 text-center py-3 border-r border-[#3a2b20]">
+                      {content.tableTopLeftHeader}
+                    </div>
+                    <div className="col-span-5 text-center py-3 border-r border-[#3a2b20]">
+                      {content.tableTopMiddleHeader}
+                    </div>
+                    <div className="text-center py-3">{content.tableTopRightHeader}</div>
                   </div>
-                  <div className="col-span-5 text-center py-3 border-r border-[#3a2b20]">
-                    {content.tableTopMiddleHeader}
-                  </div>
-                  <div className="text-center py-3">{content.tableTopRightHeader}</div>
-                </div>
 
-                <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] text-[#3c2f23] text-sm font-semibold border-b border-[#3a2b20]">
-                  {tableHeaders.map((h, i) => (
+                  <div className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] text-[#3c2f23] text-sm font-semibold border-b border-[#3a2b20]">
+                    {tableHeaders.map((h, i) => (
+                      <div
+                        key={i}
+                        className="p-3 text-center border-r h-full flex justify-center items-center border-[#3a2b20] bg-white last:border-r-0"
+                      >
+                        {h}
+                      </div>
+                    ))}
+                  </div>
+
+                  {yearRows.map((row, i) => (
                     <div
                       key={i}
-                      className="p-3 text-center border-r h-full flex justify-center items-center border-[#3a2b20] bg-white last:border-r-0"
+                      className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] items-center text-sm border-b bg-white border-[#3a2b20]"
                     >
-                      {h}
+                      <div className="p-3 text-center flex justify-center items-center h-full text-orange-600 font-semibold border-r border-[#3a2b20]">
+                        {row.week}
+                      </div>
+                      <div className="p-3 text-[#4a3b2f] flex items-center h-full border-r border-[#3a2b20]">
+                        {dateLabels[i]}
+                      </div>
+                      {[0, 1, 2, 3, 4].map((campIdx) => (
+                        <div
+                          key={campIdx}
+                          className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full"
+                        >
+                          <TooltipDot
+                            type={getStatusForCamp(row, campIdx, i)}
+                            hoverText={getHoverTextForCamp(row, campIdx)}
+                          />
+                        </div>
+                      ))}
+                      <div className="p-3 text-center text-[#b14b1a] font-semibold flex justify-center items-center h-full">
+                        ${row.price ?? 1299 + i * 100}
+                      </div>
                     </div>
                   ))}
                 </div>
-
-                {yearRows.map((row, i) => (
-                  <div
-                    key={i}
-                    className="grid grid-cols-[1fr_350px_1fr_1fr_1fr_1fr_1fr_1fr] items-center text-sm border-b bg-white border-[#3a2b20]"
-                  >
-                    <div className="p-3 text-center flex justify-center items-center h-full text-orange-600 font-semibold border-r border-[#3a2b20]">
-                      {row.week.split("—")[0]}
-                    </div>
-                    <div className="p-3 text-[#4a3b2f] flex items-center h-full border-r border-[#3a2b20]">
-                      {row.date}
-                    </div>
-                    {[0, 1, 2, 3, 4].map((campIdx) => (
-                      <div
-                        key={campIdx}
-                        className="p-3 border-r border-[#3a2b20] flex justify-center items-center h-full"
-                      >
-                        <TooltipDot
-                          type={getStatusForCamp(row, campIdx, i)}
-                          hoverText={getHoverTextForCamp(row, campIdx)}
-                        />
-                      </div>
-                    ))}
-                    <div className="p-3 text-center text-[#b14b1a] font-semibold flex justify-center items-center h-full">
-                      ${row.price ?? 1299 + i * 100}
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         <div>
           <h2 className="mt-8 text-center text-[18px] font-bold text-black sm:mt-10 sm:text-[20px]">
